@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Java的引用级别有什么区别？ | Hello World</title>
-  <meta name="keywords" content=" 面试题 ">
-  <meta name="description" content="Java的引用级别有什么区别？ | Hello World">
+  <title>Elasticsearch-路由算法、请求原理 | Hello World</title>
+  <meta name="keywords" content=" es , 全文检索 ">
+  <meta name="description" content="Elasticsearch-路由算法、请求原理 | Hello World">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="categories">
@@ -309,9 +309,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-强引用、软引用、弱引用、虚引用有什么区别？" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-Elasticsearch-路由算法、请求原理" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Java的引用级别有什么区别？</h1>
+        <h1 class="article-title">Elasticsearch-路由算法、请求原理</h1>
     
     <div class="article-meta">
         
@@ -319,26 +319,28 @@
         
         <span class="book">
             
-                <a href="javascript:" target="_blank" data-rel="Java基础 noopener">Java基础</a>
+                <a href="javascript:" target="_blank" data-rel="全文检索 noopener">全文检索</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a href="javascript:" target="_blank" rel="noopener" class="color4">面试题</a>
+            <a href="javascript:" target="_blank" rel="noopener" class="color3">es</a>
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color5">全文检索</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-11-30 12:16:26'>2019-11-29 20:31</time>
+        创建时间:<time class="date" title='更新时间: 2019-11-30 15:36:46'>2019-11-30 15:15</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:324</span>
+        <span>字数:383</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -357,7 +359,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#路由算法"><span class="toc-text">路由算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#算法原理"><span class="toc-text">算法原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#请求原理"><span class="toc-text">请求原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#写原理"><span class="toc-text">写原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#读原理"><span class="toc-text">读原理</span></a></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -372,28 +374,17 @@
 </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <blockquote>
-<p> 不同的引用类型，主要体现的是对象的不同的可达性和对垃圾收集的影响。  </p>
+        <h1 id="路由算法"><a href="#路由算法" class="headerlink" title="路由算法"></a>路由算法</h1><blockquote>
+<p>一个index的数据会分为多片，每片在一个shard上。所以说一个document只能存在一个shard中，当创建document的时候，es就需要决定这个document要保存到哪个shard上，这个过程就是document routing，数据路由。</p>
 </blockquote>
-<ul>
-<li>强引用<ul>
-<li>最常见的普通对象引用，只要还有强引用指向一个对象，就表示这个对象活着，垃圾收集器不会碰这种对象。但是只要超过了引用的作用域或者显示的将强引用对象赋值为null，就是可以被垃圾回收。</li>
-</ul>
-</li>
-<li>软引用<ul>
-<li>相对比强引用弱化一些的引用，可以让对象豁免一些垃圾收集，只有当JVM认为内存不足时，才会去试图回收软引用对象。JVM会确保在抛出OOM以前将软引用指向的对象清理掉。通常来实现内存敏感的缓存。</li>
-</ul>
-</li>
-<li>弱引用<ul>
-<li>它和软引用类似，但是它不能使对象豁免垃圾收集，仅仅是提供一种访问在弱引用状态下对象的路径。比如维护一种非强制性的映射关系。</li>
-</ul>
-</li>
-<li>虚引用<ul>
-<li>无法通过虚引用访问对象，虚引用仅仅是提供了一种finalize后做某些事情的机制。  </li>
-</ul>
-</li>
-</ul>
-<p><strong>&emsp; 所有的引用类型都是在java.lang.Reference抽象类的子类，通过get()方法可以获得。</strong></p>
+<h2 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h2><blockquote>
+<p>shard = hash（routing number） % number_of_primary_shards。</p>
+</blockquote>
+<p>&emsp; 这就是es计算一个document保存在哪个shard使用的算法。需要注意的是，这里面的routing_number默认是id，可以手动设置。同样的routing_number经过hash函数后的值是相同的。无论hash后的数值是多少，与primaryShards取余后，一定小于等于它。<br>&emsp; 这也就解释了为什么我们可以通过参数修改replica shard但是不能修改primary shard，因为它参与了routing算法。</p>
+<h1 id="请求原理"><a href="#请求原理" class="headerlink" title="请求原理"></a>请求原理</h1><h2 id="写原理"><a href="#写原理" class="headerlink" title="写原理"></a>写原理</h2><p><img src="/images/pasted-12.png" alt="图解"></p>
+<p>&emsp; 当一个请求决定创建document时，可以任意选一个primary shard进行请求。接受到请求的primary shard就升级成为<strong>协调节点</strong>，通过上面将的routing算法得出一个需要保存的shard地址，然后将这个请求路由到算法的节点上，primary shard创建完成后，同步到自己的replica shard。都处理完成后，通知协调节点自己已经工作完成了，然后由协调节点响应client端。</p>
+<h2 id="读原理"><a href="#读原理" class="headerlink" title="读原理"></a>读原理</h2><p><img src="/images/pasted-13.png" alt="图解"></p>
+<p>&emsp; es在处理一个请求时，会将请求打到所有的shard上面，因为每个shard都包含了部分数据，但是如果primary shard存在replica shard，那么请求也可以打到replica shard上。</p>
 
       
        

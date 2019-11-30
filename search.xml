@@ -4,6 +4,114 @@
   
     
     <entry>
+      <title>Elasticsearch-TF&amp;IDF算法、Scroll搜索</title>
+      <link href="/2019/11/30/Elasticsearch-TF-IDF%E7%AE%97%E6%B3%95%E3%80%81Scroll%E6%90%9C%E7%B4%A2/"/>
+      <url>/2019/11/30/Elasticsearch-TF-IDF%E7%AE%97%E6%B3%95%E3%80%81Scroll%E6%90%9C%E7%B4%A2/</url>
+      
+        <content type="html"><![CDATA[<h1 id="TF-amp-IDF"><a href="#TF-amp-IDF" class="headerlink" title="TF&amp;IDF"></a>TF&amp;IDF</h1><blockquote><p>es计算分数的算法，es的分数，是es给出的最直观的搜索文本与索引中的文本匹配度的一个分数。默认es会将返回的数据按照分数进行倒叙。</p></blockquote><p>&emsp; es的分数算法，是使用TF&amp;IDF算法来实现，这个算法的主要分成三个部分。</p><ul><li>搜索文本中各个词条，在field文本中出现的次数。次数越多，分数越高。权重较高。</li><li>搜索文本中各个词条，在整个索引中所有文档中的出现次数。次数越多，分数越低。</li><li>field的长度越长，分数越低。field的长度越短，分数越高。权重较低。</li></ul><p><strong>举一个例子：</strong><br>&emsp; 假如我们有三篇文章</p><ul><li>Elasticsearch是一个基于Lucene的搜索服务器。它提供了一个分布式多用户能力的全问搜索引擎，基于RESTful web接口。</li><li>Solr是一个高性能，采用java开发，给予Lucene的全文搜索服务器。</li><li>Lucene是一个开源的全文检索引擎工具包，但它不是一个完整的全文检索引擎。</li></ul><p>&emsp; 这时，我们想通过一个inpute框检索系统中所有包含“Lucene”关键字的文章，es为这三篇文章，分别赋予了“Lucene”关键字的分数。然后通过?explain=true参数可以查询到一个query中的详细信息和分数的计算。</p><pre><code>GET /test2/article/_search?explain=true{  &quot;query&quot;: {    &quot;match&quot;: {      &quot;content&quot;: &quot;lucene&quot;    }  }}</code></pre><h1 id="Scroll大数据搜索"><a href="#Scroll大数据搜索" class="headerlink" title="Scroll大数据搜索"></a>Scroll大数据搜索</h1><p>&emsp; 如果一次将大量数据查询出来，那么性能就会很差。这时我们一般采用Scroll滚动查询，也就是每次查询一部分的数据，直到所有数据查询完成。Scroll搜索会在第一次搜索时保存一个当时数据的快照来缓存，后续给予这个快照进行搜索，这个期间如果数据发生了变化，用户是看不到的。Scroll不使用相关度分数排序，而且使用_doc排序，性能较高。<br>&emsp; 每次发送Scroll查询，我们需要指定一个Scroll的时间参数，每次搜索请求只要在这个时间内完成就可以。返回的结果会包含一个scroll_id，后续的请求必须带上一个scroll_id。<br>&emsp; Scoll主要进行海量数据的搜索，与分页的使用场景不同。分页主要用来一页一页搜索给用户看，Scroll主要用一批一批检索数据，让系统处理。</p><pre><code>GET /test2/article/_search?scroll=1m{  &quot;query&quot;: {    &quot;match_all&quot;: {}  },  &quot;sort&quot;: [&quot;_doc&quot;],  &quot;size&quot;: 1}//第二次查询使用返回的idGET /_search/scroll{  &quot;scroll&quot;:&quot;1m&quot;,  &quot;scroll_id&quot;:&quot;返回的scrollId&quot;}</code></pre>]]></content>
+      
+      
+      <categories>
+          
+          <category> 全文检索 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> es </tag>
+            
+            <tag> 全文检索 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Elasticsearch-deep paging、mapping介绍</title>
+      <link href="/2019/11/30/Elasticsearch-deep-paging%E3%80%81mapping%E4%BB%8B%E7%BB%8D/"/>
+      <url>/2019/11/30/Elasticsearch-deep-paging%E3%80%81mapping%E4%BB%8B%E7%BB%8D/</url>
+      
+        <content type="html"><![CDATA[<h1 id="deep-paging"><a href="#deep-paging" class="headerlink" title="deep paging"></a>deep paging</h1><blockquote><p>深度分页是es分页的一个特点，它耗费了大量的性能。</p></blockquote><p>&emsp; es的分页语法使用from和size关键字和mysql limit使用一样，下标从0开始。</p><pre><code>    GET /index/type/_search?from=0&amp;size=10    GET /index/type/_search?from=10&amp;size=10</code></pre><p>&emsp; 深度分页搜索，当在大量数据中使用分页，就会发生这种问题。<br>&emsp; 假如我们分页查询第100页，每页10条，一共有6000条数据，也就是取出1001-1010条数据。这些数据保存在三个shard中，每个shard保存2000条。请求到达协调节点，协调节点向三个shard转发。这时每个shard都会从自己的2000条数据中，取出0-1010条数据返回给协调节点。<br>&emsp; 协调节点收到3030条数据后，进行排序，从排序后的数据中在取出1001-1010条数据返回给客户端。<br>&emsp; 之所以不是在shard内部排序好，然后返回30条数据，再由协调节点对30条数据进行整理。就是因为document中的_score导致，每个shard中数据的_score是不一样的，如果在内部排序那么最后的数据一定是不准确的。</p><h2 id="deep-paging引发的问题"><a href="#deep-paging引发的问题" class="headerlink" title="deep paging引发的问题"></a>deep paging引发的问题</h2><ul><li>耗费带宽：每次深度分页查询，都要返回大量的无用数据占用带宽。</li><li>耗费内存：这些无用数据也占用了大量的内存，</li><li>耗费CPU：协调节点每次都需要对这些数据进行排序，然后在返回。</li></ul><h1 id="mapping介绍"><a href="#mapping介绍" class="headerlink" title="mapping介绍"></a>mapping介绍</h1><p>&emsp; mapping就是index的type的元数据，每个type都有一个自己的mapping，决定了数据类型、建立倒排索引的行为、还有可以进行搜索的行为。<br>&emsp; 当我们向es插入数据时，es会自动建立索引，同时建立type以及对应的mapping，mapping中定义了每一个field的数据类型。<br>&emsp; 不同的类型，比如text和date，可能有的是exact value，有的是full text类型。</p><ul><li>exact value在建立倒排索引的分词时，会将整个一个关键词建立在倒排索引中，处理搜索时，也要求关键词完全匹配才可以。</li><li>full text在建立倒排索引时会经过一系列的处理流程，例如大小写转换，同义词转换等等。处理搜索时</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 全文检索 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> es </tag>
+            
+            <tag> 全文检索 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Elasticsearch-写一致性、返回解析</title>
+      <link href="/2019/11/30/Elasticsearch-%E5%86%99%E4%B8%80%E8%87%B4%E6%80%A7%E3%80%81%E8%BF%94%E5%9B%9E%E8%A7%A3%E6%9E%90/"/>
+      <url>/2019/11/30/Elasticsearch-%E5%86%99%E4%B8%80%E8%87%B4%E6%80%A7%E3%80%81%E8%BF%94%E5%9B%9E%E8%A7%A3%E6%9E%90/</url>
+      
+        <content type="html"><![CDATA[<h1 id="写一致性"><a href="#写一致性" class="headerlink" title="写一致性"></a>写一致性</h1><p>&emsp; 我们在发送任何一个增删改请求时，都可以要求es对节点的健康状况做判断。通过一个<strong>consistency</strong>参数来指明，我们当前这个请求的写一致性是什么。</p><ul><li>one：要求所有的primary shard都是活跃的。</li><li>all：要求所有的primary shard和replica shard都是活跃的。</li><li>quorum默认：要求所有的shard中，大部分都是活跃的。通过算法来设置一个quorum值，并且es限定了只有当replica shard的数量&gt;1的时候才可以使用，这就解释了为什么1台节点的时候，我们也可以正常操作。当quorum不足时，进行wait默认1分钟，然后timeout。</li></ul><h1 id="search返回内容解析"><a href="#search返回内容解析" class="headerlink" title="_search返回内容解析"></a>_search返回内容解析</h1><pre><code>GET /_search?timeout=10ms    {      &quot;took&quot;: 5,      &quot;timed_out&quot;: false,      &quot;_shards&quot;: {        &quot;total&quot;: 5,        &quot;successful&quot;: 5,        &quot;skipped&quot;: 0,        &quot;failed&quot;: 0      },      &quot;hits&quot;: {        &quot;total&quot;: 3,        &quot;max_score&quot;: 1,        &quot;hits&quot;: [          {            &quot;_index&quot;: &quot;mamber&quot;,            &quot;_type&quot;: &quot;account&quot;,            &quot;_id&quot;: &quot;2&quot;,            &quot;_score&quot;: 1,            &quot;_source&quot;: {              &quot;name&quot;: &quot;lisi&quot;,              &quot;age&quot;: 22            }          }        ]      }    }</code></pre><ul><li>took：搜索使用的毫秒。</li><li>timed_out：默认我们只有将一次请求的数据完整请求后才返回，但是通过设置timeout，我们可以要求es尽量在期间内将搜索到的部分数据直接返回给client端，而不是等待全部数据。</li><li>hits.total：总条数</li><li>hits.max_score：所有结果中，最高的匹配度分数。</li><li>hits.hits：默认前10条数据，按照分数倒叙。</li></ul><p><img src="/images/pasted-14.png" alt="time_out"></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 全文检索 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> es </tag>
+            
+            <tag> 全文检索 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Elasticsearch-路由算法、请求原理</title>
+      <link href="/2019/11/30/Elasticsearch-%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95%E3%80%81%E8%AF%B7%E6%B1%82%E5%8E%9F%E7%90%86/"/>
+      <url>/2019/11/30/Elasticsearch-%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95%E3%80%81%E8%AF%B7%E6%B1%82%E5%8E%9F%E7%90%86/</url>
+      
+        <content type="html"><![CDATA[<h1 id="路由算法"><a href="#路由算法" class="headerlink" title="路由算法"></a>路由算法</h1><blockquote><p>一个index的数据会分为多片，每片在一个shard上。所以说一个document只能存在一个shard中，当创建document的时候，es就需要决定这个document要保存到哪个shard上，这个过程就是document routing，数据路由。</p></blockquote><h2 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h2><blockquote><p>shard = hash（routing number） % number_of_primary_shards。</p></blockquote><p>&emsp; 这就是es计算一个document保存在哪个shard使用的算法。需要注意的是，这里面的routing_number默认是id，可以手动设置。同样的routing_number经过hash函数后的值是相同的。无论hash后的数值是多少，与primaryShards取余后，一定小于等于它。<br>&emsp; 这也就解释了为什么我们可以通过参数修改replica shard但是不能修改primary shard，因为它参与了routing算法。</p><h1 id="请求原理"><a href="#请求原理" class="headerlink" title="请求原理"></a>请求原理</h1><h2 id="写原理"><a href="#写原理" class="headerlink" title="写原理"></a>写原理</h2><p><img src="/images/pasted-12.png" alt="图解"></p><p>&emsp; 当一个请求决定创建document时，可以任意选一个primary shard进行请求。接受到请求的primary shard就升级成为<strong>协调节点</strong>，通过上面将的routing算法得出一个需要保存的shard地址，然后将这个请求路由到算法的节点上，primary shard创建完成后，同步到自己的replica shard。都处理完成后，通知协调节点自己已经工作完成了，然后由协调节点响应client端。</p><h2 id="读原理"><a href="#读原理" class="headerlink" title="读原理"></a>读原理</h2><p><img src="/images/pasted-13.png" alt="图解"></p><p>&emsp; es在处理一个请求时，会将请求打到所有的shard上面，因为每个shard都包含了部分数据，但是如果primary shard存在replica shard，那么请求也可以打到replica shard上。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 全文检索 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> es </tag>
+            
+            <tag> 全文检索 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>nacos-配置中心</title>
       <link href="/2019/11/30/nacos-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/"/>
       <url>/2019/11/30/nacos-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/</url>
@@ -62,9 +170,9 @@
     
     
     <entry>
-      <title>Elasticsearch-shard与扩容介绍</title>
-      <link href="/2019/11/30/Elasticsearch-shard%E4%B8%8E%E6%89%A9%E5%AE%B9%E4%BB%8B%E7%BB%8D/"/>
-      <url>/2019/11/30/Elasticsearch-shard%E4%B8%8E%E6%89%A9%E5%AE%B9%E4%BB%8B%E7%BB%8D/</url>
+      <title>Elasticsearch-shard、扩容介绍</title>
+      <link href="/2019/11/30/Elasticsearch-shard%E3%80%81%E6%89%A9%E5%AE%B9%E4%BB%8B%E7%BB%8D/"/>
+      <url>/2019/11/30/Elasticsearch-shard%E3%80%81%E6%89%A9%E5%AE%B9%E4%BB%8B%E7%BB%8D/</url>
       
         <content type="html"><![CDATA[<h1 id="什么是shard？"><a href="#什么是shard？" class="headerlink" title="什么是shard？"></a>什么是shard？</h1><p>&emsp; 首先我们明确一个概念，每个index都是默认拥有5个P shard和与之对应的R shard组成。也就是说一个index拥有10个shard。我们的document通过es的处理保存在不同的P shard和R shard上。<strong>每一个shard都是磁盘上的某一块具体物理地址</strong>。<br>&emsp; Es为了保证高可用，在node宕机时不会造成服务无法访问、数据丢失等因素，它选择<strong>冗余的存储数据</strong>来避免。</p><ul><li>每一个index包含多个shard，最少是由1个P sahrd组成。在创建index时，P shard的数量就已经确定，后期无法进行更改。但是R shard是可以随时进行数量调整的。</li><li>每一个shard都是一个最小的工作单元，它承担了部分数据。是一个完整的Lucene实例，拥有完整的创建索引、处理请求的能力。这也就说明，一个R shard在P shard宕机时，是完全可以自主处理该shard组下的所有请求的。</li><li>在node发生变化时，shard会自动在node中进行负载均衡的分配，这一切都是es来帮助我们处理的。</li><li>每个document一定只保存在一个P shard以及对应的R shard中。不可能同时存在两个P shard中。</li><li>P shard不能和自己的R shard在同一个node上，但可以和其他的R shard在同一个node。</li></ul><pre><code>PUT /创建的索引{    &quot;settings&quot;:{        &quot;number_of_shards&quot;:5,        &quot;number_of_replicas&quot;1    }}</code></pre><h1 id="es的扩容"><a href="#es的扩容" class="headerlink" title="es的扩容"></a>es的扩容</h1><p>&emsp; es的扩容就像任何其他分布式应用扩容一样，分为垂直扩容与水平扩种两种。es会自动对扩容后的note进行负载均衡。</p><ul><li>垂直扩容：更新服务器的大小，服务器总数量不变。比如：两台16G内存的服务器（共32G），将其中一台替换为32G，服务器总数量=2，但是内存扩容到48G。</li><li>水平扩容：增加服务器数量，服务器总数量变化。比如：两台16G内存的服务区（共32G），新增一台16G服务器，服务器总数量=3，内存扩容到48G。 </li></ul><h2 id="扩容的极限"><a href="#扩容的极限" class="headerlink" title="扩容的极限"></a>扩容的极限</h2><p>&emsp; 通过扩容机制以及shard的特性，我们引出一个扩容极限的问题。那么什么是扩容极限？<br>&emsp; 我们知道每一个shard其实都是硬盘内的一个区域，它耗费着系统的IO/CPU/Memery资源。那么也就是说，如果一台node，上面只有1个shard岂不是就能占用全部的资源，这时也是es性能最好的时候。<br>&emsp; 但是这又引出了另一个问题，我们知道一个index，默认是有10个shard（5P 5R），也就是说当我们扩容到了10台node，就发生了扩容极限。我们每一个shard已经占用了当前note的全部资源。如果这时发生了性能问题，也就是说我们的10台note的集群都无法不足时，还要继续进行扩容。<br>处理方法就是：增加node，然后新增R shard，来继续进行负载均衡。不过这里要注意的是，我们在进行settings时，是以P shard的倍数进行设置。<br>&emsp; 举例：默认5P，每一个搭配1R，总shard数=10   |    修改R shard为2。默认5P，每一个搭配2R，总shard数=15。这时你的扩容极限就变为了15台。  </p><h2 id="尽可能的提高容错性"><a href="#尽可能的提高容错性" class="headerlink" title="尽可能的提高容错性"></a>尽可能的提高容错性</h2><p>&emsp; 当我们某一个node发生各种异常情况宕机，但是不影响服务的使用，保证数据查询的正确性。允许最多的note宕机，那么就越高可用、高容错。假如100台note，我们最多允许99台node宕机还能保证服务和数据正常。那么这就是超级高可用和超级高容错。。要是100台node，100个note都宕机了，还是能用，那这就太神了。。。<br>&emsp; 在3台note下，9个shard（3P 6R）的配置，容错性就很不错，我们最多同时允许2台note宕机</p><h1 id="分布式透明隐藏特性"><a href="#分布式透明隐藏特性" class="headerlink" title="分布式透明隐藏特性"></a>分布式透明隐藏特性</h1><p>&emsp; es是一套分布式系统，之所以分布式就是为了处理大数据。如果数量很小或者纯单机应用，那还不如用Solor或者直接用Lucene来实现。但是es的优势又不光光体现在分布式，它相比较前两者更简单好用，解压即用。为此它在内部实现了很多机制没有暴露给我们开发者。</p><ul><li>自动分片机制，当我们保存document时不需要考虑这个document要保存在什么shard上。取的时候也不需要特意指定shard。</li><li>集群发现机制，es使node自动加入相关或者默认的集群中接受集群的管理。</li><li>shard的负载均衡，es对各个node中的shard进行负载均衡，尽量不使某一个note压力过大。</li><li>请求路由，当我们准备从es获取数据使，我们并不需要关心真实的命中node和shard。只需访问一个es地址，es会自动将数据进行汇集处理响应回来。</li><li>集群扩容，当note的数量发生改变，shard需要重新进行分配。如何分配，怎么分配这些es都帮我们处理了。</li><li>master宕机node升级，假如我们的master节点发生了宕机，es会自动将某一个node升级为master节点，不会发生服务中断的情况。当master回归使，回来时master就变成了一个普通的node。</li><li>master节点主要是管理es集群的元数据，比如索引的创建和删除。node的创建和删除。master不承担所有的请求，也就不会造成性能瓶颈。</li><li>节点对等分布式架构：在es架构中，每一个node都能接受处理所有的请求，任何一个node接受请求后，都可以路由到相关node。最先接受请求的node，统一处理后将数据响应。也就是说集群中的所有node都是平等的，不存在master能做的事node不能做。</li></ul>]]></content>
       
@@ -89,11 +197,11 @@
     
     
     <entry>
-      <title>Elasticssearch-安装与运行</title>
-      <link href="/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%BF%90%E8%A1%8C/"/>
-      <url>/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%BF%90%E8%A1%8C/</url>
+      <title>Elasticssearch-安装、运行</title>
+      <link href="/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E3%80%81%E8%BF%90%E8%A1%8C/"/>
+      <url>/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E3%80%81%E8%BF%90%E8%A1%8C/</url>
       
-        <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><blockquote><p>Elasticsearch是一个分布式、高性能、高可用、可伸缩的搜索和分析系统。一个实时的分布式搜索分析引擎，它能让你以一个之前从未有过的速度和规模，去探索你的数据。它是全文检索、结构化搜索、分析这三个功能的组合。 </p></blockquote><p>&emsp; Elasticsearch是基于全文检索引擎Lucene之上，但是它不仅仅是一个全文搜索引擎，它可以被下面这样准确的形容：</p><ul><li>一个分布式的实施文档存储，每个字段都可以被索引与搜索。</li><li>一个分布式实时分析搜索引擎。</li><li>能胜任上百个服务节点的扩展，并支持PB级别的结构化或者非结构化数据。</li><li>自动维护数据冗余，避免服务宕机造成数据丢失。</li><li>基于Lucene封装更多支持，例如聚合搜索、基于地理位置的检索。</li></ul><h2 id="什么是倒排索引？"><a href="#什么是倒排索引？" class="headerlink" title="什么是倒排索引？"></a>什么是倒排索引？</h2><p>&emsp; 在我们搜索Elasticsearch时，总是看到说es是基于倒排索引进行查询，那么什么是倒排索引？当我们将一句话通过分词进行拆分，然后将每一个拆分后的词设置一个专门的id，最后将这些id进行整合就得到了倒排索引。<br>&emsp; 例如：这时，我们搜索《狮子》es会就去[1,2,3,4]的文档，然后展示出来。这个效率相比较数据库的like，快了不知道多少倍。当然中文分词的效果比英文分词要差很多，向百度之类的大厂，还是自己实现中文分词。</p><table><thead><tr><th>ID</th><th>文档</th></tr></thead><tbody><tr><td>1</td><td>狮子王电影预告</td></tr><tr><td>2</td><td>狮子王电影海报</td></tr><tr><td>3</td><td>狮子王剧透</td></tr><tr><td>4</td><td>狮子王电影海报剧透</td></tr></tbody></table><table><thead><tr><th>索引</th><th>文档地址</th></tr></thead><tbody><tr><td>狮子</td><td>1、2、3、4</td></tr><tr><td>狮子王</td><td>1、2、3、4</td></tr><tr><td>电影</td><td>1、2、4</td></tr><tr><td>海报</td><td>2、4</td></tr><tr><td>剧透</td><td>3、4</td></tr></tbody></table><h2 id="什么是全文检索？"><a href="#什么是全文检索？" class="headerlink" title="什么是全文检索？"></a>什么是全文检索？</h2><p>&emsp; 通过上面的倒排索引，我们已经可以很快的精确将某一个值快速的查找出来，但是这远远不够。如果我们忽略速度，这和数据库查询有什么区别？没有任何区别甚至还不如数据库。倒排索引除了可以让我们更快的更精准的查到数据，还为全文索引做准备。上面了例子，我搜索“狮子”，当然可以把1，2，3，4四个文档的数据返回给我。甚至我搜索“狮”这一个字，数据库也有like，也搜索到这四个文档。但是我如果搜索“老虎”呢？搜索“动物”呢？以数据库的思维这是绝对不会检索到的。但这不是我们希望的结果。我们希望可以将类似的、相近的数据返回。全文检索就是解决这个问题。当创建倒排索引时，也可以会分词创建一个相似，目的就是解决上面的问题。<br>&emsp; es的全文检索提供了很多强大的功能，例如：缩写（中国 -&gt; cn）、格式化、大小写、同义词等。</p><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><ul><li>Index<ul><li>类似于Mysql里面的database。</li></ul></li><li>Type  <ul><li>类似于mysql中的table，es可以在index中创建type，然后通过mapping进行映射。</li><li>在Lucene底层是不区分type的，同一个index下面的所有type都存储在一起，底层数据结构中通过_type这个field来进行type的区分。</li><li>当前index下所有document都是共享field的，也就是说，假如一个index下面保存人、动物两个type。虽然动物中没有field，但是人里面有。那么动物也就自然而然有了这个field，只不过是空值而已。所以我们要把具有相似field的数据放在一个index下，避免大量空值造成性能问题。</li></ul></li><li>Document&amp;field<ul><li>一个type是由多个Document组成的，类似一行数据，每一行数据是由多个field也就是列组成。</li></ul></li><li>Mapping<ul><li>用来表述数据、字段、表之间的关系和相关信息。例如创建索引，索引类型，是否保存原始索引，是否压缩，是否分词等等信息。</li></ul></li><li>Shard<ul><li>每一个index存储在多个分片中，里面冗余的保存的具体的document，es默认一个index由5个primary shard和5个replica shard组成。</li></ul></li><li>Replica<ul><li>为了避免shard宕机造成服务无法访问，es提供了replica进行高可用扩展。每一个shard分配一个replica，在shard宕机时可以提供服务，并且可以单独使用读服务。</li></ul></li></ul><h4 id="index和type到底有什么区别？"><a href="#index和type到底有什么区别？" class="headerlink" title="index和type到底有什么区别？"></a>index和type到底有什么区别？</h4><p>&emsp; 前面说了，把index理解成database，type理解成table。这只是为了更好了理解。由于两种数据存储的方式完全不一样，任何比喻都是为了更好的理解。但是往往把他们真实的用途掩盖。</p><ul><li>index<ul><li>Index存储在多个分片中，也就是Lucene index。它们有自己的资源开销。在我们搜索数据时，每个分片都需要搜索一次。然后ES通过自己的机制在整合从所有分片得到的数据。因此一个大的index，效率要比小index高。例如：搜索10个index，每个index拥有5个分片。那么本次检索的需要整合的数据就是10*5 = 50个分片结果。如果有大量的index和分片，发起一个搜索请求时，光是合并任务就要耗费大量的服务器资源。 </li></ul></li><li>type<ul><li>使用type允许我们在index中存储多种数据类型。这样就减少了index了数量。在使用时，向每个文档加入_type，然后检索的时候通过type搜索，就会过滤掉不相关的数据。搜索一个index下面的多个type和只所有一个type没有额外的开销。因为在数据整合时的数量都是一样分片。</li></ul></li><li>当然如果我们只是想es用于一个企业级的信息检索，它的很多功能我们都用不到。但是如果我们想让关系数据库中的关系也一同保存在es中，那么这里的type和index就要特别的注意一下。</li></ul><h2 id="单机安装"><a href="#单机安装" class="headerlink" title="单机安装"></a>单机安装</h2><blockquote><p>准备工作：jdk8以上版本、nodejs8以上版本。</p></blockquote><h3 id="server端安装"><a href="#server端安装" class="headerlink" title="server端安装"></a>server端安装</h3><p>&emsp; 1、访问<a href="https://www.elastic.co/cn/downloads/elasticsearch" target="_blank" rel="noopener">官网地址</a>地址，可以下载最新版，也可以在<a href="https://www.elastic.co/cn/downloads/past-releases" target="_blank" rel="noopener">past releases</a>中下载历史版本。<br><img src="/images/pasted-3.png" alt="下载页面">  </p><p>&emsp; 2、运行解压后的文件：*\Elasticsearch\bin\elasticsearch.bat，我们可以看到127.0.0.1:9200端口上跑起了我们es服务。<br>&emsp; 3、访问127.0.0.1:9200端口，安装成功。<br><img src="/images/pasted-4.png" alt="单机安装成功"></p><h3 id="head插件安装"><a href="#head插件安装" class="headerlink" title="head插件安装"></a>head插件安装</h3><p>&emsp; 因为Elasticsearch的返回数据都是json，不具备可读性。这里使用一个开源的插件，来展示数据。<a href="https://github.com/mobz/elasticsearch-head" target="_blank" rel="noopener">下载地址</a><br>&emsp; <strong>该项目是基于nodejs的，需要nodejs8以上版本启动。进入解压目录，npm install下载node相关依赖，然后npm run start启动该项目。默认端口占用：9100。</strong></p><pre><code>#修改es中的配置文件，配置head插件http.cors.enabled: truehttp.cors.allow-origin: &quot;*&quot;</code></pre><p>&emsp; 重启server端，head连接成功。</p><h3 id="安装Kibana"><a href="#安装Kibana" class="headerlink" title="安装Kibana"></a>安装Kibana</h3><blockquote><p>Kibana是es官方开源的一个数据分析和可视化平台，是一个增强版的head插件。<strong>下载Kibana时一定要注意版本，要与es的版本一致。</strong></p></blockquote><p>&emsp; 修改Kibana.yml配置文件，增加Elasticsearch访问路径。</p><pre><code>#配置es地址elasticsearch.url: &quot;http://localhost:9200&quot;</code></pre><p>&emsp; 启动Kibana，访问默认的5601端口。<br><img src="/images/pasted-5.png" alt="Kibana安装成功页面"></p><h2 id="集群安装"><a href="#集群安装" class="headerlink" title="集群安装"></a>集群安装</h2><blockquote><p>本次集群部署三台服务器，一台master节点，两台slave节点。</p></blockquote><h3 id="Master节点配置"><a href="#Master节点配置" class="headerlink" title="Master节点配置"></a>Master节点配置</h3><p>&emsp; 修改master节点的配置文件，增加配置信息。</p><pre><code>#master集群配置cluster.name: esnode.name: masternode.master: truenetwork.host: 127.0.0.1</code></pre><p>&emsp; 增加好配置信息后，重启es服务。查看head插件页面是否正确显示。</p><h3 id="Slave节点配置"><a href="#Slave节点配置" class="headerlink" title="Slave节点配置"></a>Slave节点配置</h3><p>&emsp; 修改slave节点的配置文件，增加配置信息</p><pre><code>#slave集群配置cluster.name: esnode.name: slave1network.host: 127.0.0.1http.port: 8200 #当前子节点占用的端口号discovery.zen.ping.unicast.hosts: [&quot;127.0.0.1&quot;] </code></pre><p>&emsp; 增加好配置信息后，重启es服务。查看head插件页面是否正确显示。<br><img src="/images/pasted-6.png" alt="集群安装成功"><br>&emsp; <strong>注意，这里复制文件夹时，尽量使用刚刚解压的，因为直接复制master文件夹，容易将data文件夹中是数据也一起复制过来，造成启动失败。</strong></p>]]></content>
+        <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><blockquote><p>Elasticsearch是一个分布式、高性能、高可用、可伸缩的搜索和分析系统。一个实时的分布式搜索分析引擎，它能让你以一个之前从未有过的速度和规模，去探索你的数据。它是全文检索、结构化搜索、分析这三个功能的组合。 </p></blockquote><p>&emsp; Elasticsearch是基于全文检索引擎Lucene之上，但是它不仅仅是一个全文搜索引擎，它可以被下面这样准确的形容：</p><ul><li>一个分布式的实施文档存储，每个字段都可以被索引与搜索。</li><li>一个分布式实时分析搜索引擎。</li><li>能胜任上百个服务节点的扩展，并支持PB级别的结构化或者非结构化数据。</li><li>自动维护数据冗余，避免服务宕机造成数据丢失。</li><li>基于Lucene封装更多支持，例如聚合搜索、基于地理位置的检索。</li></ul><p>&emsp; es支持九种基本数据类型：text、byte、short、integer、long、float、double、boolean、date。</p><h2 id="什么是倒排索引？"><a href="#什么是倒排索引？" class="headerlink" title="什么是倒排索引？"></a>什么是倒排索引？</h2><p>&emsp; 在我们搜索Elasticsearch时，总是看到说es是基于倒排索引进行查询，那么什么是倒排索引？当我们将一句话通过分词进行拆分，然后将每一个拆分后的词设置一个专门的id，最后将这些id进行整合就得到了倒排索引。<br>&emsp; 例如：这时，我们搜索《狮子》es会就去[1,2,3,4]的文档，然后展示出来。这个效率相比较数据库的like，快了不知道多少倍。当然中文分词的效果比英文分词要差很多，向百度之类的大厂，还是自己实现中文分词。</p><table><thead><tr><th>ID</th><th>文档</th></tr></thead><tbody><tr><td>1</td><td>狮子王电影预告</td></tr><tr><td>2</td><td>狮子王电影海报</td></tr><tr><td>3</td><td>狮子王剧透</td></tr><tr><td>4</td><td>狮子王电影海报剧透</td></tr></tbody></table><table><thead><tr><th>索引</th><th>文档地址</th></tr></thead><tbody><tr><td>狮子</td><td>1、2、3、4</td></tr><tr><td>狮子王</td><td>1、2、3、4</td></tr><tr><td>电影</td><td>1、2、4</td></tr><tr><td>海报</td><td>2、4</td></tr><tr><td>剧透</td><td>3、4</td></tr></tbody></table><h2 id="什么是全文检索？"><a href="#什么是全文检索？" class="headerlink" title="什么是全文检索？"></a>什么是全文检索？</h2><p>&emsp; 通过上面的倒排索引，我们已经可以很快的精确将某一个值快速的查找出来，但是这远远不够。如果我们忽略速度，这和数据库查询有什么区别？没有任何区别甚至还不如数据库。<br>&emsp; 倒排索引除了可以让我们更快的更精准的查到数据，还为全文索引做准备。上面了例子，我搜索“狮子”，当然可以把1，2，3，4四个文档的数据返回给我。甚至我搜索“狮”这一个字，数据库也有like，也搜索到这四个文档。<br>&emsp; 但是我如果搜索“老虎”呢？搜索“动物”呢？以数据库的思维这是绝对不会检索到的。但这不是我们希望的结果。我们希望可以将类似的、相近的数据返回。全文检索就是解决这个问题。当创建倒排索引时，也可以会分词创建一个相似，目的就是解决上面的问题。<br>&emsp; es的全文检索提供了很多强大的功能，例如：缩写（中国 -&gt; cn）、格式化、大小写、同义词等。</p><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><ul><li>Index<ul><li>类似于Mysql里面的database。</li></ul></li><li>Type  <ul><li>类似于mysql中的table，es可以在index中创建type，然后通过mapping进行映射。</li><li>在Lucene底层是不区分type的，同一个index下面的所有type都存储在一起，底层数据结构中通过_type这个field来进行type的区分。</li><li>当前index下所有document都是共享field的，也就是说，假如一个index下面保存人、动物两个type。虽然动物中没有field，但是人里面有。那么动物也就自然而然有了这个field，只不过是空值而已。所以我们要把具有相似field的数据放在一个index下，避免大量空值造成性能问题。</li></ul></li><li>Document&amp;field<ul><li>一个type是由多个Document组成的，类似一行数据，每一行数据是由多个field也就是列组成。</li></ul></li><li>Mapping<ul><li>用来表述数据、字段、表之间的关系和相关信息。例如创建索引，索引类型，是否保存原始索引，是否压缩，是否分词等等信息。</li></ul></li><li>Shard<ul><li>每一个index存储在多个分片中，里面冗余的保存的具体的document，es默认一个index由5个primary shard和5个replica shard组成。</li></ul></li><li>Replica<ul><li>为了避免shard宕机造成服务无法访问，es提供了replica进行高可用扩展。每一个shard分配一个replica，在shard宕机时可以提供服务，并且可以单独使用读服务。</li></ul></li></ul><h4 id="index和type到底有什么区别？"><a href="#index和type到底有什么区别？" class="headerlink" title="index和type到底有什么区别？"></a>index和type到底有什么区别？</h4><p>&emsp; 前面说了，把index理解成database，type理解成table。这只是为了更好了理解。由于两种数据存储的方式完全不一样，任何比喻都是为了更好的理解。但是往往把他们真实的用途掩盖。</p><ul><li>index<ul><li>Index存储在多个分片中，也就是Lucene index。它们有自己的资源开销。在我们搜索数据时，每个分片都需要搜索一次。然后ES通过自己的机制在整合从所有分片得到的数据。因此一个大的index，效率要比小index高。例如：搜索10个index，每个index拥有5个分片。那么本次检索的需要整合的数据就是10*5 = 50个分片结果。如果有大量的index和分片，发起一个搜索请求时，光是合并任务就要耗费大量的服务器资源。 </li></ul></li><li>type<ul><li>使用type允许我们在index中存储多种数据类型。这样就减少了index了数量。在使用时，向每个文档加入_type，然后检索的时候通过type搜索，就会过滤掉不相关的数据。搜索一个index下面的多个type和只所有一个type没有额外的开销。因为在数据整合时的数量都是一样分片。</li></ul></li><li>当然如果我们只是想es用于一个企业级的信息检索，它的很多功能我们都用不到。但是如果我们想让关系数据库中的关系也一同保存在es中，那么这里的type和index就要特别的注意一下。</li></ul><h2 id="单机安装"><a href="#单机安装" class="headerlink" title="单机安装"></a>单机安装</h2><blockquote><p>准备工作：jdk8以上版本、nodejs8以上版本。</p></blockquote><h3 id="server端安装"><a href="#server端安装" class="headerlink" title="server端安装"></a>server端安装</h3><p>&emsp; 1、访问<a href="https://www.elastic.co/cn/downloads/elasticsearch" target="_blank" rel="noopener">官网地址</a>地址，可以下载最新版，也可以在<a href="https://www.elastic.co/cn/downloads/past-releases" target="_blank" rel="noopener">past releases</a>中下载历史版本。<br><img src="/images/pasted-3.png" alt="下载页面">  </p><p>&emsp; 2、运行解压后的文件：*\Elasticsearch\bin\elasticsearch.bat，我们可以看到127.0.0.1:9200端口上跑起了我们es服务。<br>&emsp; 3、访问127.0.0.1:9200端口，安装成功。<br><img src="/images/pasted-4.png" alt="单机安装成功"></p><h3 id="head插件安装"><a href="#head插件安装" class="headerlink" title="head插件安装"></a>head插件安装</h3><p>&emsp; 因为Elasticsearch的返回数据都是json，不具备可读性。这里使用一个开源的插件，来展示数据。<a href="https://github.com/mobz/elasticsearch-head" target="_blank" rel="noopener">下载地址</a><br>&emsp; <strong>该项目是基于nodejs的，需要nodejs8以上版本启动。进入解压目录，npm install下载node相关依赖，然后npm run start启动该项目。默认端口占用：9100。</strong></p><pre><code>#修改es中的配置文件，配置head插件http.cors.enabled: truehttp.cors.allow-origin: &quot;*&quot;</code></pre><p>&emsp; 重启server端，head连接成功。</p><h3 id="安装Kibana"><a href="#安装Kibana" class="headerlink" title="安装Kibana"></a>安装Kibana</h3><blockquote><p>Kibana是es官方开源的一个数据分析和可视化平台，是一个增强版的head插件。<strong>下载Kibana时一定要注意版本，要与es的版本一致。</strong></p></blockquote><p>&emsp; 修改Kibana.yml配置文件，增加Elasticsearch访问路径。</p><pre><code>#配置es地址elasticsearch.url: &quot;http://localhost:9200&quot;</code></pre><p>&emsp; 启动Kibana，访问默认的5601端口。<br><img src="/images/pasted-5.png" alt="Kibana安装成功页面"></p><h2 id="集群安装"><a href="#集群安装" class="headerlink" title="集群安装"></a>集群安装</h2><blockquote><p>本次集群部署三台服务器，一台master节点，两台slave节点。</p></blockquote><h3 id="Master节点配置"><a href="#Master节点配置" class="headerlink" title="Master节点配置"></a>Master节点配置</h3><p>&emsp; 修改master节点的配置文件，增加配置信息。</p><pre><code>#master集群配置cluster.name: esnode.name: masternode.master: truenetwork.host: 127.0.0.1</code></pre><p>&emsp; 增加好配置信息后，重启es服务。查看head插件页面是否正确显示。</p><h3 id="Slave节点配置"><a href="#Slave节点配置" class="headerlink" title="Slave节点配置"></a>Slave节点配置</h3><p>&emsp; 修改slave节点的配置文件，增加配置信息</p><pre><code>#slave集群配置cluster.name: esnode.name: slave1network.host: 127.0.0.1http.port: 8200 #当前子节点占用的端口号discovery.zen.ping.unicast.hosts: [&quot;127.0.0.1&quot;] </code></pre><p>&emsp; 增加好配置信息后，重启es服务。查看head插件页面是否正确显示。<br><img src="/images/pasted-6.png" alt="集群安装成功"><br>&emsp; <strong>注意，这里复制文件夹时，尽量使用刚刚解压的，因为直接复制master文件夹，容易将data文件夹中是数据也一起复制过来，造成启动失败。</strong></p>]]></content>
       
       
       <categories>

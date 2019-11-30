@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Elasticssearch-安装与运行 | Hello World</title>
+  <title>Elasticsearch-TF&amp;IDF算法、Scroll搜索 | Hello World</title>
   <meta name="keywords" content=" es , 全文检索 ">
-  <meta name="description" content="Elasticssearch-安装与运行 | Hello World">
+  <meta name="description" content="Elasticsearch-TF&amp;IDF算法、Scroll搜索 | Hello World">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="categories">
@@ -147,8 +147,8 @@
     </div>
     <div></div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="7">
-<input type="hidden" id="yelog_site_word_count" value="6.5k">
+<input type="hidden" id="yelog_site_posts_number" value="11">
+<input type="hidden" id="yelog_site_word_count" value="8.6k">
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
     <span id="busuanzi_value_site_pv"></span>
@@ -210,18 +210,50 @@
     <nav id="title-list-nav">
         
         <a  class="全文检索 "
-           href="/2019/11/30/Elasticsearch-shard%E4%B8%8E%E6%89%A9%E5%AE%B9%E4%BB%8B%E7%BB%8D/"
+           href="/2019/11/30/Elasticsearch-TF-IDF%E7%AE%97%E6%B3%95%E3%80%81Scroll%E6%90%9C%E7%B4%A2/"
            data-tag="es,全文检索"
            data-author="" >
-            <span class="post-title" title="Elasticsearch-shard与扩容介绍">Elasticsearch-shard与扩容介绍</span>
+            <span class="post-title" title="Elasticsearch-TF&amp;IDF算法、Scroll搜索">Elasticsearch-TF&amp;IDF算法、Scroll搜索</span>
+            <span class="post-date" title="2019-11-30 15:55:25">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-deep-paging%E3%80%81mapping%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-deep paging、mapping介绍">Elasticsearch-deep paging、mapping介绍</span>
+            <span class="post-date" title="2019-11-30 15:47:48">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-shard%E3%80%81%E6%89%A9%E5%AE%B9%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-shard、扩容介绍">Elasticsearch-shard、扩容介绍</span>
             <span class="post-date" title="2019-11-30 14:25:23">2019/11/30</span>
         </a>
         
         <a  class="全文检索 "
-           href="/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%BF%90%E8%A1%8C/"
+           href="/2019/11/30/Elasticsearch-%E5%86%99%E4%B8%80%E8%87%B4%E6%80%A7%E3%80%81%E8%BF%94%E5%9B%9E%E8%A7%A3%E6%9E%90/"
            data-tag="es,全文检索"
            data-author="" >
-            <span class="post-title" title="Elasticssearch-安装与运行">Elasticssearch-安装与运行</span>
+            <span class="post-title" title="Elasticsearch-写一致性、返回解析">Elasticsearch-写一致性、返回解析</span>
+            <span class="post-date" title="2019-11-30 15:29:27">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95%E3%80%81%E8%AF%B7%E6%B1%82%E5%8E%9F%E7%90%86/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-路由算法、请求原理">Elasticsearch-路由算法、请求原理</span>
+            <span class="post-date" title="2019-11-30 15:15:14">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E3%80%81%E8%BF%90%E8%A1%8C/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticssearch-安装、运行">Elasticssearch-安装、运行</span>
             <span class="post-date" title="2019-11-30 13:45:18">2019/11/30</span>
         </a>
         
@@ -277,9 +309,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-Elasticssearch-安装与运行" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-Elasticsearch-TF-IDF算法、Scroll搜索" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Elasticssearch-安装与运行</h1>
+        <h1 class="article-title">Elasticsearch-TF&amp;IDF算法、Scroll搜索</h1>
     
     <div class="article-meta">
         
@@ -303,12 +335,12 @@
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-11-30 14:18:59'>2019-11-30 13:45</time>
+        创建时间:<time class="date" title='更新时间: 2019-11-30 16:01:32'>2019-11-30 15:55</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:2.1k</span>
+        <span>字数:694</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -327,7 +359,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#概述"><span class="toc-text">概述</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是倒排索引？"><span class="toc-text">什么是倒排索引？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是全文检索？"><span class="toc-text">什么是全文检索？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基本概念"><span class="toc-text">基本概念</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#index和type到底有什么区别？"><span class="toc-text">index和type到底有什么区别？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#单机安装"><span class="toc-text">单机安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#server端安装"><span class="toc-text">server端安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#head插件安装"><span class="toc-text">head插件安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#安装Kibana"><span class="toc-text">安装Kibana</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#集群安装"><span class="toc-text">集群安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Master节点配置"><span class="toc-text">Master节点配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Slave节点配置"><span class="toc-text">Slave节点配置</span></a></li></ol></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#TF-amp-IDF"><span class="toc-text">TF&amp;IDF</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Scroll大数据搜索"><span class="toc-text">Scroll大数据搜索</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -342,145 +374,45 @@
 </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><blockquote>
-<p>Elasticsearch是一个分布式、高性能、高可用、可伸缩的搜索和分析系统。一个实时的分布式搜索分析引擎，它能让你以一个之前从未有过的速度和规模，去探索你的数据。它是全文检索、结构化搜索、分析这三个功能的组合。 </p>
+        <h1 id="TF-amp-IDF"><a href="#TF-amp-IDF" class="headerlink" title="TF&amp;IDF"></a>TF&amp;IDF</h1><blockquote>
+<p>es计算分数的算法，es的分数，是es给出的最直观的搜索文本与索引中的文本匹配度的一个分数。默认es会将返回的数据按照分数进行倒叙。</p>
 </blockquote>
-<p>&emsp; Elasticsearch是基于全文检索引擎Lucene之上，但是它不仅仅是一个全文搜索引擎，它可以被下面这样准确的形容：</p>
+<p>&emsp; es的分数算法，是使用TF&amp;IDF算法来实现，这个算法的主要分成三个部分。</p>
 <ul>
-<li>一个分布式的实施文档存储，每个字段都可以被索引与搜索。</li>
-<li>一个分布式实时分析搜索引擎。</li>
-<li>能胜任上百个服务节点的扩展，并支持PB级别的结构化或者非结构化数据。</li>
-<li>自动维护数据冗余，避免服务宕机造成数据丢失。</li>
-<li>基于Lucene封装更多支持，例如聚合搜索、基于地理位置的检索。</li>
+<li>搜索文本中各个词条，在field文本中出现的次数。次数越多，分数越高。权重较高。</li>
+<li>搜索文本中各个词条，在整个索引中所有文档中的出现次数。次数越多，分数越低。</li>
+<li>field的长度越长，分数越低。field的长度越短，分数越高。权重较低。</li>
 </ul>
-<h2 id="什么是倒排索引？"><a href="#什么是倒排索引？" class="headerlink" title="什么是倒排索引？"></a>什么是倒排索引？</h2><p>&emsp; 在我们搜索Elasticsearch时，总是看到说es是基于倒排索引进行查询，那么什么是倒排索引？当我们将一句话通过分词进行拆分，然后将每一个拆分后的词设置一个专门的id，最后将这些id进行整合就得到了倒排索引。<br>&emsp; 例如：这时，我们搜索《狮子》es会就去[1,2,3,4]的文档，然后展示出来。这个效率相比较数据库的like，快了不知道多少倍。当然中文分词的效果比英文分词要差很多，向百度之类的大厂，还是自己实现中文分词。</p>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>文档</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>1</td>
-<td>狮子王电影预告</td>
-</tr>
-<tr>
-<td>2</td>
-<td>狮子王电影海报</td>
-</tr>
-<tr>
-<td>3</td>
-<td>狮子王剧透</td>
-</tr>
-<tr>
-<td>4</td>
-<td>狮子王电影海报剧透</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>索引</th>
-<th>文档地址</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>狮子</td>
-<td>1、2、3、4</td>
-</tr>
-<tr>
-<td>狮子王</td>
-<td>1、2、3、4</td>
-</tr>
-<tr>
-<td>电影</td>
-<td>1、2、4</td>
-</tr>
-<tr>
-<td>海报</td>
-<td>2、4</td>
-</tr>
-<tr>
-<td>剧透</td>
-<td>3、4</td>
-</tr>
-</tbody></table>
-<h2 id="什么是全文检索？"><a href="#什么是全文检索？" class="headerlink" title="什么是全文检索？"></a>什么是全文检索？</h2><p>&emsp; 通过上面的倒排索引，我们已经可以很快的精确将某一个值快速的查找出来，但是这远远不够。如果我们忽略速度，这和数据库查询有什么区别？没有任何区别甚至还不如数据库。倒排索引除了可以让我们更快的更精准的查到数据，还为全文索引做准备。上面了例子，我搜索“狮子”，当然可以把1，2，3，4四个文档的数据返回给我。甚至我搜索“狮”这一个字，数据库也有like，也搜索到这四个文档。但是我如果搜索“老虎”呢？搜索“动物”呢？以数据库的思维这是绝对不会检索到的。但这不是我们希望的结果。我们希望可以将类似的、相近的数据返回。全文检索就是解决这个问题。当创建倒排索引时，也可以会分词创建一个相似，目的就是解决上面的问题。<br>&emsp; es的全文检索提供了很多强大的功能，例如：缩写（中国 -&gt; cn）、格式化、大小写、同义词等。</p>
-<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><ul>
-<li>Index<ul>
-<li>类似于Mysql里面的database。</li>
-</ul>
-</li>
-<li>Type  <ul>
-<li>类似于mysql中的table，es可以在index中创建type，然后通过mapping进行映射。</li>
-<li>在Lucene底层是不区分type的，同一个index下面的所有type都存储在一起，底层数据结构中通过_type这个field来进行type的区分。</li>
-<li>当前index下所有document都是共享field的，也就是说，假如一个index下面保存人、动物两个type。虽然动物中没有field，但是人里面有。那么动物也就自然而然有了这个field，只不过是空值而已。所以我们要把具有相似field的数据放在一个index下，避免大量空值造成性能问题。</li>
-</ul>
-</li>
-<li>Document&amp;field<ul>
-<li>一个type是由多个Document组成的，类似一行数据，每一行数据是由多个field也就是列组成。</li>
-</ul>
-</li>
-<li>Mapping<ul>
-<li>用来表述数据、字段、表之间的关系和相关信息。例如创建索引，索引类型，是否保存原始索引，是否压缩，是否分词等等信息。</li>
-</ul>
-</li>
-<li>Shard<ul>
-<li>每一个index存储在多个分片中，里面冗余的保存的具体的document，es默认一个index由5个primary shard和5个replica shard组成。</li>
-</ul>
-</li>
-<li>Replica<ul>
-<li>为了避免shard宕机造成服务无法访问，es提供了replica进行高可用扩展。每一个shard分配一个replica，在shard宕机时可以提供服务，并且可以单独使用读服务。</li>
-</ul>
-</li>
-</ul>
-<h4 id="index和type到底有什么区别？"><a href="#index和type到底有什么区别？" class="headerlink" title="index和type到底有什么区别？"></a>index和type到底有什么区别？</h4><p>&emsp; 前面说了，把index理解成database，type理解成table。这只是为了更好了理解。由于两种数据存储的方式完全不一样，任何比喻都是为了更好的理解。但是往往把他们真实的用途掩盖。</p>
+<p><strong>举一个例子：</strong><br>&emsp; 假如我们有三篇文章</p>
 <ul>
-<li>index<ul>
-<li>Index存储在多个分片中，也就是Lucene index。它们有自己的资源开销。在我们搜索数据时，每个分片都需要搜索一次。然后ES通过自己的机制在整合从所有分片得到的数据。因此一个大的index，效率要比小index高。例如：搜索10个index，每个index拥有5个分片。那么本次检索的需要整合的数据就是10*5 = 50个分片结果。如果有大量的index和分片，发起一个搜索请求时，光是合并任务就要耗费大量的服务器资源。 </li>
+<li>Elasticsearch是一个基于Lucene的搜索服务器。它提供了一个分布式多用户能力的全问搜索引擎，基于RESTful web接口。</li>
+<li>Solr是一个高性能，采用java开发，给予Lucene的全文搜索服务器。</li>
+<li>Lucene是一个开源的全文检索引擎工具包，但它不是一个完整的全文检索引擎。</li>
 </ul>
-</li>
-<li>type<ul>
-<li>使用type允许我们在index中存储多种数据类型。这样就减少了index了数量。在使用时，向每个文档加入_type，然后检索的时候通过type搜索，就会过滤掉不相关的数据。搜索一个index下面的多个type和只所有一个type没有额外的开销。因为在数据整合时的数量都是一样分片。</li>
-</ul>
-</li>
-<li>当然如果我们只是想es用于一个企业级的信息检索，它的很多功能我们都用不到。但是如果我们想让关系数据库中的关系也一同保存在es中，那么这里的type和index就要特别的注意一下。</li>
-</ul>
-<h2 id="单机安装"><a href="#单机安装" class="headerlink" title="单机安装"></a>单机安装</h2><blockquote>
-<p>准备工作：jdk8以上版本、nodejs8以上版本。</p>
-</blockquote>
-<h3 id="server端安装"><a href="#server端安装" class="headerlink" title="server端安装"></a>server端安装</h3><p>&emsp; 1、访问<a href="https://www.elastic.co/cn/downloads/elasticsearch" target="_blank" rel="noopener">官网地址</a>地址，可以下载最新版，也可以在<a href="https://www.elastic.co/cn/downloads/past-releases" target="_blank" rel="noopener">past releases</a>中下载历史版本。<br><img src="/images/pasted-3.png" alt="下载页面">  </p>
-<p>&emsp; 2、运行解压后的文件：*\Elasticsearch\bin\elasticsearch.bat，我们可以看到127.0.0.1:9200端口上跑起了我们es服务。<br>&emsp; 3、访问127.0.0.1:9200端口，安装成功。<br><img src="/images/pasted-4.png" alt="单机安装成功"></p>
-<h3 id="head插件安装"><a href="#head插件安装" class="headerlink" title="head插件安装"></a>head插件安装</h3><p>&emsp; 因为Elasticsearch的返回数据都是json，不具备可读性。这里使用一个开源的插件，来展示数据。<a href="https://github.com/mobz/elasticsearch-head" target="_blank" rel="noopener">下载地址</a><br>&emsp; <strong>该项目是基于nodejs的，需要nodejs8以上版本启动。进入解压目录，npm install下载node相关依赖，然后npm run start启动该项目。默认端口占用：9100。</strong></p>
-<pre><code>#修改es中的配置文件，配置head插件
-http.cors.enabled: true
-http.cors.allow-origin: &quot;*&quot;</code></pre><p>&emsp; 重启server端，head连接成功。</p>
-<h3 id="安装Kibana"><a href="#安装Kibana" class="headerlink" title="安装Kibana"></a>安装Kibana</h3><blockquote>
-<p>Kibana是es官方开源的一个数据分析和可视化平台，是一个增强版的head插件。<strong>下载Kibana时一定要注意版本，要与es的版本一致。</strong></p>
-</blockquote>
-<p>&emsp; 修改Kibana.yml配置文件，增加Elasticsearch访问路径。</p>
-<pre><code>#配置es地址
-elasticsearch.url: &quot;http://localhost:9200&quot;</code></pre><p>&emsp; 启动Kibana，访问默认的5601端口。<br><img src="/images/pasted-5.png" alt="Kibana安装成功页面"></p>
-<h2 id="集群安装"><a href="#集群安装" class="headerlink" title="集群安装"></a>集群安装</h2><blockquote>
-<p>本次集群部署三台服务器，一台master节点，两台slave节点。</p>
-</blockquote>
-<h3 id="Master节点配置"><a href="#Master节点配置" class="headerlink" title="Master节点配置"></a>Master节点配置</h3><p>&emsp; 修改master节点的配置文件，增加配置信息。</p>
-<pre><code>#master集群配置
-cluster.name: es
-node.name: master
-node.master: true
-network.host: 127.0.0.1</code></pre><p>&emsp; 增加好配置信息后，重启es服务。查看head插件页面是否正确显示。</p>
-<h3 id="Slave节点配置"><a href="#Slave节点配置" class="headerlink" title="Slave节点配置"></a>Slave节点配置</h3><p>&emsp; 修改slave节点的配置文件，增加配置信息</p>
-<pre><code>#slave集群配置
-cluster.name: es
-node.name: slave1
+<p>&emsp; 这时，我们想通过一个inpute框检索系统中所有包含“Lucene”关键字的文章，es为这三篇文章，分别赋予了“Lucene”关键字的分数。然后通过?explain=true参数可以查询到一个query中的详细信息和分数的计算。</p>
+<pre><code>GET /test2/article/_search?explain=true
+{
+  &quot;query&quot;: {
+    &quot;match&quot;: {
+      &quot;content&quot;: &quot;lucene&quot;
+    }
+  }
+}</code></pre><h1 id="Scroll大数据搜索"><a href="#Scroll大数据搜索" class="headerlink" title="Scroll大数据搜索"></a>Scroll大数据搜索</h1><p>&emsp; 如果一次将大量数据查询出来，那么性能就会很差。这时我们一般采用Scroll滚动查询，也就是每次查询一部分的数据，直到所有数据查询完成。Scroll搜索会在第一次搜索时保存一个当时数据的快照来缓存，后续给予这个快照进行搜索，这个期间如果数据发生了变化，用户是看不到的。Scroll不使用相关度分数排序，而且使用_doc排序，性能较高。<br>&emsp; 每次发送Scroll查询，我们需要指定一个Scroll的时间参数，每次搜索请求只要在这个时间内完成就可以。返回的结果会包含一个scroll_id，后续的请求必须带上一个scroll_id。<br>&emsp; Scoll主要进行海量数据的搜索，与分页的使用场景不同。分页主要用来一页一页搜索给用户看，Scroll主要用一批一批检索数据，让系统处理。</p>
+<pre><code>GET /test2/article/_search?scroll=1m
+{
+  &quot;query&quot;: {
+    &quot;match_all&quot;: {}
+  },
+  &quot;sort&quot;: [&quot;_doc&quot;],
+  &quot;size&quot;: 1
+}
 
-network.host: 127.0.0.1
-http.port: 8200 #当前子节点占用的端口号
-
-discovery.zen.ping.unicast.hosts: [&quot;127.0.0.1&quot;] </code></pre><p>&emsp; 增加好配置信息后，重启es服务。查看head插件页面是否正确显示。<br><img src="/images/pasted-6.png" alt="集群安装成功"><br>&emsp; <strong>注意，这里复制文件夹时，尽量使用刚刚解压的，因为直接复制master文件夹，容易将data文件夹中是数据也一起复制过来，造成启动失败。</strong></p>
-
+//第二次查询使用返回的id
+GET /_search/scroll
+{
+  &quot;scroll&quot;:&quot;1m&quot;,
+  &quot;scroll_id&quot;:&quot;返回的scrollId&quot;
+}</code></pre>
       
        
     </div>
