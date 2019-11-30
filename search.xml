@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+  
+    
+    <entry>
+      <title>Elasticssearch-安装与运行</title>
+      <link href="/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%BF%90%E8%A1%8C/"/>
+      <url>/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E4%B8%8E%E8%BF%90%E8%A1%8C/</url>
+      
+        <content type="html"><![CDATA[<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><blockquote><p>Elasticsearch是一个分布式、高性能、高可用、可伸缩的搜索和分析系统。一个实时的分布式搜索分析引擎，它能让你以一个之前从未有过的速度和规模，去探索你的数据。它是全文检索、结构化搜索、分析这三个功能的组合。 </p></blockquote><p>&emsp; Elasticsearch是基于全文检索引擎Lucene之上，但是它不仅仅是一个全文搜索引擎，它可以被下面这样准确的形容：</p><ul><li>一个分布式的实施文档存储，每个字段都可以被索引与搜索。</li><li>一个分布式实时分析搜索引擎。</li><li>能胜任上百个服务节点的扩展，并支持PB级别的结构化或者非结构化数据。</li><li>自动维护数据冗余，避免服务宕机造成数据丢失。</li><li>基于Lucene封装更多支持，例如聚合搜索、基于地理位置的检索。</li></ul><h2 id="什么是倒排索引？"><a href="#什么是倒排索引？" class="headerlink" title="什么是倒排索引？"></a>什么是倒排索引？</h2><p>&emsp; 在我们搜索Elasticsearch时，总是看到说es是基于倒排索引进行查询，那么什么是倒排索引？当我们将一句话通过分词进行拆分，然后将每一个拆分后的词设置一个专门的id，最后将这些id进行整合就得到了倒排索引。<br>&emsp; 例如：这时，我们搜索《狮子》es会就去[1,2,3,4]的文档，然后展示出来。这个效率相比较数据库的like，快了不知道多少倍。当然中文分词的效果比英文分词要差很多，向百度之类的大厂，还是自己实现中文分词。</p><table><thead><tr><th>ID</th><th>文档</th></tr></thead><tbody><tr><td>1</td><td>狮子王电影预告</td></tr><tr><td>2</td><td>狮子王电影海报</td></tr><tr><td>3</td><td>狮子王剧透</td></tr><tr><td>4</td><td>狮子王电影海报剧透</td></tr></tbody></table><table><thead><tr><th>索引</th><th>文档地址</th></tr></thead><tbody><tr><td>狮子</td><td>1、2、3、4</td></tr><tr><td>狮子王</td><td>1、2、3、4</td></tr><tr><td>电影</td><td>1、2、4</td></tr><tr><td>海报</td><td>2、4</td></tr><tr><td>剧透</td><td>3、4</td></tr></tbody></table><h2 id="什么是全文检索？"><a href="#什么是全文检索？" class="headerlink" title="什么是全文检索？"></a>什么是全文检索？</h2><p>&emsp; 通过上面的倒排索引，我们已经可以很快的精确将某一个值快速的查找出来，但是这远远不够。如果我们忽略速度，这和数据库查询有什么区别？没有任何区别甚至还不如数据库。倒排索引除了可以让我们更快的更精准的查到数据，还为全文索引做准备。上面了例子，我搜索“狮子”，当然可以把1，2，3，4四个文档的数据返回给我。甚至我搜索“狮”这一个字，数据库也有like，也搜索到这四个文档。但是我如果搜索“老虎”呢？搜索“动物”呢？以数据库的思维这是绝对不会检索到的。但这不是我们希望的结果。我们希望可以将类似的、相近的数据返回。全文检索就是解决这个问题。当创建倒排索引时，也可以会分词创建一个相似，目的就是解决上面的问题。<br>&emsp; es的全文检索提供了很多强大的功能，例如：缩写（中国 -&gt; cn）、格式化、大小写、同义词等。</p><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><ul><li>Index<ul><li>类似于Mysql里面的database。</li></ul></li><li>Type  <ul><li>类似于mysql中的table，es可以在index中创建type，然后通过mapping进行映射。</li><li>在Lucene底层是不区分type的，同一个index下面的所有type都存储在一起，底层数据结构中通过_type这个field来进行type的区分。</li><li>当前index下所有document都是共享field的，也就是说，假如一个index下面保存人、动物两个type。虽然动物中没有field，但是人里面有。那么动物也就自然而然有了这个field，只不过是空值而已。所以我们要把具有相似field的数据放在一个index下，避免大量空值造成性能问题。</li></ul></li><li>Document&amp;field<ul><li>一个type是由多个Document组成的，类似一行数据，每一行数据是由多个field也就是列组成。</li></ul></li><li>Mapping<ul><li>用来表述数据、字段、表之间的关系和相关信息。例如创建索引，索引类型，是否保存原始索引，是否压缩，是否分词等等信息。</li></ul></li><li>Shard<ul><li>每一个index存储在多个分片中，里面冗余的保存的具体的document，es默认一个index由5个primary shard和5个replica shard组成。</li></ul></li><li>Replica<ul><li>为了避免shard宕机造成服务无法访问，es提供了replica进行高可用扩展。每一个shard分配一个replica，在shard宕机时可以提供服务，并且可以单独使用读服务。</li></ul></li></ul><h4 id="index和type到底有什么区别？"><a href="#index和type到底有什么区别？" class="headerlink" title="index和type到底有什么区别？"></a>index和type到底有什么区别？</h4><p>&emsp; 前面说了，把index理解成database，type理解成table。这只是为了更好了理解。由于两种数据存储的方式完全不一样，任何比喻都是为了更好的理解。但是往往把他们真实的用途掩盖。</p><ul><li>index<ul><li>Index存储在多个分片中，也就是Lucene index。它们有自己的资源开销。在我们搜索数据时，每个分片都需要搜索一次。然后ES通过自己的机制在整合从所有分片得到的数据。因此一个大的index，效率要比小index高。例如：搜索10个index，每个index拥有5个分片。那么本次检索的需要整合的数据就是10*5 = 50个分片结果。如果有大量的index和分片，发起一个搜索请求时，光是合并任务就要耗费大量的服务器资源。 </li></ul></li><li>type<ul><li>使用type允许我们在index中存储多种数据类型。这样就减少了index了数量。在使用时，向每个文档加入_type，然后检索的时候通过type搜索，就会过滤掉不相关的数据。搜索一个index下面的多个type和只所有一个type没有额外的开销。因为在数据整合时的数量都是一样分片。</li></ul></li><li>当然如果我们只是想es用于一个企业级的信息检索，它的很多功能我们都用不到。但是如果我们想让关系数据库中的关系也一同保存在es中，那么这里的type和index就要特别的注意一下。</li></ul><h2 id="单机安装"><a href="#单机安装" class="headerlink" title="单机安装"></a>单机安装</h2><blockquote><p>准备工作：jdk8以上版本、nodejs8以上版本。</p></blockquote><h3 id="server端安装"><a href="#server端安装" class="headerlink" title="server端安装"></a>server端安装</h3><p>&emsp; 1、访问<a href="https://www.elastic.co/cn/downloads/elasticsearch" target="_blank" rel="noopener">官网地址</a>地址，可以下载最新版，也可以在<a href="https://www.elastic.co/cn/downloads/past-releases" target="_blank" rel="noopener">past releases</a>中下载历史版本。<br><img src="/images/pasted-3.png" alt="下载页面">  </p><p>&emsp; 2、运行解压后的文件：*\Elasticsearch\bin\elasticsearch.bat，我们可以看到127.0.0.1:9200端口上跑起了我们es服务。<br>&emsp; 3、访问127.0.0.1:9200端口，安装成功。<br><img src="/images/pasted-4.png" alt="单机安装成功"></p><h3 id="head插件安装"><a href="#head插件安装" class="headerlink" title="head插件安装"></a>head插件安装</h3><p>&emsp; 因为Elasticsearch的返回数据都是json，不具备可读性。这里使用一个开源的插件，来展示数据。<a href="https://github.com/mobz/elasticsearch-head" target="_blank" rel="noopener">下载地址</a><br>&emsp; <strong>该项目是基于nodejs的，需要nodejs8以上版本启动。进入解压目录，npm install下载node相关依赖，然后npm run start启动该项目。默认端口占用：9100。</strong></p><pre><code>#修改es中的配置文件，配置head插件http.cors.enabled: truehttp.cors.allow-origin: &quot;*&quot;</code></pre><p>&emsp; 重启server端，head连接成功。</p><h3 id="安装Kibana"><a href="#安装Kibana" class="headerlink" title="安装Kibana"></a>安装Kibana</h3><blockquote><p>Kibana是es官方开源的一个数据分析和可视化平台，是一个增强版的head插件。<strong>下载Kibana时一定要注意版本，要与es的版本一致。</strong></p></blockquote><p>&emsp; 修改Kibana.yml配置文件，增加Elasticsearch访问路径。</p><pre><code>#配置es地址elasticsearch.url: &quot;http://localhost:9200&quot;</code></pre><p>&emsp; 启动Kibana，访问默认的5601端口。<br><img src="/images/pasted-5.png" alt="Kibana安装成功页面"></p><h2 id="集群安装"><a href="#集群安装" class="headerlink" title="集群安装"></a>集群安装</h2><blockquote><p>本次集群部署三台服务器，一台master节点，两台slave节点。</p></blockquote><h3 id="Master节点配置"><a href="#Master节点配置" class="headerlink" title="Master节点配置"></a>Master节点配置</h3><p>&emsp; 修改master节点的配置文件，增加配置信息。</p><pre><code>#master集群配置cluster.name: esnode.name: masternode.master: truenetwork.host: 127.0.0.1</code></pre><p>&emsp; 增加好配置信息后，重启es服务。查看head插件页面是否正确显示。</p><h3 id="Slave节点配置"><a href="#Slave节点配置" class="headerlink" title="Slave节点配置"></a>Slave节点配置</h3><p>&emsp; 修改slave节点的配置文件，增加配置信息</p><pre><code>#slave集群配置cluster.name: esnode.name: slave1network.host: 127.0.0.1http.port: 8200 #当前子节点占用的端口号discovery.zen.ping.unicast.hosts: [&quot;127.0.0.1&quot;] </code></pre><p>&emsp; 增加好配置信息后，重启es服务。查看head插件页面是否正确显示。<br><img src="/images/pasted-6.png" alt="集群安装成功"><br>&emsp; <strong>注意，这里复制文件夹时，尽量使用刚刚解压的，因为直接复制master文件夹，容易将data文件夹中是数据也一起复制过来，造成启动失败。</strong></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 全文检索 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> es </tag>
+            
+            <tag> 全文检索 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Exception和Error的区别？</title>
+      <link href="/2019/11/29/Exception%E5%92%8CError%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/"/>
+      <url>/2019/11/29/Exception%E5%92%8CError%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>Exception和Error都是继承Throw类，在Java中只有Throwable类的实例才可以throw和catch，它是异常处理机制的基本组成。</p></blockquote><p>&emsp; Exception和Error是两种不同的设计理念，Exception是程序正常运行中可以被预料到的意外形况，可以进行相应的处理。 Error是在正常情况以外，突然出现的问题。大部分的Error都会导致程序的崩溃，不可恢复。很多时候，我们是很难显性的看到Error的，例如OOM。<br>&emsp; Exceptoin分为<strong>可检查异常</strong>和<strong>不可检查异常</strong>两种：  </p><ul><li>可检查异常必须显示的进行捕获处理，这时编译期检查的一部分，例如当我们使用File对象的时候，经常出现的文件不存在异常，这种异常是编译器在编译时帮我们想到的异常情况。  </li><li>不可检查异常就是runtime exception，是程序在运行期间发生的异常，比如从List中取值的代码，可能平时都是正常运行的，突然就出现了脚标越界的异常，但是下一次执行又正常了，这种异常就是不可检查的，因为它的动态的。 </li></ul><h3 id="ClassNotFoundException和NoClassDefFoundError有什么区别？"><a href="#ClassNotFoundException和NoClassDefFoundError有什么区别？" class="headerlink" title="ClassNotFoundException和NoClassDefFoundError有什么区别？"></a>ClassNotFoundException和NoClassDefFoundError有什么区别？</h3><ul><li>首先，它们一个的Exception的实例，一个是Error的实例，这就是最大的区别。</li><li>ClassNotFoundException体现在，当程序运行期间尝试使用类加载去加载某一个Class文件，但是在classpath中没有找到，例如通过反射Class.forName()去实例化某一个类，如果它不存在，就抛出这个Exception。</li><li>NoClassDefFoundError体现在，一个类在编译期间存在，但是运行时找不到这个类的定义，JVM就抛出这个Error。</li></ul><p><img src="/images/pasted-2.png" alt="异常错误关系图"></p><p>&emsp; <strong>要理解Throwable、Exception、Error的设计和分类，要知道它们三者之间的关系，并且有一个原则就是尽量小的范围去catch异常，不要catch Exception这种根本不知道为什么出错的异常。异常的处理腰围后续排查做准备，不要为后续工作增加负担。</strong><br>&emsp; 如果从性能的方面出发，我们要知道Java的异常在实例每一个Exception时都会对当时的栈进行快照，这是一个相对比较重的操作，如果发生的频繁了那么性能开销不低。当我们的服务出现反应慢、吞吐量下降时，优化的一个思路可能从检查频繁的Exception出发。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Java基础 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 面试题 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>final、finally、finalize有什么区别？</title>
+      <link href="/2019/11/29/final%E3%80%81finally%E3%80%81finalize%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/"/>
+      <url>/2019/11/29/final%E3%80%81finally%E3%80%81finalize%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>这就是一个垃圾的题，感觉没什么用。</p></blockquote><h1 id="final"><a href="#final" class="headerlink" title="final"></a>final</h1><p>&emsp; final可以修饰类、方法、变量。修饰后的类代表不可以继承，修饰后的变量是不可以修改的，而final的方法也不可以重写。<br><strong>&emsp; 但是final并不等于immutable。</strong>一个List变量，我们只能约束这个List不可以改变，但是不能约束它调用add方法。假如我们就是想要一个immutable类怎么办？ </p><ol><li>将class声明成final，这样别人就不能通过继承来扩展。</li><li>将所有成员变量定位为private和final，并且不要使用setter方法。</li><li>在构造对象时，成员变量使用深度拷贝来初始化，而不是直接赋值，因为你无法确定输入对象不被其他人修改。深度拷贝可以使用JSON来实现。对象–JSON–对象。</li><li>如果需要提供getter方法，那么使用copy-on-write原则。及写入操作时通过复制一个全新的对象，然后将old对象指向new对象，释放锁。读取操作没有枷锁，多线程下不保证数据一致性。</li></ol><h1 id="finally"><a href="#finally" class="headerlink" title="finally"></a>finally</h1><p>&emsp; finally是java异常处理的一种机制，try-catch-finally。保证在try语句后一定会执行finally中的代码。大部分的时候我们都是将资源流在这里关闭，但是更推荐使用JDK7以后的try-catch-resource语句。<br>&emsp; <em>主要是实现AutoCloseable接口</em></p><pre><code>//通过实现AutoCloseable接口，JVM会自动调用内部的close方法public class Resource implements AutoCloseable {    public void sayHello() {        System.out.println(&quot;hello&quot;);    }    @Override    public void close() throws Exception {        System.out.println(&quot;Resource is closed&quot;);    }}public class CloseResourceIn7 {    public static void main(String[] args) {        //将资源流在try语句的括号中声明，如果有多个资源使用分号分割。        try(Resource resource = new Resource()) {            resource.sayHello();        } catch (Exception e) {            e.printStackTrace();        }    }}</code></pre><h1 id="finalize"><a href="#finalize" class="headerlink" title="finalize"></a>finalize</h1><p>&emsp;  finalize是Object对象的一个方法，JDK9以后标记为不推荐使用。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Java基础 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 面试题 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Java的引用级别有什么区别？</title>
+      <link href="/2019/11/29/%E5%BC%BA%E5%BC%95%E7%94%A8%E3%80%81%E8%BD%AF%E5%BC%95%E7%94%A8%E3%80%81%E5%BC%B1%E5%BC%95%E7%94%A8%E3%80%81%E8%99%9A%E5%BC%95%E7%94%A8%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/"/>
+      <url>/2019/11/29/%E5%BC%BA%E5%BC%95%E7%94%A8%E3%80%81%E8%BD%AF%E5%BC%95%E7%94%A8%E3%80%81%E5%BC%B1%E5%BC%95%E7%94%A8%E3%80%81%E8%99%9A%E5%BC%95%E7%94%A8%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p> 不同的引用类型，主要体现的是对象的不同的可达性和对垃圾收集的影响。  </p></blockquote><ul><li>强引用<ul><li>最常见的普通对象引用，只要还有强引用指向一个对象，就表示这个对象活着，垃圾收集器不会碰这种对象。但是只要超过了引用的作用域或者显示的将强引用对象赋值为null，就是可以被垃圾回收。</li></ul></li><li>软引用<ul><li>相对比强引用弱化一些的引用，可以让对象豁免一些垃圾收集，只有当JVM认为内存不足时，才会去试图回收软引用对象。JVM会确保在抛出OOM以前将软引用指向的对象清理掉。通常来实现内存敏感的缓存。</li></ul></li><li>弱引用<ul><li>它和软引用类似，但是它不能使对象豁免垃圾收集，仅仅是提供一种访问在弱引用状态下对象的路径。比如维护一种非强制性的映射关系。</li></ul></li><li>虚引用<ul><li>无法通过虚引用访问对象，虚引用仅仅是提供了一种finalize后做某些事情的机制。  </li></ul></li></ul><p><strong>&emsp; 所有的引用类型都是在java.lang.Reference抽象类的子类，通过get()方法可以获得。</strong></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Java基础 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 面试题 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
+</search>
