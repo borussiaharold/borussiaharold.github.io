@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>Elasticsearch-es的持久化方案</title>
+      <link href="/2019/11/30/Elasticsearch-es%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E6%A1%88/"/>
+      <url>/2019/11/30/Elasticsearch-es%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E6%A1%88/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>es保证数据的安全和redis比较类似。都是才用log的形式。</p></blockquote><h1 id="持久化方案"><a href="#持久化方案" class="headerlink" title="持久化方案"></a>持久化方案</h1><ul><li>es同时将数据写入buffer和translog日志文件。</li><li>每间隔1秒，buffer中的数据写入一个segment file，并进入os cache中。这个时候就可以对外提供搜索服务。</li><li>写入os cache后将buffer中的数据清空。</li><li>一直重复上面的步骤，也就是一直像os cache和translog中写入数据。</li><li><strong>当translog文件比较大的时候，就触发了commit动作</strong><ul><li>首先重复1-3步骤，也就是先将buffer中数据清空。</li><li>写一个commit point到磁盘上，这个point表明了有哪些segment要写到磁盘上。</li><li>使用fsync将os cache中的数据，强行刷到磁盘上。</li><li>清空translog文件，创建一个新到translog文件。</li><li>触发commit默认是30分钟或者translog文件过大。</li></ul></li></ul><p>&emsp; <strong>这种存储原理最多丢失5s数据。</strong></p><h1 id="segment的merge"><a href="#segment的merge" class="headerlink" title="segment的merge"></a>segment的merge</h1><p>&emsp; es会自动维护内存中的各个segment file。</p><ul><li>选择一些相似大小到segment file merge成一个大的segment。</li><li>将新的segment file flush到磁盘上。</li><li>写一个新到commit point到磁盘上，这次到point排除掉旧到segment，使用刚刚merge到segment。</li><li>将新到segment file打开对外提供搜索服务，删除掉旧到segment。</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 全文检索 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> es </tag>
+            
+            <tag> 全文检索 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Elasticsearch-TF&amp;IDF算法、Scroll搜索</title>
       <link href="/2019/11/30/Elasticsearch-TF-IDF%E7%AE%97%E6%B3%95%E3%80%81Scroll%E6%90%9C%E7%B4%A2/"/>
       <url>/2019/11/30/Elasticsearch-TF-IDF%E7%AE%97%E6%B3%95%E3%80%81Scroll%E6%90%9C%E7%B4%A2/</url>

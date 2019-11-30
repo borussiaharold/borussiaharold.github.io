@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>final、finally、finalize有什么区别？ | Hello World</title>
-  <meta name="keywords" content=" 面试题 ">
-  <meta name="description" content="final、finally、finalize有什么区别？ | Hello World">
+  <title>Elasticsearch-es的持久化方案 | Hello World</title>
+  <meta name="keywords" content=" es , 全文检索 ">
+  <meta name="description" content="Elasticsearch-es的持久化方案 | Hello World">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="categories">
@@ -317,9 +317,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-final、finally、finalize有什么区别？" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-Elasticsearch-es的持久化方案" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">final、finally、finalize有什么区别？</h1>
+        <h1 class="article-title">Elasticsearch-es的持久化方案</h1>
     
     <div class="article-meta">
         
@@ -327,26 +327,28 @@
         
         <span class="book">
             
-                <a href="javascript:" target="_blank" data-rel="Java基础 noopener">Java基础</a>
+                <a href="javascript:" target="_blank" data-rel="全文检索 noopener">全文检索</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a href="javascript:" target="_blank" rel="noopener" class="color4">面试题</a>
+            <a href="javascript:" target="_blank" rel="noopener" class="color3">es</a>
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color5">全文检索</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-11-30 12:16:26'>2019-11-29 21:08</time>
+        创建时间:<time class="date" title='更新时间: 2019-11-30 16:17:10'>2019-11-30 16:06</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:478</span>
+        <span>字数:318</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -365,7 +367,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#final"><span class="toc-text">final</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#finally"><span class="toc-text">finally</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#finalize"><span class="toc-text">finalize</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#持久化方案"><span class="toc-text">持久化方案</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#segment的merge"><span class="toc-text">segment的merge</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -381,38 +383,30 @@
     <div class="article-entry" itemprop="articleBody">
       
         <blockquote>
-<p>这就是一个垃圾的题，感觉没什么用。</p>
+<p>es保证数据的安全和redis比较类似。都是才用log的形式。</p>
 </blockquote>
-<h1 id="final"><a href="#final" class="headerlink" title="final"></a>final</h1><p>&emsp; final可以修饰类、方法、变量。修饰后的类代表不可以继承，修饰后的变量是不可以修改的，而final的方法也不可以重写。<br><strong>&emsp; 但是final并不等于immutable。</strong>一个List变量，我们只能约束这个List不可以改变，但是不能约束它调用add方法。假如我们就是想要一个immutable类怎么办？ </p>
-<ol>
-<li>将class声明成final，这样别人就不能通过继承来扩展。</li>
-<li>将所有成员变量定位为private和final，并且不要使用setter方法。</li>
-<li>在构造对象时，成员变量使用深度拷贝来初始化，而不是直接赋值，因为你无法确定输入对象不被其他人修改。深度拷贝可以使用JSON来实现。对象–JSON–对象。</li>
-<li>如果需要提供getter方法，那么使用copy-on-write原则。及写入操作时通过复制一个全新的对象，然后将old对象指向new对象，释放锁。读取操作没有枷锁，多线程下不保证数据一致性。</li>
-</ol>
-<h1 id="finally"><a href="#finally" class="headerlink" title="finally"></a>finally</h1><p>&emsp; finally是java异常处理的一种机制，try-catch-finally。保证在try语句后一定会执行finally中的代码。大部分的时候我们都是将资源流在这里关闭，但是更推荐使用JDK7以后的try-catch-resource语句。<br>&emsp; <em>主要是实现AutoCloseable接口</em></p>
-<pre><code>//通过实现AutoCloseable接口，JVM会自动调用内部的close方法
-public class Resource implements AutoCloseable {
-    public void sayHello() {
-        System.out.println(&quot;hello&quot;);
-    }
-
-    @Override
-    public void close() throws Exception {
-        System.out.println(&quot;Resource is closed&quot;);
-    }
-}
-
-public class CloseResourceIn7 {
-    public static void main(String[] args) {
-        //将资源流在try语句的括号中声明，如果有多个资源使用分号分割。
-        try(Resource resource = new Resource()) {
-            resource.sayHello();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}</code></pre><h1 id="finalize"><a href="#finalize" class="headerlink" title="finalize"></a>finalize</h1><p>&emsp;  finalize是Object对象的一个方法，JDK9以后标记为不推荐使用。</p>
+<h1 id="持久化方案"><a href="#持久化方案" class="headerlink" title="持久化方案"></a>持久化方案</h1><ul>
+<li>es同时将数据写入buffer和translog日志文件。</li>
+<li>每间隔1秒，buffer中的数据写入一个segment file，并进入os cache中。这个时候就可以对外提供搜索服务。</li>
+<li>写入os cache后将buffer中的数据清空。</li>
+<li>一直重复上面的步骤，也就是一直像os cache和translog中写入数据。</li>
+<li><strong>当translog文件比较大的时候，就触发了commit动作</strong><ul>
+<li>首先重复1-3步骤，也就是先将buffer中数据清空。</li>
+<li>写一个commit point到磁盘上，这个point表明了有哪些segment要写到磁盘上。</li>
+<li>使用fsync将os cache中的数据，强行刷到磁盘上。</li>
+<li>清空translog文件，创建一个新到translog文件。</li>
+<li>触发commit默认是30分钟或者translog文件过大。</li>
+</ul>
+</li>
+</ul>
+<p>&emsp; <strong>这种存储原理最多丢失5s数据。</strong></p>
+<h1 id="segment的merge"><a href="#segment的merge" class="headerlink" title="segment的merge"></a>segment的merge</h1><p>&emsp; es会自动维护内存中的各个segment file。</p>
+<ul>
+<li>选择一些相似大小到segment file merge成一个大的segment。</li>
+<li>将新的segment file flush到磁盘上。</li>
+<li>写一个新到commit point到磁盘上，这次到point排除掉旧到segment，使用刚刚merge到segment。</li>
+<li>将新到segment file打开对外提供搜索服务，删除掉旧到segment。</li>
+</ul>
 
       
        
