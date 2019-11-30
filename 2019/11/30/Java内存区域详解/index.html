@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>nacos-注册中心 | Hello World</title>
-  <meta name="keywords" content=" spring-cloud-alibaba , 注册中心 ">
-  <meta name="description" content="nacos-注册中心 | Hello World">
+  <title>Java内存区域详解 | Hello World</title>
+  <meta name="keywords" content=" JVM堆、栈 , 内存溢出异常 ">
+  <meta name="description" content="Java内存区域详解 | Hello World">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="categories">
@@ -365,9 +365,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-nacos-注册中心" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-Java内存区域详解" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">nacos-注册中心</h1>
+        <h1 class="article-title">Java内存区域详解</h1>
     
     <div class="article-meta">
         
@@ -375,30 +375,28 @@
         
         <span class="book">
             
-                <a href="javascript:" target="_blank" data-rel="微服务 noopener">微服务</a>/
-            
-                <a href="javascript:" target="_blank" data-rel="nacos noopener">nacos</a>
+                <a href="javascript:" target="_blank" data-rel="Java虚拟机 noopener">Java虚拟机</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a href="javascript:" target="_blank" rel="noopener" class="color1">spring-cloud-alibaba</a>
+            <a href="javascript:" target="_blank" rel="noopener" class="color2">JVM堆、栈</a>
             
-            <a href="javascript:" target="_blank" rel="noopener" class="color5">注册中心</a>
+            <a href="javascript:" target="_blank" rel="noopener" class="color2">内存溢出异常</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-11-30 14:52:04'>2019-11-30 14:32</time>
+        创建时间:<time class="date" title='更新时间: 2019-11-30 16:24:38'>2019-11-30 16:22</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:290</span>
+        <span>字数:0</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -417,7 +415,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#配置member服务"><span class="toc-text">配置member服务</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#在pom-xml中引入Nacos-Discovery"><span class="toc-text">在pom.xml中引入Nacos-Discovery</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#在bootstrap-yml中配置Nacos地址"><span class="toc-text">在bootstrap.yml中配置Nacos地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#通过Cloud原生注解-EnableDiscoveryClient开启服务发现"><span class="toc-text">通过Cloud原生注解@EnableDiscoveryClient开启服务发现</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#配置order服务"><span class="toc-text">配置order服务</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#按照上面的配置，在配置一个端口不一样的applicationName-order的服务"><span class="toc-text">按照上面的配置，在配置一个端口不一样的applicationName=order的服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#在order服务中对外提供服务"><span class="toc-text">在order服务中对外提供服务</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#在mamber服务中调用order服务"><span class="toc-text">在mamber服务中调用order服务</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#配置RestTemplate"><span class="toc-text">配置RestTemplate</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#调用order服务"><span class="toc-text">调用order服务</span></a></li></ol></li></ol>
+        
     
 <style>
     .left-col .switch-btn,
@@ -432,64 +430,7 @@
 </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <p><img src="/images/pasted-11.png" alt="注册中心示例"></p>
-<blockquote>
-<p>通过上图，我们可以看到一个简单的服务发现并调用的机制。</p>
-</blockquote>
-<h1 id="配置member服务"><a href="#配置member服务" class="headerlink" title="配置member服务"></a>配置member服务</h1><h2 id="在pom-xml中引入Nacos-Discovery"><a href="#在pom-xml中引入Nacos-Discovery" class="headerlink" title="在pom.xml中引入Nacos-Discovery"></a>在pom.xml中引入Nacos-Discovery</h2><pre><code>        &lt;!-- https://mvnrepository.com/artifact/com.alibaba.cloud/spring-cloud-starter-alibaba-nacos-discovery --&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;com.alibaba.cloud&lt;/groupId&gt;
-            &lt;artifactId&gt;spring-cloud-starter-alibaba-nacos-discovery&lt;/artifactId&gt;
-            &lt;version&gt;2.1.0.RELEASE&lt;/version&gt;
-        &lt;/dependency&gt;</code></pre><h2 id="在bootstrap-yml中配置Nacos地址"><a href="#在bootstrap-yml中配置Nacos地址" class="headerlink" title="在bootstrap.yml中配置Nacos地址"></a>在bootstrap.yml中配置Nacos地址</h2><pre><code>//注意这里只使用的NacosDiscovery没有使用NacosConfig。
-server:
-  port: 9991
-spring:
-  application:
-    name: user
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848</code></pre><h2 id="通过Cloud原生注解-EnableDiscoveryClient开启服务发现"><a href="#通过Cloud原生注解-EnableDiscoveryClient开启服务发现" class="headerlink" title="通过Cloud原生注解@EnableDiscoveryClient开启服务发现"></a>通过Cloud原生注解@EnableDiscoveryClient开启服务发现</h2><pre><code>@SpringBootApplication
-@EnableDiscoveryClient
-public class WhyApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(WhyApplication.class, args);
-    }
-
-}</code></pre><h1 id="配置order服务"><a href="#配置order服务" class="headerlink" title="配置order服务"></a>配置order服务</h1><h2 id="按照上面的配置，在配置一个端口不一样的applicationName-order的服务"><a href="#按照上面的配置，在配置一个端口不一样的applicationName-order的服务" class="headerlink" title="按照上面的配置，在配置一个端口不一样的applicationName=order的服务"></a>按照上面的配置，在配置一个端口不一样的applicationName=order的服务</h2><h2 id="在order服务中对外提供服务"><a href="#在order服务中对外提供服务" class="headerlink" title="在order服务中对外提供服务"></a>在order服务中对外提供服务</h2><pre><code>@RestController
-public class OrderController {
-
-    @GetMapping(&quot;/list&quot;)
-    public String list(){
-        return &quot;返回订单列表&quot;;
-    }
-
-}</code></pre><h1 id="在mamber服务中调用order服务"><a href="#在mamber服务中调用order服务" class="headerlink" title="在mamber服务中调用order服务"></a>在mamber服务中调用order服务</h1><h2 id="配置RestTemplate"><a href="#配置RestTemplate" class="headerlink" title="配置RestTemplate"></a>配置RestTemplate</h2><blockquote>
-<p>RestTemplate是Spring提供的全家桶的一员，它的底层是对HttpClient进行了封装。</p>
-</blockquote>
-<pre><code>@Component
-public class RestTemplateConfig {
-
-    @Bean
-    @LoadBalanced
-    public RestTemplate restTemplate(){
-        return new RestTemplate();
-    }
-
-}</code></pre><h2 id="调用order服务"><a href="#调用order服务" class="headerlink" title="调用order服务"></a>调用order服务</h2><pre><code>@RestController
-public class UserController {
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @GetMapping(&quot;/get/order&quot;)
-    public String getOrder(){
-        return restTemplate.getForObject(&quot;http://order/list/&quot;,String.class);
-    }
-
-}</code></pre>
+        
       
        
     </div>
