@@ -4,6 +4,62 @@
   
     
     <entry>
+      <title>【源码】-- IoC 之深入理解 Spring IoC</title>
+      <link href="/2019/12/03/%E3%80%90%E6%BA%90%E7%A0%81%E3%80%91-%20IoC%20%E4%B9%8B%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%20Spring%20IoC/"/>
+      <url>/2019/12/03/%E3%80%90%E6%BA%90%E7%A0%81%E3%80%91-%20IoC%20%E4%B9%8B%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%20Spring%20IoC/</url>
+      
+        <content type="html"><![CDATA[<font size=3><blockquote><p>Spring的源码好难，看的稀里糊涂。在最最开始学习Spring的时候就接触了IoC，作为Spring的核心概念，还是有必要对Ico的全套实现有一个深入的认识的。本篇主要介绍IoC的基本概念和各个组件。</p></blockquote><h1 id="1-IoC理论"><a href="#1-IoC理论" class="headerlink" title="1 IoC理论"></a>1 IoC理论</h1><p>IoC全称<code>Inversion of Control</code>翻译过来就是<code>控制反转</code>，它还有一个别名叫DI（<code>Dependency Injection</code>），即依赖注入。    </p><p>这里就涉及一个问题，如何理解“控制反转”？引申出来四个问题：</p><ul><li>谁控制了谁？</li><li>控制了谁？</li><li>为何是反转？</li><li>哪些方面进行了反转？  </li></ul><blockquote><p>所谓的IoC，就是由Spring IoC容器来负责对象的生命周期和对象之间的关键。</p></blockquote><p>上面这句话就是IoC的核心含义。为此我们使用一个例子来阐述。</p><pre><code>/** * 年轻小伙子 */public class YoungMan {    private BeautifulGirl beautifulGirl;    YoungMan(){        // 可能你比较牛逼，指腹为婚        // beautifulGirl = new BeautifulGirl();    }    public void setBeautifulGirl(BeautifulGirl beautifulGirl) {        this.beautifulGirl = beautifulGirl;    }    public static void main(String[] args){        YoungMan you = new YoungMan();        // 建立我们的依赖        BeautifulGirl beautifulGirl = new BeautifulGirl(&quot;你的各种条件&quot;);        beautifulGirl.setxxx(&quot;各种投其所好&quot;);        // 然后你有女票了        you.setBeautifulGirl(beautifulGirl);    }}</code></pre><p>这就是我们通常的使用方式，如果我们需要某一个对象一般都是采取直接创建的方式（<code>new BeautifulGirl</code>），这个过程既繁琐又复杂，而且我们必须面对每一个环节，使用完成后我们还要负责销毁它。这种情况下我们使用的对象与之依赖的对象耦合在了一起。<br>其实我们思考一下就会发现一个问题，我们每次依赖到的对象真的需要我们去创建它吗？我们明白，<strong>我们依赖某一个对象并不是依赖它本身，和是依赖于它所能提供的服务</strong>。只要它能在我们需要的时候将服务提供给我们，至于它是我们创建的还是别人送过来的无关紧要。<br>这个送过来的“人”就是IoC，以上面的代码为例，它就相当于一个“婚介公司”，当我们需要一个女朋友到时候，只需要和“婚介公司”说，它会根据我们需求提供一个妹子给我们。我们需要负责谈谈恋爱、使用就可以。<br><br/><br>IoC这个“婚介公司”帮助我们从主动寻找变成了被动接受，更加的简洁、方便所有的一些都又IoC去操作，我们坐享其成。<br>所以简单的说：IoC的理念就是<strong>让别人为你服务</strong></p><p><img src="/images/pasted-16.png" alt="由IoC管理"><br>在没有IoC的时候，被注入的对象直接和被依赖的对象耦合。引入IoC以后，通过IoC Service Provider将被依赖的对象送过来。所以IoC就是这么简单：<strong>原来是需要什么东西自己去拿，现在是需要什么东西让别人（IoC Service Provider）送过来。</strong></p><br/>现在让我们在回顾上面提出的四个问题：<ul><li>谁控制了谁？<ul><li>在传统模式下，我们使用new来创建对象，也就是对象由你自己控制。现在使用IoC，由IoC来负责创建对象。谁控制了谁？当然是IoC控制了对象。</li></ul></li><li>控制了什么？<ul><li>控制对象的创建。</li></ul></li><li>为何是反转？<ul><li>没有 IoC 的时候我们都是在自己对象中主动去创建被依赖的对象，这是正转。但是有了 IoC 后，所依赖的对象直接由 IoC 容器创建后注入到被注入的对象中，依赖的对象由原来的主动获取变成被动接受，所以是反转。</li></ul></li><li>哪些方面进行了反转？<ul><li>所依赖对象的获取被反转了。</li></ul></li></ul><h2 id="1-1-注入形式"><a href="#1-1-注入形式" class="headerlink" title="1.1 注入形式"></a>1.1 注入形式</h2><blockquote><p>现在妹子有了，但是如何拥有妹子？这也是一门学问。</p></blockquote><p>IoC Service Provider 为被注入对象提供被依赖对象也有如下几种方式：构造方法注入、setter方法注入、接口注入。</p><ul><li><p><strong>构造方法注入</strong><br>构造器注入，顾名思义就是被注入的对象通过在其构造方法中声明依赖对象的参数列表，让外部知道它需要哪些依赖对象。</p><pre><code>YoungMan(BeautifulGirl beautifulGirl) {  this.beautifulGirl = beautifulGirl;}</code></pre><p>构造器注入方式比较直观，对象构造完毕后就可以直接使用，这就好比你出生你家里就给你指定了你媳妇。</p></li><li><p><strong>setter方法注入</strong><br>对于 JavaBean 对象而言，我们一般都是通过 getter 和 setter 方法来访问和设置对象的属性。所以，当前对象只需要为其所依赖的对象提供相对应的 setter 方法，就可以通过该方法将相应的依赖对象设置到被注入对象中。如下：</p></li></ul><pre><code>public class YoungMan {    private BeautifulGirl beautifulGirl;    public void setBeautifulGirl(BeautifulGirl beautifulGirl) {        this.beautifulGirl = beautifulGirl;    }}</code></pre><p>相比于构造器注入，setter 方式注入会显得比较宽松灵活些，它可以在任何时候进行注入（当然是在使用依赖对象之前），这就好比你可以先把自己想要的妹子想好了，然后再跟婚介公司打招呼，你可以要林志玲款式的，赵丽颖款式的，甚至凤姐哪款的，随意性较强。</p><ul><li><strong>接口注入</strong></li></ul><p><em>接口方式注入显得比较霸道，因为它需要被依赖的对象实现不必要的接口，带有侵入性。一般都不推荐这种方式。</em></p><h1 id="2-各个组件"><a href="#2-各个组件" class="headerlink" title="2 各个组件"></a>2 各个组件</h1><blockquote><p>IoC有五大组件，它们五个负责了IoC的全部工作。</p></blockquote><h2 id="2-1-Resource体系"><a href="#2-1-Resource体系" class="headerlink" title="2.1 Resource体系"></a>2.1 Resource体系</h2><p><code>org.springframework.core.io.Resource</code>，对资源的抽象。它的每一个实现都代表一种资源的<strong>访问策略</strong>，如 ClassPathResource、RLResource、FileSystemResource 等。</p><p><img src="/images/pasted-17.png" alt="资源定位"></p><h3 id="2-1-1-ResourceLoader-体系"><a href="#2-1-1-ResourceLoader-体系" class="headerlink" title="2.1.1 ResourceLoader 体系"></a>2.1.1 ResourceLoader 体系</h3><p>有了资源的定位，就要有资源加载。Spring利用<code>org.springframework.core.io.ResourceLoader</code>进行统一资源加载。</p><p><img src="/images/pasted-18.png" alt="资源加载"></p><h2 id="2-2-BeanFactory-体系"><a href="#2-2-BeanFactory-体系" class="headerlink" title="2.2 BeanFactory 体系"></a>2.2 BeanFactory 体系</h2><p><code>org.springframework.beans.factory.BeanFactory</code>，是一个非常纯粹的 bean 容器，它是 IoC 必备的数据结构，其中 BeanDefinition 是它的基本结构。BeanFactory 内部维护着一个BeanDefinition map ，并可根据 BeanDefinition 的描述进行 bean 的创建和管理。</p><p><img src="/images/pasted-19.png" alt="Bean的管理"></p><ul><li>BeanFactory 有三个直接子类 ListableBeanFactory、HierarchicalBeanFactory 和 AutowireCapableBeanFactory 。</li><li>DefaultListableBeanFactory 为最终默认实现，它实现了所有接口。</li></ul><h2 id="2-3-BeanDefinition-体系"><a href="#2-3-BeanDefinition-体系" class="headerlink" title="2.3 BeanDefinition 体系"></a>2.3 BeanDefinition 体系</h2><p><code>org.springframework.beans.factory.config.BeanDefinition</code>，用来描述Spring中的Bean对象。</p><p><img src="/images/pasted-20.png" alt="Bean的描述"></p><h2 id="2-4-BeanDefinitionReader-体系"><a href="#2-4-BeanDefinitionReader-体系" class="headerlink" title="2.4 BeanDefinitionReader 体系"></a>2.4 BeanDefinitionReader 体系</h2><p><code>org.springframework.beans.factory.support.BeanDefinitionReader</code>，是读取 Spring 的配置文件的内容，也就是从XML中读取配置信息。并将其转换成 IoC 容器内部的数据结构 ：BeanDefinition 。</p><p><img src="/images/pasted-21.png" alt="Bean的转换"></p><h2 id="2-5-ApplicationContext-体系"><a href="#2-5-ApplicationContext-体系" class="headerlink" title="2.5 ApplicationContext 体系"></a>2.5 ApplicationContext 体系</h2><p><code>org.springframework.context.ApplicationContext</code>，这就是大名鼎鼎的Spring容器。它叫做应用上下文，与我们应用息息相关。它继承 BeanFactory ，所以它是 BeanFactory 的扩展升级版，如果BeanFactory 是屌丝的话，那么 ApplicationContext 则是名副其实的高富帅。由于 ApplicationContext 的结构就决定了它与 BeanFactory 的不同，其主要区别有：</p><ul><li>继承<code>org.springframework.context.MessageSource</code>接口，提供国际化的标准访问策略。</li><li>继承<code>org.springframework.context.ApplicationEventPublisher</code>接口，<strong>提供强大的事件机制。</strong></li><li>扩展 ResourceLoader，可以用来加载多种 Resource，可以灵活访问不同的资源。</li><li>对 Web 应用的支持。</li></ul><p>我们对ApplicationContext还是相对更熟悉一些的，例如我们WEB中用到的XmlWebApplicationContext就属于这个体系，还有ClassPathXmlApplicationContext等。<br><img src="/images/pasted-22.png" alt="复杂的Spring容器"></p><h2 id="2-6-小结"><a href="#2-6-小结" class="headerlink" title="2.6 小结"></a>2.6 小结</h2><p>上面的5个体系，是Spring IoC中的核心部分。其实IoC一看还是挺简单的，无外乎是将配置文件（暂时理解成XML）中的配置进行解析，然后将生成的对象放到一个Map里面，然后使用的时候直接从Map里面取就可以。但是真实的场景里面还是要面临很多的问题。</p></font>]]></content>
+      
+      
+      <categories>
+          
+          <category> Spring </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Spring </tag>
+            
+            <tag> 源码分析 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Spring面试题</title>
+      <link href="/2019/12/02/Spring%E9%9D%A2%E8%AF%95%E9%A2%98/"/>
+      <url>/2019/12/02/Spring%E9%9D%A2%E8%AF%95%E9%A2%98/</url>
+      
+        <content type="html"><![CDATA[<font size=3><blockquote><p>这套面试题，不包括Spring MVC部分。主要以IoC、AOP、Transction为主。</p></blockquote></font>]]></content>
+      
+      
+      <categories>
+          
+          <category> 面试题 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Spring IOC </tag>
+            
+            <tag> Spring AOP </tag>
+            
+            <tag> Spring 基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Java【基础】面试题</title>
       <link href="/2019/12/02/Java%E3%80%90%E5%9F%BA%E7%A1%80%E3%80%91%E9%9D%A2%E8%AF%95%E9%A2%98/"/>
       <url>/2019/12/02/Java%E3%80%90%E5%9F%BA%E7%A1%80%E3%80%91%E9%9D%A2%E8%AF%95%E9%A2%98/</url>
@@ -85,7 +141,7 @@
       <link href="/2019/11/30/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3ClassLoader/"/>
       <url>/2019/11/30/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3ClassLoader/</url>
       
-        <content type="html"><![CDATA[<blockquote><p>这在面试中算是比较深的问题了，当我们将.class文件从硬盘读取到内存中供我们使用，JVM经历了一系列的操作。</p></blockquote><p>&emsp; 我们看一下代码，对类的加载顺序有一个认识。下面的两版代码打印什么？</p><pre><code>public class Main {    public static void main(String[] args) {        Test test = Test.getInstance();        System.out.println(test.counter1);        System.out.println(test.counter2);    }}//写一个简单的单例class Test{    private static Test t = new Test();    public static int counter1;    public static int counter2 = 0;    private Test() {        counter1 ++;        counter2 ++;    }    public static Test getInstance(){        return t;    }}--------------第二版//修改类部分代码class Test{    public static int counter1;    public static int counter2 = 0;    private static Test t = new Test(); //修改类书写顺序    private Test() {        counter1 ++;        counter2 ++;    }    public static Test getInstance(){        return t;    }}</code></pre><h1 id="从硬盘到内存"><a href="#从硬盘到内存" class="headerlink" title="从硬盘到内存"></a>从硬盘到内存</h1><p>&emsp; 类的加载顺序主要分为：</p><p><img src="/images/pasted-15.png" alt="图解"></p><ul><li>加载：从硬盘将二进制文件加载到内存，将读到到数据放到JVM方法区中，然后在堆上创建一个Class对象用来封装这个类在方法区到数据结构。也就是一个镜像对象，每一个类都有一个自己到专属Class对象，所以在反射中我们可以使用Class对象来获取类到全部数据。</li><li>连接：<ul><li>验证：保证被加载类到正确性。验证结构、语义、字节码、兼容性等。</li><li>准备：为类到静态变量分配内存，并设置默认值。</li><li>解析：把类中的符号引用换成成直接引用。</li></ul></li><li>初始化：为类的静态变量赋正确的值。</li></ul><h1 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h1><p>&emsp; <strong>所有的JVM类必须在被程序首次主动使用时才初始化，但是加载和连接阶段已经发生。</strong><br>&emsp; 这里我们要说明一下主动使用场景：</p><ul><li>new对象，当我们手动创建一个对象时。</li><li>访问某个类到静态变量。</li><li>调用某个类到静态方法。</li><li>通过Class类进行反射操作。</li><li>初始化一个类到子类。</li><li>JVM启动时通过参数标明为默认启动到类。</li></ul><p>&emsp; 有主动就有被动，被动使用并不会触发初始化：</p><ul><li>当我们通过子类到静态方法获取父类到静态变量。</li><li>创建数组对象。<strong>E.g.&emsp; Student[] s = new Student[1]</strong>。</li></ul><h1 id="类加载器对象"><a href="#类加载器对象" class="headerlink" title="类加载器对象"></a>类加载器对象</h1><blockquote><p>JVM通过类加载对象来读取.class文件，这里有一个重要到概念：双亲委派机制</p></blockquote><h2 id="类加载器到类型"><a href="#类加载器到类型" class="headerlink" title="类加载器到类型"></a>类加载器到类型</h2><ul><li>Bootstrap Classloader：JVM最顶级加载器，只负责加载最核心到类，不提供给开发者使用。</li><li>Extension Classloader：负责加载扩展类库，加载/lib/ext目录下到jar。</li><li>Application Classloader：复杂加载classpath下面到所有jar和class文件，也就是说我们到业务代码都是通过它来加载到JVM中到。</li></ul>]]></content>
+        <content type="html"><![CDATA[<blockquote><p>这在面试中算是比较深的问题了，当我们将.class文件从硬盘读取到内存中供我们使用，JVM经历了一系列的操作。</p></blockquote><p>&emsp; 我们看一下代码，对类的加载顺序有一个认识。下面的两版代码打印什么？</p><pre><code>public class Main {    public static void main(String[] args) {        Test test = Test.getInstance();        System.out.println(test.counter1);        System.out.println(test.counter2);    }}//写一个简单的单例class Test{    private static Test t = new Test();    public static int counter1;    public static int counter2 = 0;    private Test() {        counter1 ++;        counter2 ++;    }    public static Test getInstance(){        return t;    }}--------------第二版//修改类部分代码class Test{    public static int counter1;    public static int counter2 = 0;    private static Test t = new Test(); //修改类书写顺序    private Test() {        counter1 ++;        counter2 ++;    }    public static Test getInstance(){        return t;    }}</code></pre><h1 id="从硬盘到内存"><a href="#从硬盘到内存" class="headerlink" title="从硬盘到内存"></a>从硬盘到内存</h1><p>&emsp; 类的加载顺序主要分为：</p><p><img src="/images/pasted-15.png" alt="图解"></p><ul><li>加载：从硬盘将二进制文件加载到内存，将读到到数据放到JVM方法区中，然后在堆上创建一个Class对象用来封装这个类在方法区到数据结构。也就是一个镜像对象，每一个类都有一个自己到专属Class对象，所以在反射中我们可以使用Class对象来获取类到全部数据。</li><li>连接：<ul><li>验证：保证被加载类到正确性。验证结构、语义、字节码、兼容性等。</li><li>准备：为类到静态变量分配内存，并设置默认值。</li><li>解析：把类中的符号引用换成成直接引用。</li></ul></li><li>初始化：为类的静态变量赋正确的值。</li></ul><h1 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h1><p>&emsp; <strong>所有的JVM类必须在被程序首次主动使用时才初始化，但是加载和连接阶段已经发生。</strong><br>&emsp; 这里我们要说明一下主动使用场景：</p><ul><li>new对象，当我们手动创建一个对象时。</li><li>访问某个类到静态变量。</li><li>调用某个类到静态方法。</li><li>通过Class类进行反射操作。</li><li>初始化一个类的子类。</li><li>JVM启动时通过参数标明为默认启动到类。</li></ul><p>&emsp; 有主动就有被动，被动使用并不会触发初始化：</p><ul><li>当我们通过子类到静态方法获取父类到静态变量。</li><li>创建数组对象。<strong>E.g.&emsp; Student[] s = new Student[1]</strong>。</li><li>Classloader的loadClass方法会加载一个类，但不是主动使用，不初始化。</li></ul><h1 id="类加载器对象"><a href="#类加载器对象" class="headerlink" title="类加载器对象"></a>类加载器对象</h1><blockquote><p>JVM通过类加载对象来读取.class文件，这里有一个重要到概念：双亲委派机制</p></blockquote><h2 id="类加载器类型"><a href="#类加载器类型" class="headerlink" title="类加载器类型"></a>类加载器类型</h2><ul><li>Bootstrap Classloader：JVM最顶级加载器，只负责加载最核心到类，不提供给开发者使用。</li><li>Extension Classloader：负责加载扩展类库，加载/lib/ext目录下到jar。</li><li>System Classloader：复杂加载classpath下面到所有jar和class文件，也就是说我们到业务代码都是通过它来加载到JVM中到。<blockquote><p>我们可以通过继承ClassLoader抽象类来实现<strong>自定义加载器</strong>，它的默认父加载器是System Classloader，加载器之前是关系并不是继承实现。</p></blockquote></li></ul>]]></content>
       
       
       <categories>
