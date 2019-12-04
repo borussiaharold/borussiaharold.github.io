@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>【源码】-- IoC 之深入理解 Spring IoC | Hello World</title>
+  <title>【源码】IoC之深入理解Spring IoC | Hello World</title>
   <meta name="keywords" content=" Spring , 源码分析 ">
-  <meta name="description" content="【源码】-- IoC 之深入理解 Spring IoC | Hello World">
+  <meta name="description" content="【源码】IoC之深入理解Spring IoC | Hello World">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="categories">
@@ -163,8 +163,8 @@
     </div>
     <div></div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="15">
-<input type="hidden" id="yelog_site_word_count" value="12.9k">
+<input type="hidden" id="yelog_site_posts_number" value="17">
+<input type="hidden" id="yelog_site_word_count" value="16.8k">
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
     <span id="busuanzi_value_site_pv"></span>
@@ -260,6 +260,30 @@
     </div>
     
     <nav id="title-list-nav">
+        
+        <a id="top" class="Spring "
+           href="/2019/12/03/%E3%80%90%E6%BA%90%E7%A0%81%E3%80%91IoC%E4%B9%8B%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%20IoC/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="【源码】IoC之深入理解Spring IoC">【源码】IoC之深入理解Spring IoC</span>
+            <span class="post-date" title="2019-12-03 13:37:09">2019/12/03</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/%E3%80%90%E6%BA%90%E7%A0%81%E3%80%91IoC%E4%B9%8BSpring%E7%BB%9F%E4%B8%80%E8%B5%84%E6%BA%90%E5%8A%A0%E8%BD%BD%E7%AD%96%E7%95%A5/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="【源码】IoC之Spring统一资源加载策略">【源码】IoC之Spring统一资源加载策略</span>
+            <span class="post-date" title="2019-12-04 15:09:37">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/%E3%80%90%E6%BA%90%E7%A0%81%E3%80%91IoC%E4%B9%8B%E5%8A%A0%E8%BD%BDBeanDefinition/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="【源码】IoC之加载BeanDefinition">【源码】IoC之加载BeanDefinition</span>
+            <span class="post-date" title="2019-12-04 15:08:52">2019/12/04</span>
+        </a>
         
         <a  class="全文检索 "
            href="/2019/11/30/Elasticsearch-TF-IDF%E7%AE%97%E6%B3%95%E3%80%81Scroll%E6%90%9C%E7%B4%A2/"
@@ -365,14 +389,6 @@
             <span class="post-date" title="2019-11-30 14:32:50">2019/11/30</span>
         </a>
         
-        <a  class="Spring "
-           href="/2019/12/03/%E3%80%90%E6%BA%90%E7%A0%81%E3%80%91-%20IoC%20%E4%B9%8B%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%20Spring%20IoC/"
-           data-tag="Spring,源码分析"
-           data-author="" >
-            <span class="post-title" title="【源码】-- IoC 之深入理解 Spring IoC">【源码】-- IoC 之深入理解 Spring IoC</span>
-            <span class="post-date" title="2019-12-03 13:37:09">2019/12/03</span>
-        </a>
-        
         <a  class="面试题 "
            href="/2019/11/30/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3ClassLoader/"
            data-tag="Java基础,类加载器"
@@ -393,11 +409,13 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-【源码】- IoC 之深入理解 Spring IoC" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-【源码】IoC之深入理解Spring IoC" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">【源码】-- IoC 之深入理解 Spring IoC</h1>
+        <h1 class="article-title">【源码】IoC之深入理解Spring IoC</h1>
     
     <div class="article-meta">
+        
+        <span class="top"><a href="javascript:" target="_blank" rel="noopener">置顶</a></span>
         
         
         
@@ -419,7 +437,7 @@
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-12-04 14:35:03'>2019-12-03 13:37</time>
+        创建时间:<time class="date" title='更新时间: 2019-12-04 16:00:32'>2019-12-03 13:37</time>
         
     </div>
     <div class="article-meta">
@@ -443,7 +461,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-IoC理论"><span class="toc-text">1 IoC理论</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-注入形式"><span class="toc-text">1.1 注入形式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-各个组件"><span class="toc-text">2 各个组件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-Resource体系"><span class="toc-text">2.1 Resource体系</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-1-ResourceLoader-体系"><span class="toc-text">2.1.1 ResourceLoader 体系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-BeanFactory-体系"><span class="toc-text">2.2 BeanFactory 体系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-BeanDefinition-体系"><span class="toc-text">2.3 BeanDefinition 体系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-BeanDefinitionReader-体系"><span class="toc-text">2.4 BeanDefinitionReader 体系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5-ApplicationContext-体系"><span class="toc-text">2.5 ApplicationContext 体系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-6-小结"><span class="toc-text">2.6 小结</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-IoC理论"><span class="toc-text">1 IoC理论</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-注入形式"><span class="toc-text">1.1 注入形式</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-五大组件"><span class="toc-text">2 五大组件</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-Resource体系"><span class="toc-text">2.1 Resource体系</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-1-ResourceLoader-体系"><span class="toc-text">2.1.1 ResourceLoader 体系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-BeanFactory-体系"><span class="toc-text">2.2 BeanFactory 体系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-BeanDefinition-体系"><span class="toc-text">2.3 BeanDefinition 体系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-BeanDefinitionReader-体系"><span class="toc-text">2.4 BeanDefinitionReader 体系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5-ApplicationContext-体系"><span class="toc-text">2.5 ApplicationContext 体系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-6-小结"><span class="toc-text">2.6 小结</span></a></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -465,12 +483,16 @@
 </blockquote>
 <h1 id="1-IoC理论"><a href="#1-IoC理论" class="headerlink" title="1 IoC理论"></a>1 IoC理论</h1><p>IoC全称<code>Inversion of Control</code>翻译过来就是<code>控制反转</code>，它还有一个别名叫DI（<code>Dependency Injection</code>），即依赖注入。    </p>
 <p>这里就涉及一个问题，如何理解“控制反转”？引申出来四个问题：</p>
+<font size=2>
+
 <ul>
 <li>谁控制了谁？</li>
 <li>控制了谁？</li>
 <li>为何是反转？</li>
 <li>哪些方面进行了反转？  </li>
 </ul>
+</font>
+
 <blockquote>
 <p>所谓的IoC，就是由Spring IoC容器来负责对象的生命周期和对象之间的关键。</p>
 </blockquote>
@@ -505,6 +527,8 @@ public class YoungMan {
 <br/>
 现在让我们在回顾上面提出的四个问题：
 
+<font size=2>
+
 <ul>
 <li>谁控制了谁？<ul>
 <li>在传统模式下，我们使用new来创建对象，也就是对象由你自己控制。现在使用IoC，由IoC来负责创建对象。谁控制了谁？当然是IoC控制了对象。</li>
@@ -523,6 +547,9 @@ public class YoungMan {
 </ul>
 </li>
 </ul>
+</font>
+
+
 <h2 id="1-1-注入形式"><a href="#1-1-注入形式" class="headerlink" title="1.1 注入形式"></a>1.1 注入形式</h2><blockquote>
 <p>现在妹子有了，但是如何拥有妹子？这也是一门学问。</p>
 </blockquote>
@@ -549,7 +576,7 @@ public class YoungMan {
 <li><strong>接口注入</strong></li>
 </ul>
 <p><em>接口方式注入显得比较霸道，因为它需要被依赖的对象实现不必要的接口，带有侵入性。一般都不推荐这种方式。</em></p>
-<h1 id="2-各个组件"><a href="#2-各个组件" class="headerlink" title="2 各个组件"></a>2 各个组件</h1><blockquote>
+<h1 id="2-五大组件"><a href="#2-五大组件" class="headerlink" title="2 五大组件"></a>2 五大组件</h1><blockquote>
 <p>IoC有五大组件，它们五个负责了IoC的全部工作。</p>
 </blockquote>
 <h2 id="2-1-Resource体系"><a href="#2-1-Resource体系" class="headerlink" title="2.1 Resource体系"></a>2.1 Resource体系</h2><p><code>org.springframework.core.io.Resource</code>，对资源的抽象。它的每一个实现都代表一种资源的<strong>访问策略</strong>，如 ClassPathResource、RLResource、FileSystemResource 等。</p>

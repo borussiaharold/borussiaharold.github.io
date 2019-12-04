@@ -544,12 +544,12 @@ div.ac > ul > li:before,
   content: "\e9ba";
 }
 .full-toc .post-toc {
-  width: 200px;
+  width: 400px;
   padding-top: 10px;
   position: fixed;
   top: 106px;
   bottom: 0;
-  right: -200px;
+  right: -400px;
   z-index: 20;
   background: rgba(250,250,250,0.9);
   border-top: 1px solid #e5e8ec;
@@ -1058,7 +1058,6 @@ div.ac > ul > li:before,
 }
 .nav-right .title-list nav a:before,
 .nav-right .title-list #local-search-result a:before {
-  content: "\e901";
   position: absolute;
   top: 7px;
   left: 12px;
@@ -1067,9 +1066,7 @@ div.ac > ul > li:before,
   color: #309e85;
 }
 .nav-right .title-list nav a#top:before,
-.nav-right .title-list #local-search-result a#top:before {
-  content: "\f08d";
-}
+.nav-right .title-list #local-search-result a#top:before,
 .nav-right .title-list nav a.hover:before,
 .nav-right .title-list #local-search-result a.hover:before {
   animation: wobble 1s linear;
@@ -1557,8 +1554,16 @@ div.ac > ul > li:before,
   background-color: #009688;
 }
 .post .pjax article :not(pre) > code {
-  color: #bf1827;
-  font-family: sans-serif;
+  color: #1a1a1a;
+  line-height: 1.8em;
+  box-sizing: border-box;
+  padding: 1px 3px;
+  margin: 0 3px;
+  background: #ddd;
+  border: 1px solid #ccc;
+  font-family: Menlo, Monaco, Andale Mono, lucida console, Courier New, monospace;
+  word-wrap: break-word;
+  font-size: 14px;
 }
 .post .pjax article pre > code {
   font-size: 15px;
