@@ -127,14 +127,6 @@
     
         
             
-            <li><div data-rel="Spring">Spring</div>
-                
-            </li>
-            
-        
-    
-        
-            
             <li><div data-rel="微服务"><i class="fold iconfont icon-right"></i>微服务</div>
                 
                     <ul class="sub hide">
@@ -144,6 +136,14 @@
                         </li>
                             
                     </ul>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="Spring">Spring</div>
                 
             </li>
             
@@ -164,7 +164,7 @@
     <div></div>
 </div>
 <input type="hidden" id="yelog_site_posts_number" value="17">
-<input type="hidden" id="yelog_site_word_count" value="18.1k">
+<input type="hidden" id="yelog_site_word_count" value="18k">
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
     <span id="busuanzi_value_site_pv"></span>
@@ -220,14 +220,6 @@
     </li>
     
     <li class="article-tag-list-item">
-        <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
-    </li>
-    
-    <li class="article-tag-list-item">
-        <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
-    </li>
-    
-    <li class="article-tag-list-item">
         <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring IOC</a>
     </li>
     
@@ -245,6 +237,14 @@
     
     <li class="article-tag-list-item">
         <a href="javascript:" target="_blank" rel="noopener" class="color5">注册中心</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
     </li>
     
     <li class="article-tag-list-item">
@@ -437,7 +437,7 @@
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-12-04 16:00:32'>2019-12-03 13:37</time>
+        创建时间:<time class="date" title='更新时间: 2019-12-06 11:15:35'>2019-12-03 13:37</time>
         
     </div>
     <div class="article-meta">
@@ -589,9 +589,9 @@ public class YoungMan {
 <li>BeanFactory 有三个直接子类 ListableBeanFactory、HierarchicalBeanFactory 和 AutowireCapableBeanFactory 。</li>
 <li>DefaultListableBeanFactory 为最终默认实现，它实现了所有接口。</li>
 </ul>
-<h2 id="2-3-BeanDefinition-体系"><a href="#2-3-BeanDefinition-体系" class="headerlink" title="2.3 BeanDefinition 体系"></a>2.3 BeanDefinition 体系</h2><p><code>org.springframework.beans.factory.config.BeanDefinition</code>，用来描述Spring中的Bean对象。</p>
+<h2 id="2-3-BeanDefinition-体系"><a href="#2-3-BeanDefinition-体系" class="headerlink" title="2.3 BeanDefinition 体系"></a>2.3 BeanDefinition 体系</h2><p><code>org.springframework.beans.factory.config.BeanDefinition</code>，用来描述 Spring 中的 Bean 对象。</p>
 <p><img src="/images/pasted-20.png" alt="Bean的描述"></p>
-<h2 id="2-4-BeanDefinitionReader-体系"><a href="#2-4-BeanDefinitionReader-体系" class="headerlink" title="2.4 BeanDefinitionReader 体系"></a>2.4 BeanDefinitionReader 体系</h2><p><code>org.springframework.beans.factory.support.BeanDefinitionReader</code>，是读取 Spring 的配置文件的内容，也就是从XML中读取配置信息。并将其转换成 IoC 容器内部的数据结构 ：BeanDefinition 。</p>
+<h2 id="2-4-BeanDefinitionReader-体系"><a href="#2-4-BeanDefinitionReader-体系" class="headerlink" title="2.4 BeanDefinitionReader 体系"></a>2.4 BeanDefinitionReader 体系</h2><p><code>org.springframework.beans.factory.support.BeanDefinitionReader</code>，是读取 Spring 的配置文件的内容，也就是从 XML 中读取配置信息。并将其转换成 IoC 容器内部的数据结构 ：BeanDefinition 。</p>
 <p><img src="/images/pasted-21.png" alt="Bean的转换"></p>
 <h2 id="2-5-ApplicationContext-体系"><a href="#2-5-ApplicationContext-体系" class="headerlink" title="2.5 ApplicationContext 体系"></a>2.5 ApplicationContext 体系</h2><p><code>org.springframework.context.ApplicationContext</code>，这就是大名鼎鼎的Spring容器。它叫做应用上下文，与我们应用息息相关。它继承 BeanFactory ，所以它是 BeanFactory 的扩展升级版，如果BeanFactory 是屌丝的话，那么 ApplicationContext 则是名副其实的高富帅。由于 ApplicationContext 的结构就决定了它与 BeanFactory 的不同，其主要区别有：</p>
 <ul>
@@ -600,8 +600,8 @@ public class YoungMan {
 <li>扩展 ResourceLoader，可以用来加载多种 Resource，可以灵活访问不同的资源。</li>
 <li>对 Web 应用的支持。</li>
 </ul>
-<p>我们对ApplicationContext还是相对更熟悉一些的，例如我们WEB中用到的XmlWebApplicationContext就属于这个体系，还有ClassPathXmlApplicationContext等。<br><img src="/images/pasted-22.png" alt="复杂的Spring容器"></p>
-<h2 id="2-6-小结"><a href="#2-6-小结" class="headerlink" title="2.6 小结"></a>2.6 小结</h2><p>上面的5个体系，是Spring IoC中的核心部分。其实IoC一看还是挺简单的，无外乎是将配置文件（暂时理解成XML）中的配置进行解析，然后将生成的对象放到一个Map里面，然后使用的时候直接从Map里面取就可以。但是真实的场景里面还是要面临很多的问题。</p>
+<p>我们对 ApplicationContext 还是相对更熟悉一些的，例如我们 WEB 中用到的 XmlWebApplicationContext 就属于这个体系，还有 ClassPathXmlApplicationContext 等。<br><img src="/images/pasted-22.png" alt="复杂的Spring容器"></p>
+<h2 id="2-6-小结"><a href="#2-6-小结" class="headerlink" title="2.6 小结"></a>2.6 小结</h2><p>上面的5个体系，是 Spring IoC 中的核心部分。其实 IoC 一看还是挺简单的，无外乎是将配置文件（暂时理解成XML）中的配置进行解析，然后将生成的对象放到一个 Map 里面，然后使用的时候直接从 Map 里面取就可以。但是真实的场景里面还是要面临很多的问题。</p>
 </font>
       
        
@@ -645,7 +645,7 @@ public class YoungMan {
     /*作者、标签的自动补全*/
     $(function () {
         $('.search').AutoComplete({
-            'data': ['#es','#全文检索','#Java基础','#JVM堆、栈','#内存溢出异常','#GC','#Spring','#源码分析','#Spring IOC','#Spring AOP','#Spring 基础','#spring-cloud-alibaba','#注册中心','#类加载器',],
+            'data': ['#es','#全文检索','#Java基础','#JVM堆、栈','#内存溢出异常','#GC','#Spring IOC','#Spring AOP','#Spring 基础','#spring-cloud-alibaba','#注册中心','#Spring','#源码分析','#类加载器',],
             'itemHeight': 20,
             'width': 418
         }).AutoComplete('show');
