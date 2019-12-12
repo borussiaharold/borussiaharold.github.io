@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Elasticsearch-deep paging、mapping介绍 | Hello World</title>
-  <meta name="keywords" content=" es , 全文检索 ">
-  <meta name="description" content="Elasticsearch-deep paging、mapping介绍 | Hello World">
+  <title>【源码】IoC之注册BeanDefinitions-上 | Hello World</title>
+  <meta name="keywords" content=" Spring , 源码分析 ">
+  <meta name="description" content="【源码】IoC之注册BeanDefinitions-上 | Hello World">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="categories">
@@ -425,38 +425,40 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-Elasticsearch-deep-paging、mapping介绍" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-【源码】IoC之注册BeanDefinitions-上" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Elasticsearch-deep paging、mapping介绍</h1>
+        <h1 class="article-title">【源码】IoC之注册BeanDefinitions-上</h1>
     
     <div class="article-meta">
+        
+        <span class="top"><a href="javascript:" target="_blank" rel="noopener">置顶</a></span>
         
         
         
         <span class="book">
             
-                <a href="javascript:" target="_blank" data-rel="全文检索 noopener">全文检索</a>
+                <a href="javascript:" target="_blank" data-rel="Spring noopener">Spring</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a href="javascript:" target="_blank" rel="noopener" class="color3">es</a>
+            <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
             
-            <a href="javascript:" target="_blank" rel="noopener" class="color5">全文检索</a>
+            <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-11-30 15:54:08'>2019-11-30 15:47</time>
+        创建时间:<time class="date" title='更新时间: 2019-12-12 09:51:15'>2019-12-06 11:22</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:588</span>
+        <span>字数:1.2k</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -475,7 +477,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#deep-paging"><span class="toc-text">deep paging</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#deep-paging引发的问题"><span class="toc-text">deep paging引发的问题</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#mapping介绍"><span class="toc-text">mapping介绍</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-createBeanDefinitionDocumentReader"><span class="toc-text">1 createBeanDefinitionDocumentReader</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-registerBeanDefinitions"><span class="toc-text">2 registerBeanDefinitions</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-DefaultBeanDefinitionDocumentReader"><span class="toc-text">2.1 DefaultBeanDefinitionDocumentReader</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-1-parseBeanDefinitions"><span class="toc-text">2.1.1 parseBeanDefinitions</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-createReaderContext"><span class="toc-text">3 createReaderContext</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#小结"><span class="toc-text">小结</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -490,23 +492,197 @@
 </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="deep-paging"><a href="#deep-paging" class="headerlink" title="deep paging"></a>deep paging</h1><blockquote>
-<p>深度分页是es分页的一个特点，它耗费了大量的性能。</p>
-</blockquote>
-<p>&emsp; es的分页语法使用from和size关键字和mysql limit使用一样，下标从0开始。</p>
-<pre><code>    GET /index/type/_search?from=0&amp;size=10
-    GET /index/type/_search?from=10&amp;size=10</code></pre><p>&emsp; 深度分页搜索，当在大量数据中使用分页，就会发生这种问题。<br>&emsp; 假如我们分页查询第100页，每页10条，一共有6000条数据，也就是取出1001-1010条数据。这些数据保存在三个shard中，每个shard保存2000条。请求到达协调节点，协调节点向三个shard转发。这时每个shard都会从自己的2000条数据中，取出0-1010条数据返回给协调节点。<br>&emsp; 协调节点收到3030条数据后，进行排序，从排序后的数据中在取出1001-1010条数据返回给客户端。<br>&emsp; 之所以不是在shard内部排序好，然后返回30条数据，再由协调节点对30条数据进行整理。就是因为document中的_score导致，每个shard中数据的_score是不一样的，如果在内部排序那么最后的数据一定是不准确的。</p>
-<h2 id="deep-paging引发的问题"><a href="#deep-paging引发的问题" class="headerlink" title="deep paging引发的问题"></a>deep paging引发的问题</h2><ul>
-<li>耗费带宽：每次深度分页查询，都要返回大量的无用数据占用带宽。</li>
-<li>耗费内存：这些无用数据也占用了大量的内存，</li>
-<li>耗费CPU：协调节点每次都需要对这些数据进行排序，然后在返回。</li>
-</ul>
-<h1 id="mapping介绍"><a href="#mapping介绍" class="headerlink" title="mapping介绍"></a>mapping介绍</h1><p>&emsp; mapping就是index的type的元数据，每个type都有一个自己的mapping，决定了数据类型、建立倒排索引的行为、还有可以进行搜索的行为。<br>&emsp; 当我们向es插入数据时，es会自动建立索引，同时建立type以及对应的mapping，mapping中定义了每一个field的数据类型。<br>&emsp; 不同的类型，比如text和date，可能有的是exact value，有的是full text类型。</p>
-<ul>
-<li>exact value在建立倒排索引的分词时，会将整个一个关键词建立在倒排索引中，处理搜索时，也要求关键词完全匹配才可以。</li>
-<li>full text在建立倒排索引时会经过一系列的处理流程，例如大小写转换，同义词转换等等。处理搜索时</li>
-</ul>
+        <font size=3>
 
+<br/>
+
+<p>在获取 XML Document 对象后，会根据该对象和 Resource 资源对象调用<code>XmlBeanDefinitionReader#registerBeanDefinitions(Document doc, Resource resource)</code>方法，开始注册 BeanDefinitions。代码如下：</p>
+<pre><code>// AbstractBeanDefinitionReader.java
+private final BeanDefinitionRegistry registry;
+
+// XmlBeanDefinitionReader.java
+public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
+    // 【1】 创建 BeanDefinitionDocumentReader 对象
+    BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
+    // 【2】 获取已注册的 BeanDefinition 数量
+    int countBefore = getRegistry().getBeanDefinitionCount();
+    // 【3】 创建 XmlReaderContext 对象
+    // 【4】 注册 BeanDefinition
+    documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
+    // 【5】 计算新注册的 BeanDefinition 数量
+    return getRegistry().getBeanDefinitionCount() - countBefore;
+}</code></pre><font size=2>
+
+<ul>
+<li>【1】，调用<code>#createBeanDefinitionDocumentReader()</code>方法，实例化 BeanDefinitionDocumentReader 对象。</li>
+<li>【2】，调用<code>BeanDefinitionRegistry#getBeanDefinitionCount()</code>方法，获取<strong>已注册</strong>的 BeanDefinition 数量。</li>
+<li>【3】，调用<code>#createReaderContext(Resource resource)</code>方法，创建 XmlReaderContext 对象。</li>
+<li>【4】，调用<code>BeanDefinitionDocumentReader#registerBeanDefinitions(Document doc, XmlReaderContext readerContext)</code>方法，读取 XML 元素，注册 BeanDefinitions。</li>
+<li>【5】，计算新注册的 BeanDefinition 数量。</li>
+</ul>
+</font>
+
+<h1 id="1-createBeanDefinitionDocumentReader"><a href="#1-createBeanDefinitionDocumentReader" class="headerlink" title="1 createBeanDefinitionDocumentReader"></a>1 createBeanDefinitionDocumentReader</h1><p><code>#createBeanDefinitionDocumentReader()</code>，实例化 BeanDefinitionDocumentReader 对象。代码如下：</p>
+<pre><code>/**
+ * documentReader 的类
+ *
+ * @see #createBeanDefinitionDocumentReader() 
+ */
+private Class&lt;? extends BeanDefinitionDocumentReader&gt; documentReaderClass = DefaultBeanDefinitionDocumentReader.class;
+
+protected BeanDefinitionDocumentReader createBeanDefinitionDocumentReader() {
+    return BeanUtils.instantiateClass(this.documentReaderClass);
+}</code></pre><ul>
+<li><code>documentReaderClass</code>的默认值为<code>DefaultBeanDefinitionDocumentReader.class</code>，关于它我们后续文章在详细说明。</li>
+</ul>
+<h1 id="2-registerBeanDefinitions"><a href="#2-registerBeanDefinitions" class="headerlink" title="2 registerBeanDefinitions"></a>2 registerBeanDefinitions</h1><p><code>BeanDefinitionDocumentReader#registerBeanDefinitions(Document doc, XmlReaderContext readerContext)</code>方法，注册 BeanDefinition，在接口 BeanDefinitionDocumentReader 中定义。代码如下：</p>
+<pre><code>public interface BeanDefinitionDocumentReader {
+
+    void registerBeanDefinitions(Document doc, XmlReaderContext readerContext)
+            throws BeanDefinitionStoreException;
+
+}</code></pre><p><strong>从给定的 Document 对象中解析定义的 BeanDefinition 并将它们注册到注册表中</strong></p>
+<ul>
+<li><code>doc</code>方法参数：带解析的 Document 对象。</li>
+<li><code>readerContext</code>方法，解析器的当前上下文，包括目标注册表和被解析的资源，它是根据 Resource 来创建的。（详见本篇 <strong>3 createReaderContext</strong>）</li>
+</ul>
+<h2 id="2-1-DefaultBeanDefinitionDocumentReader"><a href="#2-1-DefaultBeanDefinitionDocumentReader" class="headerlink" title="2.1 DefaultBeanDefinitionDocumentReader"></a>2.1 DefaultBeanDefinitionDocumentReader</h2><p><code>BeanDefinitionDocumentReader</code>有且只有一个默认实现类 <code>DefaultBeanDefinitionDocumentReader</code>，它对<code>#registerBeanDefinitions()</code>方法的实现代码如下：</p>
+<pre><code>@Nullable
+private XmlReaderContext readerContext;
+
+@Nullable
+private BeanDefinitionParserDelegate delegate;
+
+@Override
+public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext) {
+    this.readerContext = readerContext;
+    // 获得 XML Document Root Element
+    // 执行注册 BeanDefinition
+    doRegisterBeanDefinitions(doc.getDocumentElement());
+}
+
+/**
+ * Register each bean definition within the given root {@code &lt;beans/&gt;} element.
+ */
+@SuppressWarnings(&quot;deprecation&quot;)  // for Environment.acceptsProfiles(String...)
+protected void doRegisterBeanDefinitions(Element root) {
+
+    // 记录老的 BeanDefinitionParserDelegate 对象
+    BeanDefinitionParserDelegate parent = this.delegate;
+    // 【1】 创建 BeanDefinitionParserDelegate 对象，并进行设置到 delegate
+    this.delegate = createDelegate(getReaderContext(), root, parent);
+    // 【2】 检查 &lt;beans /&gt; 根标签的命名空间是否为空，或者是 http://www.springframework.org/schema/beans
+    if (this.delegate.isDefaultNamespace(root)) {
+        // 【2.1】 处理 profile 属性。可参见《Spring3自定义环境配置 &lt;beans profile=&quot;&quot;&gt;》http://nassir.iteye.com/blog/1535799
+        String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
+        if (StringUtils.hasText(profileSpec)) {
+            // 【2.2】 使用分隔符切分，可能有多个 profile 。
+            String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
+                    profileSpec, BeanDefinitionParserDelegate.MULTI_VALUE_ATTRIBUTE_DELIMITERS);
+            // 【2.3】 如果所有 profile 都无效，则不进行注册
+            // We cannot use Profiles.of(...) since profile expressions are not supported
+            // in XML config. See SPR-12458 for details.
+            if (!getReaderContext().getEnvironment().acceptsProfiles(specifiedProfiles)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug(&quot;Skipped XML bean definition file due to specified profiles [&quot; + profileSpec +
+                            &quot;] not matching: &quot; + getReaderContext().getResource());
+                }
+                return;
+            }
+        }
+    }
+
+    // 【3】 解析前处理
+    preProcessXml(root);
+    // 【4】 解析
+    parseBeanDefinitions(root, this.delegate);
+    // 【5】 解析后处理
+    postProcessXml(root);
+
+    // 设置 delegate 回老的 BeanDefinitionParserDelegate 对象
+    this.delegate = parent;
+}</code></pre><font size=2>
+
+<ul>
+<li><p>【1】，创建 BeanDefinitionParserDelegate 对象，并进行设置<code>delegate</code>，BeanDefinitionParserDelegate 是一个重要的类，它负责<strong>解析</strong> BeanDefinition。代码如下：</p>
+<pre><code>protected BeanDefinitionParserDelegate createDelegate(
+      XmlReaderContext readerContext, Element root, @Nullable BeanDefinitionParserDelegate parentDelegate) {
+  // 创建 BeanDefinitionParserDelegate 对象
+  BeanDefinitionParserDelegate delegate = new BeanDefinitionParserDelegate(readerContext);
+  // 初始化默认
+  delegate.initDefaults(root, parentDelegate);
+  return delegate;
+}</code></pre></li>
+<li><p>【2】，检查<code>&lt;beans /&gt;</code>跟标签的命名空间是否为空。</p>
+<ul>
+<li>【2.1】，判断是否<code>&lt;beans /&gt;</code>上配置了<code>profile</code>属性。</li>
+<li>【2.2】，使用分隔符切分，可能有多个 profile。</li>
+<li>【2.3】，判断如果所有 profile 都无效，则<code>return</code>不进行注册。</li>
+</ul>
+</li>
+<li><p>【4】，调用<code>#parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate)</code>方法，进行逻辑解析（<strong>详见 2.1.1 parseBeanDefinition</strong>）</p>
+</li>
+<li><p>【3】、【5】，解析的前后处理，目前这两个方法都是空实现，交由子类实现。代码如下：</p>
+</li>
+</ul>
+<pre><code>protected void preProcessXml(Element root) {}
+
+protected void postProcessXml(Element root) {}
+</code></pre></font>
+
+
+
+<h3 id="2-1-1-parseBeanDefinitions"><a href="#2-1-1-parseBeanDefinitions" class="headerlink" title="2.1.1 parseBeanDefinitions"></a>2.1.1 parseBeanDefinitions</h3><p><code>#parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate)</code>方法，进行解析逻辑。代码如下：</p>
+<pre><code>protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
+    // 【1】 如果根节点使用默认命名空间，执行默认解析
+    if (delegate.isDefaultNamespace(root)) {
+        // 遍历子节点
+        NodeList nl = root.getChildNodes();
+        for (int i = 0; i &lt; nl.getLength(); i++) {
+            Node node = nl.item(i);
+            if (node instanceof Element) {
+                Element ele = (Element) node;
+                // &lt;1&gt; 如果该节点使用默认命名空间，执行默认解析
+                if (delegate.isDefaultNamespace(ele)) {
+                    parseDefaultElement(ele, delegate);
+                // 如果该节点非默认命名空间，执行自定义解析
+                } else {
+                    delegate.parseCustomElement(ele);
+                }
+            }
+        }
+    // 【2】 如果根节点非默认命名空间，执行自定义解析
+    } else {
+        delegate.parseCustomElement(root);
+    }
+}</code></pre><ul>
+<li>Spring 有<strong>两种</strong> Bean声明方法：<ul>
+<li>配置文件式：<code>&lt;bean id=&quot;studentService&quot; class=&quot;org.springframework.core.StudentService&quot; /&gt;</code>对应【1】。</li>
+<li>自定义注解方法：<code>&lt;tx:annotation-driven&gt;</code>对应【2】。</li>
+</ul>
+</li>
+</ul>
+<h1 id="3-createReaderContext"><a href="#3-createReaderContext" class="headerlink" title="3 createReaderContext"></a>3 createReaderContext</h1><p><code>#createReaderContext(Resource resource)</code>方法，创建 XmlReaderContext对象，代码如下：</p>
+<pre><code>private ProblemReporter problemReporter = new FailFastProblemReporter();
+
+private ReaderEventListener eventListener = new EmptyReaderEventListener();
+
+private SourceExtractor sourceExtractor = new NullSourceExtractor();
+
+@Nullable
+private NamespaceHandlerResolver namespaceHandlerResolver;
+
+/**
+ * Create the {@link XmlReaderContext} to pass over to the document reader.
+ */
+public XmlReaderContext createReaderContext(Resource resource) {
+    return new XmlReaderContext(resource, this.problemReporter, this.eventListener,
+            this.sourceExtractor, this, getNamespaceHandlerResolver());
+}</code></pre><p>关于 XmlReaderContext详细，见后续。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>至此，<code>XmlBeanDefinitionReader#doLoadBeanDefinitions(InputSource inputSource, Resource resource)</code>方法中，做的三件事情已经全完分析完毕。<br>另外<code>XmlBeanDefinitionReader#doLoadBeanDefinitions(InputSource inputSource, Resource resource)</code>方法，整体时序图如下：</p>
+<p><img src="/images/pasted-26.png" alt="时序图"></p>
+<p><em>红色部分，就是 BeanDefinition 的解析过程</em></p>
+</font>
       
        
     </div>
