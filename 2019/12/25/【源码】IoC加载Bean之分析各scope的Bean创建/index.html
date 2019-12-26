@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Elasticsearch-路由算法、请求原理 | Hello World</title>
-  <meta name="keywords" content=" es , 全文检索 ">
-  <meta name="description" content="Elasticsearch-路由算法、请求原理 | Hello World">
+  <title>【源码】IoC加载Bean之分析各scope的Bean创建 | Hello World</title>
+  <meta name="keywords" content=" Spring , 源码分析 ">
+  <meta name="description" content="【源码】IoC加载Bean之分析各scope的Bean创建 | Hello World">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="categories">
@@ -457,38 +457,40 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-Elasticsearch-路由算法、请求原理" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-【源码】IoC加载Bean之分析各scope的Bean创建" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Elasticsearch-路由算法、请求原理</h1>
+        <h1 class="article-title">【源码】IoC加载Bean之分析各scope的Bean创建</h1>
     
     <div class="article-meta">
+        
+        <span class="top"><a href="javascript:" target="_blank" rel="noopener">置顶</a></span>
         
         
         
         <span class="book">
             
-                <a href="javascript:" target="_blank" data-rel="全文检索 noopener">全文检索</a>
+                <a href="javascript:" target="_blank" data-rel="Spring noopener">Spring</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a href="javascript:" target="_blank" rel="noopener" class="color3">es</a>
+            <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
             
-            <a href="javascript:" target="_blank" rel="noopener" class="color5">全文检索</a>
+            <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-11-30 15:36:46'>2019-11-30 15:15</time>
+        创建时间:<time class="date" title='更新时间: 2019-12-26 11:02:13'>2019-12-25 15:46</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:383</span>
+        <span>字数:1.9k</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -507,7 +509,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#路由算法"><span class="toc-text">路由算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#算法原理"><span class="toc-text">算法原理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#请求原理"><span class="toc-text">请求原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#写原理"><span class="toc-text">写原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#读原理"><span class="toc-text">读原理</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-singleton"><span class="toc-text">1 singleton</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-addSingleton"><span class="toc-text">1.1 addSingleton</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-原型模式"><span class="toc-text">2 原型模式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-beforePrototypeCreation】"><span class="toc-text">2.1 beforePrototypeCreation】</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-afterSingletonCreation"><span class="toc-text">2.2 afterSingletonCreation</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-其他作用域"><span class="toc-text">3 其他作用域</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-总结"><span class="toc-text">4 总结</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -522,18 +524,283 @@
 </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="路由算法"><a href="#路由算法" class="headerlink" title="路由算法"></a>路由算法</h1><blockquote>
-<p>一个index的数据会分为多片，每片在一个shard上。所以说一个document只能存在一个shard中，当创建document的时候，es就需要决定这个document要保存到哪个shard上，这个过程就是document routing，数据路由。</p>
-</blockquote>
-<h2 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h2><blockquote>
-<p>shard = hash（routing number） % number_of_primary_shards。</p>
-</blockquote>
-<p>&emsp; 这就是es计算一个document保存在哪个shard使用的算法。需要注意的是，这里面的routing_number默认是id，可以手动设置。同样的routing_number经过hash函数后的值是相同的。无论hash后的数值是多少，与primaryShards取余后，一定小于等于它。<br>&emsp; 这也就解释了为什么我们可以通过参数修改replica shard但是不能修改primary shard，因为它参与了routing算法。</p>
-<h1 id="请求原理"><a href="#请求原理" class="headerlink" title="请求原理"></a>请求原理</h1><h2 id="写原理"><a href="#写原理" class="headerlink" title="写原理"></a>写原理</h2><p><img src="/images/pasted-12.png" alt="图解"></p>
-<p>&emsp; 当一个请求决定创建document时，可以任意选一个primary shard进行请求。接受到请求的primary shard就升级成为<strong>协调节点</strong>，通过上面将的routing算法得出一个需要保存的shard地址，然后将这个请求路由到算法的节点上，primary shard创建完成后，同步到自己的replica shard。都处理完成后，通知协调节点自己已经工作完成了，然后由协调节点响应client端。</p>
-<h2 id="读原理"><a href="#读原理" class="headerlink" title="读原理"></a>读原理</h2><p><img src="/images/pasted-13.png" alt="图解"></p>
-<p>&emsp; es在处理一个请求时，会将请求打到所有的shard上面，因为每个shard都包含了部分数据，但是如果primary shard存在replica shard，那么请求也可以打到replica shard上。</p>
+        <font size=3>
 
+</br>
+
+
+<p>在 Spring 中存在着不同的 scope，默认是 singleton，还有 property、request 等其他的 scope。他们的初始化步骤各不相同。</p>
+<h1 id="1-singleton"><a href="#1-singleton" class="headerlink" title="1 singleton"></a>1 singleton</h1><p>Spring 的 scope 默认为 singleton，其初始化代码如下：</p>
+<pre><code>// AbstractBeanFactory.java
+
+if (mbd.isSingleton()) { // 单例模式
+    sharedInstance = getSingleton(beanName, () -&gt; {
+        try {
+            return createBean(beanName, mbd, args);
+        }
+        catch (BeansException ex) {
+            // 显式从单例缓存中删除 Bean 实例
+            // 因为单例模式下为了解决循环依赖，可能他已经存在了，所以销毁它。 TODO 芋艿
+            destroySingleton(beanName);
+            throw ex;
+        }
+    });
+    // &lt;x&gt;
+    bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
+}
+</code></pre><p>在上文中已经分析了从缓存中获取单例默认的 Bean。但如果<strong>缓存中不存在呢</strong>？则需要从头开始加载 Bean，这个过程由<code>#getSingleton(...)</code>方法实现。代码如下：</p>
+<pre><code>// DefaultSingletonBeanRegistry.java
+
+public Object getSingleton(String beanName, ObjectFactory&lt;?&gt; singletonFactory) {
+    Assert.notNull(beanName, &quot;Bean name must not be null&quot;);
+    // 全局加锁
+    synchronized (this.singletonObjects) {
+        // 【1】 从缓存中检查一遍
+        // 因为 singleton 模式其实就是复用已经创建的 bean 所以这步骤必须检查
+        Object singletonObject = this.singletonObjects.get(beanName);
+        //  为空，开始加载过程
+        if (singletonObject == null) {
+            if (this.singletonsCurrentlyInDestruction) {
+                throw new BeanCreationNotAllowedException(beanName,
+                        &quot;Singleton bean creation not allowed while singletons of this factory are in destruction &quot; +
+                        &quot;(Do not request a bean from a BeanFactory in a destroy method implementation!)&quot;);
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug(&quot;Creating shared instance of singleton bean &#39;&quot; + beanName + &quot;&#39;&quot;);
+            }
+            // 【2】 加载前置处理
+            beforeSingletonCreation(beanName);
+            boolean newSingleton = false;
+            boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
+            if (recordSuppressedExceptions) {
+                this.suppressedExceptions = new LinkedHashSet&lt;&gt;();
+            }
+            try {
+                // 【3】 初始化 bean
+                // 这个过程其实是调用 createBean() 方法
+                singletonObject = singletonFactory.getObject();
+                newSingleton = true;
+            } catch (IllegalStateException ex) {
+                singletonObject = this.singletonObjects.get(beanName);
+                if (singletonObject == null) {
+                    throw ex;
+                }
+            } catch (BeanCreationException ex) {
+                if (recordSuppressedExceptions) {
+                    for (Exception suppressedException : this.suppressedExceptions) {
+                        ex.addRelatedCause(suppressedException);
+                    }
+                }
+                throw ex;
+            } finally {
+                if (recordSuppressedExceptions) {
+                    this.suppressedExceptions = null;
+                }
+                // 【4】 后置处理
+                afterSingletonCreation(beanName);
+            }
+            // 【5】 加入缓存中
+            if (newSingleton) {
+                addSingleton(beanName, singletonObject);
+            }
+        }
+        return singletonObject;
+    }</code></pre><p>其实这个过程并没有创建 Bean 对象，仅仅做了一部分的准备和预处理步骤。真正获取单例 Bean 的方法，由【3】处的<code>singletonFactory.getObject()</code>方法实现，而<code>singletonFactory</code>参数由回调方法产生。</p>
+<font size=2>
+
+<ul>
+<li>【1】处，再次检查缓存中是否已经加载过，如果已经加载了则直接返回，否则开始加载过程。</li>
+<li>【2】处，调用<code>#beforeSingletonCreation(...)</code>方法，记录加载单例 Bean 之前的加载状态，即前置处理。</li>
+<li>【3】处，调用参数传递的 ObjectFactory 的<code>#getObject()</code>方法实例化。<strong>极其重要，后续详讲</strong></li>
+<li>【4】处，调用<code>#afterSingletonCreation(...)</code>方法，进行加载单例后的后置处理。</li>
+<li>【5】处，调用<code>#addSingleton(...)</code>方法，将结果记录到缓存中，同时删除加载 Bean 过程中所记录的一切服务状态。详见【1.1 addSingleton】</li>
+</ul>
+</font>
+
+<h2 id="1-1-addSingleton"><a href="#1-1-addSingleton" class="headerlink" title="1.1 addSingleton"></a>1.1 addSingleton</h2><pre><code>// DefaultSingletonBeanRegistry.java
+
+/**
+ * 存放的是单例 bean 的映射。
+ *
+ * 对应关系为 bean name --&gt; bean instance
+ */
+private final Map&lt;String, Object&gt; singletonObjects = new ConcurrentHashMap&lt;&gt;(256);
+
+/**
+ * 存放的是【早期】的单例 bean 的映射。
+ *
+ * 对应关系也是 bean name --&gt; bean instance。
+ *
+ * 它与 {@link #singletonObjects} 的区别区别在，于 earlySingletonObjects 中存放的 bean 不一定是完整的。
+ *
+ * 从 {@link #getSingleton(String)} 方法中，中我们可以了解，bean 在创建过程中就已经加入到 earlySingletonObjects 中了，
+ * 所以当在 bean 的创建过程中就可以通过 getBean() 方法获取。
+ * 这个 Map 也是解决【循环依赖】的关键所在。
+ **/
+private final Map&lt;String, ObjectFactory&lt;?&gt;&gt; singletonFactories = new HashMap&lt;&gt;(16);
+
+/**
+ * 存放的是 ObjectFactory 的映射，可以理解为创建单例 bean 的 factory 。
+ *
+ * 对应关系是 bean name --&gt; ObjectFactory
+ */
+private final Map&lt;String, Object&gt; earlySingletonObjects = new HashMap&lt;&gt;(16);
+
+/** Set of registered singletons, containing the bean names in registration order. */
+private final Set&lt;String&gt; registeredSingletons = new LinkedHashSet&lt;&gt;(256);
+
+protected void addSingleton(String beanName, Object singletonObject) {
+    synchronized (this.singletonObjects) {
+        this.singletonObjects.put(beanName, singletonObject);
+        this.singletonFactories.remove(beanName);
+        this.earlySingletonObjects.remove(beanName);
+        this.registeredSingletons.add(beanName);
+    }
+}</code></pre><font size=2>
+
+<p>一个 put、一个 add、两个 remove 操作。</p>
+<ul>
+<li>【put】<code>singletonObjects</code>属性，单例 Bean 的缓存。</li>
+<li>【remove】<code>singletonFactories</code>属性，单例 BeanFactory 的缓存。</li>
+<li>【remove】<code>earlySingletonObjects</code>属性，早期创建的单例 Bean 的缓存。</li>
+<li>【add】<code>registeredSingletons</code>属性，已经注册的单例缓存。</li>
+</ul>
+</font>
+
+<h1 id="2-原型模式"><a href="#2-原型模式" class="headerlink" title="2 原型模式"></a>2 原型模式</h1><pre><code>// AbstractBeanFactory.java
+
+else if (mbd.isPrototype()) {
+    Object prototypeInstance = null;
+    try {
+       // 【1】 加载前置处理
+        beforePrototypeCreation(beanName);
+        // 【2】 创建 Bean 对象
+        prototypeInstance = createBean(beanName, mbd, args);
+    } finally {
+       // 【3】 加载后置处理
+        afterPrototypeCreation(beanName);
+    }
+    // 【4】 从 Bean 实例中获取对象
+    bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
+}</code></pre><p>原型模式的初始化比较简单，直接创建一个新的 Bean 实例就可以，过程如下：</p>
+<font size=2>
+
+<ul>
+<li>【1】处，调用<code>#beforePrototypeCreation(...)</code>方法，记录加载原型模式之前的加载状态，即前置处理。详见【2.1 beforePrototypeCreation】</li>
+<li>【2】处，调用<code>#createBean(...)</code>方法，创建一个 Bean 实例对象。<strong>超级重要！后续详讲</strong></li>
+<li>【3】处，调用<code>#afterPrototypeCreation(...)</code>方法，进行加载原型模式之后的加载状态，即后置处理。详见【2.3 afterPrototypeCreation】</li>
+<li>【4】处，加载了单例 Bean 后，调用<code>#getObjectForBeanInstance(...)</code>方法，从 Bean 实例中获取对象。该方法已经在【【源码】IoC加载Bean之从单例缓存中获取单例 Bean】详细说明。</font>
+
+
+</li>
+</ul>
+<h2 id="2-1-beforePrototypeCreation】"><a href="#2-1-beforePrototypeCreation】" class="headerlink" title="2.1 beforePrototypeCreation】"></a>2.1 beforePrototypeCreation】</h2><pre><code>
+// AbstractBeanFactory.java
+
+private final ThreadLocal&lt;Object&gt; prototypesCurrentlyInCreation =
+        new NamedThreadLocal&lt;&gt;(&quot;Prototype beans currently in creation&quot;);
+
+protected void beforePrototypeCreation(String beanName) {
+    Object curVal = this.prototypesCurrentlyInCreation.get();
+    if (curVal == null) { // String
+        this.prototypesCurrentlyInCreation.set(beanName);
+    } else if (curVal instanceof String) { // String =&gt; Set
+        Set&lt;String&gt; beanNameSet = new HashSet&lt;&gt;(2);
+        beanNameSet.add((String) curVal);
+        beanNameSet.add(beanName);
+        this.prototypesCurrentlyInCreation.set(beanNameSet);
+    } else { // Set
+        Set&lt;String&gt; beanNameSet = (Set&lt;String&gt;) curVal;
+        beanNameSet.add(beanName);
+    }
+}
+</code></pre><h2 id="2-2-afterSingletonCreation"><a href="#2-2-afterSingletonCreation" class="headerlink" title="2.2 afterSingletonCreation"></a>2.2 afterSingletonCreation</h2><pre><code>// AbstractBeanFactory.java
+
+protected void afterPrototypeCreation(String beanName) {
+    Object curVal = this.prototypesCurrentlyInCreation.get();
+    if (curVal instanceof String) { // String =&gt; null
+        this.prototypesCurrentlyInCreation.remove();
+    } else if (curVal instanceof Set) { // Set
+        Set&lt;String&gt; beanNameSet = (Set&lt;String&gt;) curVal;
+        beanNameSet.remove(beanName);
+        if (beanNameSet.isEmpty()) { // Set =&gt; null
+            this.prototypesCurrentlyInCreation.remove();
+        }
+    }
+}</code></pre><h1 id="3-其他作用域"><a href="#3-其他作用域" class="headerlink" title="3 其他作用域"></a>3 其他作用域</h1><pre><code>// AbstractBeanFactory.java
+
+else {
+    // 获得 scopeName 对应的 Scope 对象
+    String scopeName = mbd.getScope();
+    final Scope scope = this.scopes.get(scopeName);
+    if (scope == null) {
+        throw new IllegalStateException(&quot;No Scope registered for scope name &#39;&quot; + scopeName + &quot;&#39;&quot;);
+    }
+    try {
+        // 从指定的 scope 下创建 bean
+        Object scopedInstance = scope.get(beanName, () -&gt; {
+            // 加载前置处理
+            beforePrototypeCreation(beanName);
+            try {
+                // 创建 Bean 对象
+                return createBean(beanName, mbd, args);
+            } finally {
+                // 加载后缀处理
+                afterPrototypeCreation(beanName);
+            }
+        });
+        // 从 Bean 实例中获取对象
+        bean = getObjectForBeanInstance(scopedInstance, name, beanName, mbd);
+    } catch (IllegalStateException ex) {
+        throw new BeanCreationException(beanName,
+                &quot;Scope &#39;&quot; + scopeName + &quot;&#39; is not active for the current thread; consider &quot; +
+                &quot;defining a scoped proxy for this bean if you intend to refer to it from a singleton&quot;,
+                ex);
+    }
+}
+</code></pre><p><strong>核心路程和原型模式一样</strong>，只不过获取 Bean 的实例由<code>Scope#get(...)</code>方法来实现。代码如下：</p>
+<pre><code>// SimpleThreadScope.java
+
+private final ThreadLocal&lt;Map&lt;String, Object&gt;&gt; threadScope =
+    new NamedThreadLocal&lt;Map&lt;String, Object&gt;&gt;(&quot;SimpleThreadScope&quot;) {
+        @Override
+        protected Map&lt;String, Object&gt; initialValue() {
+            return new HashMap&lt;&gt;();
+        }
+    };
+
+@Override
+public Object get(String name, ObjectFactory&lt;?&gt; objectFactory) {
+    // 获取 scope 缓存
+    Map&lt;String, Object&gt; scope = this.threadScope.get();
+    Object scopedObject = scope.get(name);
+    if (scopedObject == null) {
+        scopedObject = objectFactory.getObject();
+        // 加入缓存
+        scope.put(name, scopedObject);
+    }
+    return scopedObject;
+}</code></pre><p><code>org.springframework.beans.factory.config.Scope</code>接口，有多种不同的实现，对应不同的 scope。</p>
+<h1 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h1><p>对于上面三个模块，其中最重要的<strong>有两个方法</strong>：</p>
+<font size=2>
+
+<ul>
+<li>一个是<code>#createBean(...)</code>方法。<ul>
+<li>后续详细说明。</li>
+</ul>
+</li>
+<li>一个是<code>#getObjectForBeanInstance()</code>方法。<ul>
+<li>在前面的【【源码】IoC加载Bean之从单例缓存中获取单例 Bean】已经详细说明。</li>
+</ul>
+</li>
+</ul>
+<p>这两个方法，在上面三个模块中<strong>都有调用</strong>。</p>
+</font>
+
+<blockquote>
+<p>getObjectForBeanInstance 方法主要是验证我们得到的 Bean 的正确性。其实就是检测当前的 Bean 是否是 FactoryBean 的类型。<br>如果是，name需要调用该 Bean 对应的 FactoryBean 实例的<code>#getObject()</code>方法，作为返回值。<br>无论是从缓存中获取的 Bean 还是通过不同的 scope 策略加载的 Bean 都只是最原始的 Bean 状态，并不一定是我们需要的 Bean。<br>举个例子，加入我们需要工厂 Bean 进行处理。那么这里得到的其实是工厂 Bean 的初始状态，但是我们真正需要的是工厂 Bean 定义的<code>factiry-method</code>方法返回的 Bean，而<code>getObjectForBeanInstance</code>方法，就是完成这个工作的。</p>
+</blockquote>
+</font>
       
        
     </div>
