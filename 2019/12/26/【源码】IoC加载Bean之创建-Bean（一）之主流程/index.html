@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Elasticsearch-TF&amp;IDF算法、Scroll搜索 | Hello World</title>
-  <meta name="keywords" content=" es , 全文检索 ">
-  <meta name="description" content="Elasticsearch-TF&amp;IDF算法、Scroll搜索 | Hello World">
+  <title>【源码】IoC加载Bean之创建 Bean（一）之主流程 | Hello World</title>
+  <meta name="keywords" content=" Spring , 源码分析 ">
+  <meta name="description" content="【源码】IoC加载Bean之创建 Bean（一）之主流程 | Hello World">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="categories">
@@ -481,38 +481,40 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-Elasticsearch-TF-IDF算法、Scroll搜索" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-【源码】IoC加载Bean之创建-Bean（一）之主流程" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Elasticsearch-TF&amp;IDF算法、Scroll搜索</h1>
+        <h1 class="article-title">【源码】IoC加载Bean之创建 Bean（一）之主流程</h1>
     
     <div class="article-meta">
+        
+        <span class="top"><a href="javascript:" target="_blank" rel="noopener">置顶</a></span>
         
         
         
         <span class="book">
             
-                <a href="javascript:" target="_blank" data-rel="全文检索 noopener">全文检索</a>
+                <a href="javascript:" target="_blank" data-rel="Spring noopener">Spring</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a href="javascript:" target="_blank" rel="noopener" class="color3">es</a>
+            <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
             
-            <a href="javascript:" target="_blank" rel="noopener" class="color5">全文检索</a>
+            <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-11-30 16:01:32'>2019-11-30 15:55</time>
+        创建时间:<time class="date" title='更新时间: 2019-12-26 14:20:15'>2019-12-26 11:04</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:694</span>
+        <span>字数:2.2k</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -531,7 +533,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#TF-amp-IDF"><span class="toc-text">TF&amp;IDF</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Scroll大数据搜索"><span class="toc-text">Scroll大数据搜索</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-createBean-抽象方法"><span class="toc-text">1 createBean 抽象方法</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-createBean-默认实现"><span class="toc-text">2 createBean 默认实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-解析指定-BeanDefinition-的-class"><span class="toc-text">2.1 解析指定 BeanDefinition 的 class</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-处理-override-属性"><span class="toc-text">2.2 处理 override 属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-实例化的前置处理"><span class="toc-text">2.3 实例化的前置处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-创建-Bean"><span class="toc-text">2.4 创建 Bean</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-小结"><span class="toc-text">3 小结</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -546,45 +548,1171 @@
 </div>
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="TF-amp-IDF"><a href="#TF-amp-IDF" class="headerlink" title="TF&amp;IDF"></a>TF&amp;IDF</h1><blockquote>
-<p>es计算分数的算法，es的分数，是es给出的最直观的搜索文本与索引中的文本匹配度的一个分数。默认es会将返回的数据按照分数进行倒叙。</p>
-</blockquote>
-<p>&emsp; es的分数算法，是使用TF&amp;IDF算法来实现，这个算法的主要分成三个部分。</p>
-<ul>
-<li>搜索文本中各个词条，在field文本中出现的次数。次数越多，分数越高。权重较高。</li>
-<li>搜索文本中各个词条，在整个索引中所有文档中的出现次数。次数越多，分数越低。</li>
-<li>field的长度越长，分数越低。field的长度越短，分数越高。权重较低。</li>
-</ul>
-<p><strong>举一个例子：</strong><br>&emsp; 假如我们有三篇文章</p>
-<ul>
-<li>Elasticsearch是一个基于Lucene的搜索服务器。它提供了一个分布式多用户能力的全问搜索引擎，基于RESTful web接口。</li>
-<li>Solr是一个高性能，采用java开发，给予Lucene的全文搜索服务器。</li>
-<li>Lucene是一个开源的全文检索引擎工具包，但它不是一个完整的全文检索引擎。</li>
-</ul>
-<p>&emsp; 这时，我们想通过一个inpute框检索系统中所有包含“Lucene”关键字的文章，es为这三篇文章，分别赋予了“Lucene”关键字的分数。然后通过?explain=true参数可以查询到一个query中的详细信息和分数的计算。</p>
-<pre><code>GET /test2/article/_search?explain=true
-{
-  &quot;query&quot;: {
-    &quot;match&quot;: {
-      &quot;content&quot;: &quot;lucene&quot;
-    }
-  }
-}</code></pre><h1 id="Scroll大数据搜索"><a href="#Scroll大数据搜索" class="headerlink" title="Scroll大数据搜索"></a>Scroll大数据搜索</h1><p>&emsp; 如果一次将大量数据查询出来，那么性能就会很差。这时我们一般采用Scroll滚动查询，也就是每次查询一部分的数据，直到所有数据查询完成。Scroll搜索会在第一次搜索时保存一个当时数据的快照来缓存，后续给予这个快照进行搜索，这个期间如果数据发生了变化，用户是看不到的。Scroll不使用相关度分数排序，而且使用_doc排序，性能较高。<br>&emsp; 每次发送Scroll查询，我们需要指定一个Scroll的时间参数，每次搜索请求只要在这个时间内完成就可以。返回的结果会包含一个scroll_id，后续的请求必须带上一个scroll_id。<br>&emsp; Scoll主要进行海量数据的搜索，与分页的使用场景不同。分页主要用来一页一页搜索给用户看，Scroll主要用一批一批检索数据，让系统处理。</p>
-<pre><code>GET /test2/article/_search?scroll=1m
-{
-  &quot;query&quot;: {
-    &quot;match_all&quot;: {}
-  },
-  &quot;sort&quot;: [&quot;_doc&quot;],
-  &quot;size&quot;: 1
-}
+        <font size=3>
 
-//第二次查询使用返回的id
-GET /_search/scroll
-{
-  &quot;scroll&quot;:&quot;1m&quot;,
-  &quot;scroll_id&quot;:&quot;返回的scrollId&quot;
-}</code></pre>
+<br/>
+
+
+<blockquote>
+<p>在上篇中我们注意到一个重要的方法<code>#createBean(...)</code>方法，这是一个<strong>核心方法</strong>，要特别的注意！</p>
+</blockquote>
+<h1 id="1-createBean-抽象方法"><a href="#1-createBean-抽象方法" class="headerlink" title="1 createBean 抽象方法"></a>1 createBean 抽象方法</h1><pre><code>// AbstractBeanFactory.java
+
+protected abstract Object createBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args)
+        throws BeanCreationException;</code></pre><p>该方法定义在<code>AbstractBeanFactory</code>抽象类中，含义是根据给定的<code>BeanDefinition</code>和<code>args</code>实例出一个 Bean 对象。<br>如果该 BeanDefinition 存在父类，则该 BeanDefinition 已经合并了父类的属性。<br>所有 Bean 实例的创建，都会委托给该方法实现。  </p>
+<font size=2>
+
+<ul>
+<li>该方法接收三个参数：</li>
+<li>beanName：bean 的名字。</li>
+<li>mbd：已经合并了父类属性的 BeanDefinition。</li>
+<li>args：用于构造函数或者工厂方法创建 Bean 实例对象的参数。</li>
+</ul>
+</font>
+
+
+<h1 id="2-createBean-默认实现"><a href="#2-createBean-默认实现" class="headerlink" title="2 createBean 默认实现"></a>2 createBean 默认实现</h1><pre><code>
+// AbstractAutowireCapableBeanFactory.java
+
+@Override
+protected Object createBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args)
+        throws BeanCreationException {
+
+    if (logger.isTraceEnabled()) {
+        logger.trace(&quot;Creating instance of bean &#39;&quot; + beanName + &quot;&#39;&quot;);
+    }
+    RootBeanDefinition mbdToUse = mbd;
+
+    // 【1】 确保此时的 bean 已经被解析了
+    // 如果获取的class 属性不为null，则克隆该 BeanDefinition
+    // 主要是因为该动态解析的 class 无法保存到到共享的 BeanDefinition
+    Class&lt;?&gt; resolvedClass = resolveBeanClass(mbd, beanName);
+    if (resolvedClass != null &amp;&amp; !mbd.hasBeanClass() &amp;&amp; mbd.getBeanClassName() != null) {
+        mbdToUse = new RootBeanDefinition(mbd);
+        mbdToUse.setBeanClass(resolvedClass);
+    }
+
+    // Prepare method overrides.
+    try {
+        // 【2】 验证和准备覆盖方法
+        mbdToUse.prepareMethodOverrides();
+    } catch (BeanDefinitionValidationException ex) {
+        throw new BeanDefinitionStoreException(mbdToUse.getResourceDescription(),
+                beanName, &quot;Validation of method overrides failed&quot;, ex);
+    }
+
+    try {
+        // 【3】 实例化的前置处理
+        // 给 BeanPostProcessors 一个机会用来返回一个代理类而不是真正的类实例
+        // AOP 的功能就是基于这个地方
+        Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
+        if (bean != null) {
+            return bean;
+        }
+    } catch (Throwable ex) {
+        throw new BeanCreationException(mbdToUse.getResourceDescription(), beanName,
+                &quot;BeanPostProcessor before instantiation of bean failed&quot;, ex);
+    }
+
+    try {
+        // 【4】 创建 Bean 对象
+        Object beanInstance = doCreateBean(beanName, mbdToUse, args);
+        if (logger.isTraceEnabled()) {
+            logger.trace(&quot;Finished creating instance of bean &#39;&quot; + beanName + &quot;&#39;&quot;);
+        }
+        return beanInstance;
+    } catch (BeanCreationException | ImplicitlyAppearedSingletonException ex) {
+        throw ex;
+    } catch (Throwable ex) {
+        throw new BeanCreationException(
+                mbdToUse.getResourceDescription(), beanName, &quot;Unexpected exception during bean creation&quot;, ex);
+    }
+}
+</code></pre><font size=2>
+
+<ul>
+<li>【1】处，解析指定的 BeanDefinition 的 class 属性。</li>
+<li>【2】处，处理<code>override</code>属性。</li>
+<li>【3】处，实例化的前置处理器。</li>
+<li>【4】处，创建 Bean 对象。</li>
+</ul>
+</font>
+
+
+<h2 id="2-1-解析指定-BeanDefinition-的-class"><a href="#2-1-解析指定-BeanDefinition-的-class" class="headerlink" title="2.1 解析指定 BeanDefinition 的 class"></a>2.1 解析指定 BeanDefinition 的 class</h2><pre><code>// AbstractAutowireCapableBeanFactory.java
+
+Class&lt;?&gt; resolvedClass = resolveBeanClass(mbd, beanName);
+if (resolvedClass != null &amp;&amp; !mbd.hasBeanClass() &amp;&amp; mbd.getBeanClassName() != null) {
+    mbdToUse = new RootBeanDefinition(mbd);
+    mbdToUse.setBeanClass(resolvedClass);
+}</code></pre><p><code>#resolveBeanClass(...)</code>方法，主要是解析 BeanDefinition 的 class 类，并将已经解析的 Class 存储在 BeanDefinition 中供后面使用。<br>如果解析的 class 不为空，则会将该 BeanDefinition 进行设置到 <code>mbdToUse</code>中，这要做的主要目的，是因为动态解析的 class 是无法保存到共享的 BeanDefinition 中。</p>
+<h2 id="2-2-处理-override-属性"><a href="#2-2-处理-override-属性" class="headerlink" title="2.2 处理 override 属性"></a>2.2 处理 override 属性</h2><p>在 Bean 实例化过程中，如果检测到存在<code>methodOverride</code>，则会动态地为当前 Bean 生成代理并使用对应的拦截器为 Bean 做增强处理。具体如何增强后续分析，现在先看<code>mbdToUse.prepareMethodOverrides()</code>代码块做了什么。代码如下：</p>
+<pre><code>// AbstractBeanDefinition.java
+
+public void prepareMethodOverrides() throws BeanDefinitionValidationException {
+    // Check that lookup methods exists.
+    if (hasMethodOverrides()) {
+        Set&lt;MethodOverride&gt; overrides = getMethodOverrides().getOverrides();
+        synchronized (overrides) { // 同步
+            // 循环，执行 prepareMethodOverride
+            for (MethodOverride mo : overrides) {
+                prepareMethodOverride(mo);
+            }
+        }
+    }
+}</code></pre><p>如果存在<code>methodOverride</code>，则获取所有的 methodOverride，然后通过遍历的方法一次调用<code>#prepareMethodOverride()</code>方法，代码如下：</p>
+<pre><code>// AbstractBeanDefinition.java
+
+protected void prepareMethodOverride(MethodOverride mo) throws BeanDefinitionValidationException {
+    int count = ClassUtils.getMethodCountForName(getBeanClass(), mo.getMethodName());
+    if (count == 0) {
+        throw new BeanDefinitionValidationException(
+                &quot;Invalid method override: no method with name &#39;&quot; + mo.getMethodName() +
+                &quot;&#39; on class [&quot; + getBeanClassName() + &quot;]&quot;);
+    } else if (count == 1) {
+        // Mark override as not overloaded, to avoid the overhead of arg type checking.
+        mo.setOverloaded(false);
+    }
+}</code></pre><font size=2>
+
+<ul>
+<li>根据方法名称，从 class 中获取该方法名的个数。<ul>
+<li>如果为0，则抛出 BeanDefinitionValidationException 异常。</li>
+<li>如果为1，则设置该重载方法没有被重载。</li>
+</ul>
+</li>
+<li>如果一个类中存在多个重载方法，则在方法调用的时候在来决定到底重载哪个。</li>
+</ul>
+</font>
+
+<p>我们看到<code>mbdToUse.prepareMethodOverrides()</code>代码块，其实并没有做什么实例工作，仅仅是对<code>methodOverride</code>属性做了一些简单的校验。</p>
+<h2 id="2-3-实例化的前置处理"><a href="#2-3-实例化的前置处理" class="headerlink" title="2.3 实例化的前置处理"></a>2.3 实例化的前置处理</h2><p><code>#resolveBeforeInstantiation(...)</code>方法的作用，是给 BeanPostProcessors 后置处理器返回一个<strong>代理对象</strong>的机会，其实在调用该方法之前 Spring 一直都没有创建 Bean，name这里返回一个 Bean 的代理又有什么意义？这是为了在后续做<code>if</code>判断使用。代码如下：</p>
+<pre><code>// AbstractBeanDefinition.java
+
+Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
+// ↓↓↓ 
+if (bean != null) {
+    return bean;
+}</code></pre><font size=2>
+
+<ul>
+<li>如果代理对象不为空，则直接返回代理对象，<strong>这一步很重要</strong>！！Spring 后续实现 AOP 就是通过这个判断。</li>
+<li><code>#resolveBeforeInstantiation(...)</code>方法。代码如下：</li>
+</ul>
+<pre><code>// AbstractAutowireCapableBeanFactory.java
+
+@Nullable
+protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
+    Object bean = null;
+    if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
+        // Make sure bean class is actually resolved at this point.
+        if (!mbd.isSynthetic() &amp;&amp; hasInstantiationAwareBeanPostProcessors()) {
+            Class&lt;?&gt; targetType = determineTargetType(beanName, mbd);
+            if (targetType != null) {
+                // 前置
+                bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
+                if (bean != null) {
+                    // 后置
+                    bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+                }
+            }
+        }
+        mbd.beforeInstantiationResolved = (bean != null);
+    }
+    return bean;
+}</code></pre><p>这个方法的核心在于<code>#applyBeanPostProcessorsBeforeInstantiation()</code>和<code>#applyBeanPostProcessorsAfterInitialization()</code>两个方法，before 为实例化前的后置处理器，after 为实例化后的后置处理器。<br>后续这两个方法会在详细说明。</p>
+</font>
+
+
+
+
+<h2 id="2-4-创建-Bean"><a href="#2-4-创建-Bean" class="headerlink" title="2.4 创建 Bean"></a>2.4 创建 Bean</h2><p>如果没有代理对象，就只能走正常的路线进行 Bean 的创建了。该过程由<code>#doCreateBean(...)</code>方法来实现。代码如下：</p>
+<pre><code>// AbstractAutowireCapableBeanFactory.java
+
+protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args)
+        throws BeanCreationException {
+
+    // BeanWrapper 是对 Bean 的包装，其接口中所定义的功能很简单包括设置获取被包装的对象，获取被包装 bean 的属性描述器
+    BeanWrapper instanceWrapper = null;
+    // 【1】 单例模型，则从未完成的 FactoryBean 缓存中删除
+    if (mbd.isSingleton()) {
+        instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
+    }
+    // 【2】 使用合适的实例化策略来创建新的实例：工厂方法、构造函数自动注入、简单初始化
+    if (instanceWrapper == null) {
+        instanceWrapper = createBeanInstance(beanName, mbd, args);
+    }
+    // 包装的实例对象
+    final Object bean = instanceWrapper.getWrappedInstance();
+    // 包装的实例对象的类型
+    Class&lt;?&gt; beanType = instanceWrapper.getWrappedClass();
+    if (beanType != NullBean.class) {
+        mbd.resolvedTargetType = beanType;
+    }
+
+    // 【3】 判断是否有后置处理
+    // 如果有后置处理，则允许后置处理修改 BeanDefinition
+    synchronized (mbd.postProcessingLock) {
+        if (!mbd.postProcessed) {
+            try {
+                // 后置处理修改 BeanDefinition
+                applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
+            } catch (Throwable ex) {
+                throw new BeanCreationException(mbd.getResourceDescription(), beanName,
+                        &quot;Post-processing of merged bean definition failed&quot;, ex);
+            }
+            mbd.postProcessed = true;
+        }
+    }
+
+    // 【4】 解决单例模式的循环依赖
+    boolean earlySingletonExposure = (mbd.isSingleton() // 单例模式
+            &amp;&amp; this.allowCircularReferences // 运行循环依赖
+            &amp;&amp; isSingletonCurrentlyInCreation(beanName)); // 当前单例 bean 是否正在被创建
+    if (earlySingletonExposure) {
+        if (logger.isTraceEnabled()) {
+            logger.trace(&quot;Eagerly caching bean &#39;&quot; + beanName +
+                    &quot;&#39; to allow for resolving potential circular references&quot;);
+        }
+        // 提前将创建的 bean 实例加入到 singletonFactories 中
+        // 这里是为了后期避免循环依赖
+        addSingletonFactory(beanName, () -&gt; getEarlyBeanReference(beanName, mbd, bean));
+    }
+
+    // 开始初始化 bean 实例对象
+    Object exposedObject = bean;
+    try {
+        // 【5】 对 bean 进行填充，将各个属性值注入，其中，可能存在依赖于其他 bean 的属性
+        // 则会递归初始依赖 bean
+        populateBean(beanName, mbd, instanceWrapper);
+        // 【6】 调用初始化方法
+        exposedObject = initializeBean(beanName, exposedObject, mbd);
+    } catch (Throwable ex) {
+        if (ex instanceof BeanCreationException &amp;&amp; beanName.equals(((BeanCreationException) ex).getBeanName())) {
+            throw (BeanCreationException) ex;
+        } else {
+            throw new BeanCreationException(
+                    mbd.getResourceDescription(), beanName, &quot;Initialization of bean failed&quot;, ex);
+        }
+    }
+
+    // 【7】 循环依赖处理
+    if (earlySingletonExposure) {
+        // 获取 earlySingletonReference
+        Object earlySingletonReference = getSingleton(beanName, false);
+        // 只有在存在循环依赖的情况下，earlySingletonReference 才不会为空
+        if (earlySingletonReference != null) {
+            // 如果 exposedObject 没有在初始化方法中被改变，也就是没有被增强
+            if (exposedObject == bean) {
+                exposedObject = earlySingletonReference;
+            // 处理依赖
+            } else if (!this.allowRawInjectionDespiteWrapping &amp;&amp; hasDependentBean(beanName)) {
+                String[] dependentBeans = getDependentBeans(beanName);
+                Set&lt;String&gt; actualDependentBeans = new LinkedHashSet&lt;&gt;(dependentBeans.length);
+                for (String dependentBean : dependentBeans) {
+                    if (!removeSingletonIfCreatedForTypeCheckOnly(dependentBean)) {
+                        actualDependentBeans.add(dependentBean);
+                    }
+                }
+                if (!actualDependentBeans.isEmpty()) {
+                    throw new BeanCurrentlyInCreationException(beanName,
+                            &quot;Bean with name &#39;&quot; + beanName + &quot;&#39; has been injected into other beans [&quot; +
+                            StringUtils.collectionToCommaDelimitedString(actualDependentBeans) +
+                            &quot;] in its raw version as part of a circular reference, but has eventually been &quot; +
+                            &quot;wrapped. This means that said other beans do not use the final version of the &quot; +
+                            &quot;bean. This is often the result of over-eager type matching - consider using &quot; +
+                            &quot;&#39;getBeanNamesOfType&#39; with the &#39;allowEagerInit&#39; flag turned off, for example.&quot;);
+                }
+            }
+        }
+    }
+
+    // 【8】 注册 bean
+    try {
+        registerDisposableBeanIfNecessary(beanName, bean, mbd);
+    } catch (BeanDefinitionValidationException ex) {
+        throw new BeanCreationException(
+                mbd.getResourceDescription(), beanName, &quot;Invalid destruction signature&quot;, ex);
+    }
+
+    return exposedObject;
+}</code></pre><p>这块是最核心的创建方法，很复杂。<br><font size=2></p>
+<ul>
+<li>【1】处，如果是单例模式清除掉缓存。</li>
+<li>【2】处，到调用<code>#createBeanInstance(...)</code>方法，实例化 Bean。只要是将 BeanDefinition 转换为<code>org.springframework.beans.BeanWrapper</code>对象。<ul>
+<li>详见【【源码】IoC加载Bean之创建 Bean（二）】和【【源码】IoC加载Bean之创建 Bean（三）】</li>
+</ul>
+</li>
+<li>【3】处，MergedBeanDefinitionPostProcessor 的应用。</li>
+<li>【4】处，单例模式的循环依赖处理。<ul>
+<li>详见【【源码】IoC加载Bean之创建 Bean（五）】</li>
+</ul>
+</li>
+<li>【5】处，调用<code>#populateBean(...)</code>方法，进行属性填充。将所有属性填充至 Bean 的实例中。<ul>
+<li>详见【【源码】IoC加载Bean之创建 Bean（四）】</li>
+</ul>
+</li>
+<li>【6】处，调用<code>#initializeBean(...)</code>方法，初始化 Bean。<ul>
+<li>详见【【源码】IoC加载Bean之创建 Bean（六）】</li>
+</ul>
+</li>
+<li>【7】处，依赖检查。</li>
+<li>【8】处，注册 DisposableBean。</li>
+</ul>
+</font>
+
+<h1 id="3-小结"><a href="#3-小结" class="headerlink" title="3 小结"></a>3 小结</h1><p><code>#doCreateBean(...)</code>方法，完成 Bean 的创建和初始化工作，内容很多。这里就是简单的列出思路，下文开始，将对该方法进行拆分分析，从以下几个方面入手：<br><font size=2></p>
+<ul>
+<li><code>#createBeanInstance(...)</code>方法，实例化 Bean。</li>
+<li>循环依赖的处理。</li>
+<li><code>#populateBean(...)</code>方法，进行属性填充。</li>
+<li><code>#initializeBean(...)</code>方法，初始化 Bean。</li>
+</ul>
+</font>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</font>
       
        
     </div>
