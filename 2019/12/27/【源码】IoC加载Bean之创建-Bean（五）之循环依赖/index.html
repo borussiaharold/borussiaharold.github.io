@@ -525,7 +525,7 @@
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-12-27 11:21:35'>2019-12-27 09:59</time>
+        创建时间:<time class="date" title='更新时间: 2019-12-27 11:39:57'>2019-12-27 09:59</time>
         
     </div>
     <div class="article-meta">
@@ -674,7 +674,7 @@ private final Map&lt;String, ObjectFactory&lt;?&gt;&gt; singletonFactories = new
 
 <ul>
 <li>首先，从一级缓存    <code>singletonObjects</code>获取。</li>
-<li>如果，没有切当前指定的 beanName 正在创建，在从二级缓存<code>earlySingletonObjects</code>中获取。</li>
+<li>如果，没有且当前指定的 beanName 正在创建，在从二级缓存<code>earlySingletonObjects</code>中获取。</li>
 <li>如果，还是没有且允许<code>singletonFactories</code>通过<code>#getObject()</code>方法获取，则从三级缓存<code>singletonFactories</code>获取。如果获取到了，通过其<code>#getObject()</code>方法获取实例。并将其加入到二级缓存<code>earlySingletonObjects</code>中，并从三级缓存<code>singletonFactories</code>删除。代码如下：</li>
 </ul>
 <pre><code>// DefaultSingletonBeanRegistry.java
@@ -771,7 +771,7 @@ public Object getSingleton(String beanName, ObjectFactory&lt;?&gt; singletonFact
 <font size=2>
 
 <ul>
-<li>首先 A 完成初始化第一步并将自己提前曝光出来，在初始化的时候发现自己依赖对象 B，此时就去尝试<code>#getObject*(b)</code>，然后发现 B 还没有创建出来。</li>
+<li>首先 A 完成初始化第一步并将自己提前曝光出来，在初始化的时候发现自己依赖对象 B，此时就去尝试<code>#getObject(b)</code>，然后发现 B 还没有创建出来。</li>
 <li>然后去创建 B，在 B 初始化的时候又发现自己依赖 C，C也没有被创建出来。</li>
 <li>这时 C 的初始化过程中，发现自己依赖 A，于是尝试<code>#getObject(A)</code>，<strong>重点在这！</strong>，这时由于 A 已经添加到缓存中了（一般都是三级缓存中），通过 ObjectFactory 提前曝光，<strong>拿出来了！！！</strong>。C 在拿到 A 以后顺序完成初始化，然后将自己添加到一级缓存中。</li>
 <li>回到 B 的流程，B 也拿到了 C，完成初始化。A 也可以顺利拿到 B 完成初始化。整个过程就结束了！！！！！</li>
