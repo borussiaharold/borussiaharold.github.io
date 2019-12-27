@@ -525,7 +525,7 @@
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-12-27 10:39:38'>2019-12-27 09:59</time>
+        创建时间:<time class="date" title='更新时间: 2019-12-27 11:21:35'>2019-12-27 09:59</time>
         
     </div>
     <div class="article-meta">
@@ -640,7 +640,7 @@ private final Map&lt;String, Object&gt; singletonObjects = new ConcurrentHashMap
  * 所以当在 bean 的创建过程中就可以通过 getBean() 方法获取。
  * 这个 Map 也是解决【循环依赖】的关键所在。
  **/
-private final Map&lt;String, ObjectFactory&lt;?&gt;&gt; singletonFactories = new HashMap&lt;&gt;(16);
+private final Map&lt;String, Object&gt; earlySingletonObjects = new HashMap&lt;&gt;(16);
 
 /**
  *
@@ -648,7 +648,7 @@ private final Map&lt;String, ObjectFactory&lt;?&gt;&gt; singletonFactories = new
  *
  * 对应关系是 bean name --&gt; ObjectFactory
  */
-private final Map&lt;String, Object&gt; earlySingletonObjects = new HashMap&lt;&gt;(16);</code></pre><p>他们仨，就是 Spring 解决 singleton bean 的关键因素，我们暂称他们为<strong>三级缓存</strong>：</p>
+private final Map&lt;String, ObjectFactory&lt;?&gt;&gt; singletonFactories = new HashMap&lt;&gt;(16);</code></pre><p>他们仨，就是 Spring 解决 singleton bean 的关键因素，我们暂称他们为<strong>三级缓存</strong>：</p>
 <font size=2>
 
 <ul>
