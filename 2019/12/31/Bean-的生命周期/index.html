@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>categories | Hello World</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="categories | Hello World">
+  <title>Bean 的生命周期 | Hello World</title>
+  <meta name="keywords" content=" Spring , 源码分析 ">
+  <meta name="description" content="Bean 的生命周期 | Hello World">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="categories">
@@ -545,24 +545,40 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="page-" class="article article-type-page" itemscope itemprop="blogPost">
+        <article id="post-Bean-的生命周期" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">categories</h1>
+        <h1 class="article-title">Bean 的生命周期</h1>
     
     <div class="article-meta">
         
+        <span class="top"><a href="javascript:" target="_blank" rel="noopener">置顶</a></span>
         
         
+        
+        <span class="book">
+            
+                <a href="javascript:" target="_blank" data-rel="Spring noopener">Spring</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
+            
+        </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-11-30 12:16:26'>2019-11-29 19:17</time>
+        创建时间:<time class="date" title='更新时间: 2019-12-31 19:35:52'>2019-12-31 18:40</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:0</span>
+        <span>字数:2.4k</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -581,7 +597,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Bean-实例化"><span class="toc-text">1 Bean 实例化</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-激活-Aware"><span class="toc-text">2 激活 Aware</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-BeanPostProcessor"><span class="toc-text">3 BeanPostProcessor</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-InitializingBean-和-init-method"><span class="toc-text">4 InitializingBean 和 init-method</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-DisposableBean-和-destroy-method"><span class="toc-text">5 DisposableBean 和 destroy-method</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-示例"><span class="toc-text">6 示例</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -596,7 +612,851 @@
 </div>
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <font size=3>
+
+<br/>
+
+<p>在分析 Spring Bean 实例化过程中提到 Spring 并不是一启动容器就开启 Bean 的实例化进程，只有当用户调用<code>#getBean(...)</code>方法后，才会触发相应的 Bean 实例化进程。当前，也可以选择直接使用 ApplicationContext 容器，因为该容器启动的时候会立刻调用注册到该容器的所有 Bean 。<br>对于 BeanFactory 而言，并不是所有的<code>#getBean(...)</code>方法都会触发实例化，比如 singleton 类型的 Bean。该类型的 Bean 只会第一次调用<code>#getBean(...)</code>的时候触发，后续则直接在缓存中获取实例对象。</p>
+<p><code>#getBean(...)</code>方法只是 Bean 实例化的入口，真正从处理在 AbstractAutowireCapableBeanFactory 的<code>#doCreateBean(...)</code>中实现，流程如下：</p>
+<p><img src="/images/pasted-42.png" alt="注册流程"></p>
+<p>原来我们采用 new 的方式创建一个对象，用完该对象在脱离作用域后就会被回收，对于后续操作我们无线干涉。但是采取 Spring 容器后，我们完全摆脱了这种命运，Spring 容器将会对锁管理的 Bean 对象，全部给予一个<strong>统一的生命周期</strong>，同时在这个阶段，我们也可以进行干涉。</p>
+<h1 id="1-Bean-实例化"><a href="#1-Bean-实例化" class="headerlink" title="1 Bean 实例化"></a>1 Bean 实例化</h1><p>在<code>#doCreateBean(...)</code>方法中，首先进行 Bean 实例化工作，主要由<code>#createBeanInstance(...)</code>方法实现，该方法返回一个 BeanWrapper 对象。BeanWrapper 对象是 Spring 的一个低级 Bean，具有基础结构的核心接口。为什么说<strong>低级</strong>，因为这个 Bean 还不能被我们使用，连最基本的属性都没有设置。而我们实际开发过程中，一般都不会直接使用该类，而是通过 BeanFactory 隐式的使用。</p>
+<p>BeanWrapper 接口有一个默认实现类 BeanWrapperImple，主要作用是对 Bean 进行包装，然后对这个包装的 Bean 进行操作，比如后续注入属性。</p>
+<p>在实例化 Bean 过程中，Spring 采用<strong>策略模式</strong>来决定使用哪种方法实例化 Bean，一般具有反射和 CGlib 两种。</p>
+<p>InstantiationStrategy 定义了 Bean 实例化策略的抽象接口，其子类 SimpleInstantiationStrategy 提供了基于反射来实例化对象的功能。CglibSubclassingInstantiationStrategy 继承 SimpleInstantiationStrategy，它除了拥有父类以反射实例化对象的功能外，还提供了通过 CGlib 进行动态代理的功能。<strong>默认情况下，Spring 使用 CglibSubclassingInstantiationStrategy</strong>。</p>
+<p>关于 Bean 实例化的详细过程，在前面的文章中已经说明，可以详细的看下。</p>
+<h1 id="2-激活-Aware"><a href="#2-激活-Aware" class="headerlink" title="2 激活 Aware"></a>2 激活 Aware</h1><p>当 Spring 完成 Bean 的实例化并设置相关属性与依赖后，则会开始 Bean 的初始化进程<code>#initializeBean(...)</code>，初始化第一个阶段是检查当前 Bean 对象是否实现了一系列以 Aware 结尾的接口。</p>
+<p>Aware 接口为 Spring 容器的核心接口，是一个具有标识作用的超级接口，实现了该接口的 Bean 是具有被 Spring 容器通知的能力，通知的方法是<strong>回调</strong>。</p>
+<p>在初始化接口，主要是感知 BeanNameAware、BeanClassLoaderAware、BeanFactoryAware。代码如下：</p>
+<pre><code>// AbstractAutowireCapableBeanFactory.java
+
+private void invokeAwareMethods(final String beanName, final Object bean) {
+    if (bean instanceof Aware) {
+        // BeanNameAware
+        if (bean instanceof BeanNameAware) {
+            ((BeanNameAware) bean).setBeanName(beanName);
+        }
+        // BeanClassLoaderAware
+        if (bean instanceof BeanClassLoaderAware) {
+            ClassLoader bcl = getBeanClassLoader();
+            if (bcl != null) {
+                ((BeanClassLoaderAware) bean).setBeanClassLoader(bcl);
+            }
+        }
+        // BeanFactoryAware
+        if (bean instanceof BeanFactoryAware) {
+            ((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
+        }
+    }
+}</code></pre><font size=2>
+
+<ul>
+<li>BeanNameAware：对该 Bean 对象定义的 BeanName 设置到当前对象实例中。</li>
+<li>BeanClassLoaderAware：对当前 Bean 对象相应的 ClassLoader 注入到当前对象实例中。</li>
+<li>BeanFactoryAware：BeanFactoy 容器会将自身注入到当前实例中，这样在当前实例中就有了一个 BeanFactory 容器的引用。</li>
+</ul>
+</font>
+
+<p>详细可看前面的文章。</p>
+<h1 id="3-BeanPostProcessor"><a href="#3-BeanPostProcessor" class="headerlink" title="3 BeanPostProcessor"></a>3 BeanPostProcessor</h1><p>初始化第二个阶段是 BeanPostProcessor 增强处理，在该阶段 BeanPostProcessor 会处理当前容器内所有符合条件的实例化后的 Bean 对象。它主要是对 Spring 容器提供的 Bean 实例对象进行有效的扩展。允许 Spring 在初始化 Bean 阶段对其进行定制化修改。</p>
+<p>BeanPostProcessor 接口提供了两个方法，在不同的时机执行，分别对应前置处理器和后置处理器。代码如下：</p>
+<pre><code>public interface BeanPostProcessor {
+
+    @Nullable
+    default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        return bean;
+    }
+
+    @Nullable
+    default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        return bean;
+    }
+
+}</code></pre><p>详细可看前面的文章。</p>
+<h1 id="4-InitializingBean-和-init-method"><a href="#4-InitializingBean-和-init-method" class="headerlink" title="4 InitializingBean 和 init-method"></a>4 InitializingBean 和 init-method</h1><p>InitializingBean 是一个接口，它为 Spring Bean 的初始化提供了一种方式，它有一个<code>#afterPropertiesSet()</code>方法，在 Bean 的初始化进程中会判断当前 Bean 是否实现了 InitializingBean。如果实现了则调用<code>#afterPropertiesSet()</code>，进行初始化动作。然后在检查是否也指定了<code>init-method</code>，如果指定了则通过反射的方式调用<code>init-method</code>。代码如下：</p>
+<pre><code>// AbstractAutowireCapableBeanFactory.java
+
+protected void invokeInitMethods(String beanName, final Object bean, @Nullable RootBeanDefinition mbd)
+        throws Throwable {
+    // 首先会检查是否是 InitializingBean ，如果是的话需要调用 afterPropertiesSet()
+    boolean isInitializingBean = (bean instanceof InitializingBean);
+    if (isInitializingBean &amp;&amp; (mbd == null || !mbd.isExternallyManagedInitMethod(&quot;afterPropertiesSet&quot;))) {
+        if (logger.isTraceEnabled()) {
+            logger.trace(&quot;Invoking afterPropertiesSet() on bean with name &#39;&quot; + beanName + &quot;&#39;&quot;);
+        }
+        if (System.getSecurityManager() != null) { // 安全模式
+            try {
+                AccessController.doPrivileged((PrivilegedExceptionAction&lt;Object&gt;) () -&gt; {
+                    // 属性初始化的处理
+                    ((InitializingBean) bean).afterPropertiesSet();
+                    return null;
+                }, getAccessControlContext());
+            } catch (PrivilegedActionException pae) {
+                throw pae.getException();
+            }
+        } else {
+            // 属性初始化的处理
+            ((InitializingBean) bean).afterPropertiesSet();
+        }
+    }
+
+    if (mbd != null &amp;&amp; bean.getClass() != NullBean.class) {
+        // 判断是否指定了 init-method()，
+        // 如果指定了 init-method()，则再调用制定的init-method
+        String initMethodName = mbd.getInitMethodName();
+        if (StringUtils.hasLength(initMethodName) &amp;&amp;
+                !(isInitializingBean &amp;&amp; &quot;afterPropertiesSet&quot;.equals(initMethodName)) &amp;&amp;
+                !mbd.isExternallyManagedInitMethod(initMethodName)) {
+            // 激活用户自定义的初始化方法
+            // 利用反射机制执行
+            invokeCustomInitMethod(beanName, bean, mbd);
+        }
+    }
+}</code></pre><p>对于 Spring 而言，虽然上面两种都可以实现初始化定义，但是还是更推崇<code>init-method</code>方式。</p>
+<h1 id="5-DisposableBean-和-destroy-method"><a href="#5-DisposableBean-和-destroy-method" class="headerlink" title="5 DisposableBean 和 destroy-method"></a>5 DisposableBean 和 destroy-method</h1><p>与 InitializingBean 和 init-method 对于对象的自定义初始化相似，DisposableBean和 destroy-method 则用于对象的自定义销毁工作。</p>
+<p>当一个 Bean 对象经历了实例化、设置属性、初始化阶段，那么该 Bean 就是对外提供使用了。当完成调用后，如果是 singleton 类型的 Bean，则会看当前 Bean 是否实现了 DisposableBean 接口或者配置了 destroy-method 属性。如果是话就会对该对象注册一个用于对象销毁的毁掉方法。</p>
+<p>但是，并不是对象完成调用后就会立刻执行销毁方法，因为这个时候 Spring 容器还处于运行阶段，只有当 Spring 容器关闭的时候才会去调用。但是 Spring 容器需要我们<strong>主动去告知</strong>。</p>
+<font size=2>
+
+<ul>
+<li>BeanFactory：需要主动调用<code>#destroySingletons()</code>方法，通知 BeanFactory 容器去执行相应的销毁方法。</li>
+<li>ApplicationContext：需要主动调用<code>#registerShutdownHook()</code>方法。</li>
+</ul>
+</font>
+
+<h1 id="6-示例"><a href="#6-示例" class="headerlink" title="6 示例"></a>6 示例</h1><p>下面用一个示例在看看上面的执行逻辑。代码如下：</p>
+<pre><code>public class LifeCycleBean implements BeanNameAware,BeanFactoryAware,BeanClassLoaderAware,BeanPostProcessor,
+        InitializingBean,DisposableBean {
+
+    private String test;
+
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        System.out.println(&quot;属性注入....&quot;);
+        this.test = test;
+    }
+
+    public LifeCycleBean(){ // 构造方法
+        System.out.println(&quot;构造函数调用...&quot;);
+    }
+
+    public void display(){
+        System.out.println(&quot;方法调用...&quot;);
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        System.out.println(&quot;BeanFactoryAware 被调用...&quot;);
+    }
+
+    @Override
+    public void setBeanName(String name) {
+        System.out.println(&quot;BeanNameAware 被调用...&quot;);
+    }
+
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        System.out.println(&quot;BeanClassLoaderAware 被调用...&quot;);
+    }
+
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println(&quot;BeanPostProcessor postProcessBeforeInitialization 被调用...&quot;);
+        return bean;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        System.out.println(&quot;BeanPostProcessor postProcessAfterInitialization 被调用...&quot;);
+        return bean;
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        System.out.println(&quot;DisposableBean destroy 被调动...&quot;);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        System.out.println(&quot;InitializingBean afterPropertiesSet 被调动...&quot;);
+    }
+
+    public void initMethod(){
+        System.out.println(&quot;init-method 被调用...&quot;);
+    }
+
+    public void destroyMethdo(){
+        System.out.println(&quot;destroy-method 被调用...&quot;);
+    }
+
+}</code></pre><p>LifeCycleBean 继承了 BeanNameAware、BeanFactoryAware、BeanClassLoaderAware、BeanPostProcessor、InitializingBean、DisposableBean 六个接口，同时定义了一个 test 属性用于验证属性注入和提供一个<code>#display()</code>方法用于模拟调用。</p>
+<pre><code>&lt;bean id=&quot;lifeCycle&quot; class=&quot;org.springframework.core.test.lifeCycleBean&quot;
+        init-method=&quot;initMethod&quot; destroy-method=&quot;destroyMethdo&quot;&gt;
+    &lt;property name=&quot;test&quot; value=&quot;test&quot;/&gt;
+&lt;/bean&gt;</code></pre><p>配置 init-method 和 destroy-method。</p>
+<pre><code>// BeanFactory 容器一定要调用该方法进行 BeanPostProcessor 注册
+factory.addBeanPostProcessor(new LifeCycleBean()); // 【1】
+
+LifeCycleBean lifeCycleBean = (LifeCycleBean) factory.getBean(&quot;lifeCycle&quot;);
+lifeCycleBean.display();
+
+System.out.println(&quot;方法调用完成，容器开始关闭....&quot;);
+// 关闭容器
+factory.destroySingletons();</code></pre><p>运行结果如下：</p>
+<pre><code>构造函数调用...
+构造函数调用...
+属性注入....
+BeanNameAware 被调用...
+BeanClassLoaderAware 被调用...
+BeanFactoryAware 被调用...
+BeanPostProcessor postProcessBeforeInitialization 被调用...
+InitializingBean afterPropertiesSet 被调动...
+init-method 被调用...
+BeanPostProcessor postProcessAfterInitialization 被调用...
+方法调用...
+方法调用完成，容器开始关闭....
+DisposableBean destroy 被调动...
+destroy-method 被调用...</code></pre><p>有两个构造参数调用，是因为在【1】处，我们创建了一个 BeanPostProcessor。</p>
+<p>根据执行的结果我们可以对 Spring Bean 的生命周期如下：<br><font size=2></p>
+<ul>
+<li><ol>
+<li>Spring 容器根据实例化策略对 Bean 进行实例化。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>实例化完成后，如果该 Bean 设置了一些属性的话，则利用 set 方法设置一些属性。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>如果该 Bean 实现了 BeanNameAware 接口，则调用<code>#setBeanName(...)</code>方法。</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>如果该 Bean 实现了 BeanClassLoaderAware 接口，则调用<code>setBeanClassLoader(...)</code>方法。</li>
+</ol>
+</li>
+<li><ol start="5">
+<li>如果该 Bean 实现了 BeanFactoryAware 接口，则调用<code>setBeanFactory(...)</code>方法。</li>
+</ol>
+</li>
+<li><ol start="6">
+<li>如果该容器注册了 BeanPostProcessor，则会调用<code>#postProcessBeforeInitialization(...)</code>方法，完成 Bean 前置处理。</li>
+</ol>
+</li>
+<li><ol start="7">
+<li>如果该 Bean 实现了 InitializingBean 接口，则调用<code>#afterPropertiesSet()</code>方法。</li>
+</ol>
+</li>
+<li><ol start="8">
+<li>如果该 Bean 配置了 init-method，则反射调用指定的方法。</li>
+</ol>
+</li>
+<li><ol start="9">
+<li>初始化完成后，如果该容器注册了 BeanPostProcessor，则调用<code>#postProcessAfterInitialization(...)</code>方法，完成后置处理。</li>
+</ol>
+</li>
+<li><ol start="10">
+<li>对象完成初始化，提供使用。</li>
+</ol>
+</li>
+<li><ol start="11">
+<li>在容器关闭前，如果该 Bean 实现了 DisposableBean 接口，则调用<code>#destroy()</code>方法。</li>
+</ol>
+</li>
+<li><ol start="12">
+<li>在容器关闭前，如果该 Bean 配置了 destroy-method，则反射调用指定方法。</li>
+</ol>
+</li>
+<li><ol start="13">
+<li>草他妈的终于完事了，整个 Bean 的生命周期完事了！让它去死把！</li>
+</ol>
+</li>
+</ul>
+</font>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</font>
       
        
     </div>
