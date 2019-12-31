@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Java内存区域详解 | Hello World</title>
-  <meta name="keywords" content=" JVM堆、栈 , 内存溢出异常 ">
-  <meta name="description" content="Java内存区域详解 | Hello World">
+  <title>深入分析 Aware 接口 | Hello World</title>
+  <meta name="keywords" content=" Spring , 源码分析 ">
+  <meta name="description" content="深入分析 Aware 接口 | Hello World">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="categories">
@@ -521,38 +521,40 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-Java内存区域详解" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-深入分析-Aware-接口" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Java内存区域详解</h1>
+        <h1 class="article-title">深入分析 Aware 接口</h1>
     
     <div class="article-meta">
+        
+        <span class="top"><a href="javascript:" target="_blank" rel="noopener">置顶</a></span>
         
         
         
         <span class="book">
             
-                <a href="javascript:" target="_blank" data-rel="Java虚拟机 noopener">Java虚拟机</a>
+                <a href="javascript:" target="_blank" data-rel="Spring noopener">Spring</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a href="javascript:" target="_blank" rel="noopener" class="color2">JVM堆、栈</a>
+            <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
             
-            <a href="javascript:" target="_blank" rel="noopener" class="color2">内存溢出异常</a>
+            <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2019-11-30 16:24:38'>2019-11-30 16:22</time>
+        创建时间:<time class="date" title='更新时间: 2019-12-31 10:22:41'>2019-12-31 09:58</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:0</span>
+        <span>字数:1k</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -571,7 +573,7 @@
     
     <div class="toc-ref">
     
-        
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Aware-接口"><span class="toc-text">1 Aware 接口</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Aware-子类"><span class="toc-text">2 Aware 子类</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-示例"><span class="toc-text">2.1 示例</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-小结"><span class="toc-text">3 小结</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -586,7 +588,158 @@
 </div>
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <font size=3>
+
+<br/>
+
+<p>AbstractAutowireCapableBeanFactory 的<code>#doCreateBean(...)</code>方法，主要做三件事：</p>
+<font size=2>
+
+<ul>
+<li>实例化 Bean 对象：<code>#createBeanInstance(...)</code>方法。</li>
+<li>属性注入：<code>#populateBean(...)</code>方法。</li>
+<li>初始化 Bean 对象：<code>#initializeBean(...)</code>方法。</li>
+</ul>
+</font>
+
+<p>而<strong>初始化 Bean 对象时</strong>也是做三件事：</p>
+<font size=2>
+
+<ul>
+<li>激活 Aware 方法。</li>
+<li>后置处理器的应用。</li>
+<li>激活自定义的 init 方法。</li>
+</ul>
+</font>
+
+<p>接下来三篇，就是描述这三件事情。</p>
+<h1 id="1-Aware-接口"><a href="#1-Aware-接口" class="headerlink" title="1 Aware 接口"></a>1 Aware 接口</h1><p><code>org.springframework.beans.factory.Aware</code> 接口。定义如下：</p>
+<pre><code>public interface Aware {
+
+}</code></pre><p>Aware 接口为 Spring 容器的核心接口，是一个具有表示作用的超级接口，实现了该接口的 Bean 是具有被 Spring 容器<strong>通知的能力</strong>，通知的方式是采用<strong>回调</strong>。  </p>
+<p>Aware 接口是一个空接口，实际的方法签名由各个子接口来确定，且该接口通常只会有一个接口单参数的 set 方法，该 set 方法的命名方式为：set + 去掉接口命中 Aware 后缀。即 XxxAware 接口，通常方法定义为 setXxx()。    </p>
+<p>Aware 的子接口需要提供一个<code>setXxx()</code>方法，我们知道 set 是设置属性值的方法，Aware 的含义是感知的，感应的。那么在 Spring 容器中是如何实现感知并设置属性值得呢？我们可以从初始化 Bean 中激活 Aware 方法<code>#invokeAwareMethods(...)</code>方法中看到一点。代码如下：</p>
+<pre><code>// AbstractAutowireCapableBeanFactory.java
+
+private void invokeAwareMethods(final String beanName, final Object bean) {
+    if (bean instanceof Aware) {
+        // BeanNameAware
+        if (bean instanceof BeanNameAware) {
+            ((BeanNameAware) bean).setBeanName(beanName);
+        }
+        // BeanClassLoaderAware
+        if (bean instanceof BeanClassLoaderAware) {
+            ClassLoader bcl = getBeanClassLoader();
+            if (bcl != null) {
+                ((BeanClassLoaderAware) bean).setBeanClassLoader(bcl);
+            }
+        }
+        // BeanFactoryAware
+        if (bean instanceof BeanFactoryAware) {
+            ((BeanFactoryAware) bean).setBeanFactory(AbstractAutowireCapableBeanFactory.this);
+        }
+    }
+}</code></pre><p>首先，判断 Bean 是否的 Aware 接口的实现。如果是的话，则调用<code>setXxx()</code>方法，给实例设置属性值。在<code>#invokeAwareMethods(...)</code>方法中，主要设置 beanName、beanClassLoader、beanFactory三个属性值。</p>
+<h1 id="2-Aware-子类"><a href="#2-Aware-子类" class="headerlink" title="2 Aware 子类"></a>2 Aware 子类</h1><p>Spring 提供了一系列的 Aware 接口。如下图。</p>
+<p><img src="/images/pasted-32.png" alt="Aware 子类"></p>
+<p>上面只是一部分子类，从这里我们可以看到 Spring 提供的 Aware 接口是何其多。同时从上图我们也可以看到几个熟悉的接口，如：BeanClassloaderAware、BeanFactoryAware、BeanNameAware。</p>
+<pre><code>public interface BeanClassLoaderAware extends Aware {
+
+    /**
+    * 将 BeanClassLoader 提供给 bean 实例回调
+    * 在 bean 属性填充之后、初始化回调之前回调，
+    * 例如InitializingBean的InitializingBean.afterPropertiesSet（）方法或自定义init方法
+    */
+    void setBeanClassLoader(ClassLoader classLoader);
+
+}
+
+
+public interface BeanFactoryAware extends Aware {
+    /**
+    * 将 BeanFactory 提供给 bean 实例回调
+    * 调用时机和 setBeanClassLoader 一样
+    */
+    void setBeanFactory(BeanFactory beanFactory) throws BeansException;
+
+}
+
+
+public interface BeanNameAware extends Aware {
+
+    /**
+    * 在创建此 bean 的 bean工厂中设置 beanName
+    */
+    void setBeanName(String name);
+
+}
+
+
+public interface ApplicationContextAware extends Aware {
+
+    /**
+     * 设置此 bean 对象的 ApplicationContext，通常，该方法用于初始化对象
+     */
+    void setApplicationContext(ApplicationContext applicationContext)
+        throws BeansException;
+
+}</code></pre><h2 id="2-1-示例"><a href="#2-1-示例" class="headerlink" title="2.1 示例"></a>2.1 示例</h2><pre><code>public class MyApplicationAware implements BeanNameAware,BeanFactoryAware,BeanClassLoaderAware,ApplicationContextAware{
+
+    private String beanName;
+
+    private BeanFactory beanFactory;
+
+    private ClassLoader classLoader;
+
+    private ApplicationContext applicationContext;
+
+    @Override
+    public void setBeanClassLoader(ClassLoader classLoader) {
+        System.out.println(&quot;调用了 BeanClassLoaderAware 的 setBeanClassLoader 方法&quot;);
+        this.classLoader = classLoader;
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        System.out.println(&quot;调用了 BeanFactoryAware 的 setBeanFactory 方法&quot;);
+        this.beanFactory = beanFactory;
+    }
+
+    @Override
+    public void setBeanName(String name) {
+        System.out.println(&quot;调用了 BeanNameAware 的 setBeanName 方法&quot;);
+        this.beanName = name;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        System.out.println(&quot;调用了 ApplicationContextAware 的 setApplicationContext 方法&quot;);
+        this.applicationContext = applicationContext;
+    }
+
+    public void display(){
+        System.out.println(&quot;beanName:&quot; + beanName);
+        System.out.println(&quot;是否为单例：&quot; + beanFactory.isSingleton(beanName));
+        System.out.println(&quot;系统环境为：&quot; + applicationContext.getEnvironment());
+    }
+}</code></pre><pre><code>public static void main(String[] args) {
+    ClassPathResource resource = new ClassPathResource(&quot;spring.xml&quot;);
+    DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
+    XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
+    reader.loadBeanDefinitions(resource);
+
+    MyApplicationAware applicationAware = (MyApplicationAware) factory.getBean(&quot;myApplicationAware&quot;);
+    applicationAware.display();
+}</code></pre><p><img src="/images/pasted-33.png" alt="运行结果"></p>
+<p>从该运行结果可以看出，这里只执行了三个 Aware 接口的 set 方法，原因就是通过<code>#getBean(...)</code>方法调用时，在激活 Aware 接口时只检测了 BeanNameAware、BeanClassloaderAware、BeanFactoryAware 三个 Aware 接口。如果将测试方法调整如下：</p>
+<pre><code>public static void main(String[] args) {
+    ApplicationContext applicationContext = new ClassPathXmlApplicationContext(&quot;spring.xml&quot;);
+    MyApplicationAware applicationAware = (MyApplicationAware) applicationContext.getBean(&quot;myApplicationAware&quot;);
+    applicationAware.display();
+}</code></pre><p><img src="/images/pasted-34.png" alt="运行结果"></p>
+<p>我们看到运行结果一致。可以说明是 Spring 容器自动将相关的 Aware 属性 set 到了我们需要的 Bean 中。</p>
+<h1 id="3-小结"><a href="#3-小结" class="headerlink" title="3 小结"></a>3 小结</h1><p>到这里我们基本可以知道 Aware 真正的含义是什么了。其实是 Spring 容器在初始化主动监测当前 Bean 是否实现了 Aware 接口。如果实现了则回调其 set 方法将相应的参数设置给 Bean。</p>
+</font>
       
        
     </div>
