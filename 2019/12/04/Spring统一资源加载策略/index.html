@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Spring统一资源加载策略 | Hello World</title>
+  <meta name="keywords" content=" Spring , 源码分析 ">
+  <meta name="description" content="Spring统一资源加载策略 | Hello World">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta property="og:type" content="website">
+<meta property="og:title" content="categories">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;categories&#x2F;index.html">
+<meta property="og:site_name" content="Hello World">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-11-30T04:16:26.000Z">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/head.jpg">
+
+<link href="/css/style.css?v=1.0.1" rel="stylesheet">
+
+<link href="/css/hl_theme/darcula.css?v=1.0.1" rel="stylesheet">
+
+<link href="//cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="/js/jquery.autocomplete.min.js?v=1.0.1" ></script>
+
+<script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.0.1" ></script>
+
+</head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="false">
+  <input class="theme_blog_path" value="">
+</div>
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/head.jpg" />
+</a>
+<div class="author">
+    <span>王浩宇</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active">全部文章</div></li>
+    
+        
+            
+            <li><div data-rel="Spring">Spring</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="全文检索">全文检索</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="面试题">面试题</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="Java虚拟机">Java虚拟机</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="微服务"><i class="fold iconfont icon-right"></i>微服务</div>
+                
+                    <ul class="sub hide">
+                        
+                        <li><div data-rel="nacos">nacos</div>
+                            
+                        </li>
+                            
+                    </ul>
+                
+            </li>
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    
+    </div>
+    <div></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="34">
+<input type="hidden" id="yelog_site_word_count" value="60k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="back-title-list"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <form onkeydown="if(event.keyCode==13){return false;}">
+        <input class="search" type="text" placeholder="以 in: 开头进行全文搜索" autocomplete="off"id="local-search-input" >
+        <i class="cross"></i>
+        <span>
+            <label for="tagswitch">Tags:</label>
+            <input id="tagswitch" type="checkbox" style="display: none" />
+            <i id="tagsWitchIcon"></i>
+        </span>
+    </form>
+    <div class="tags-list">
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color3">es</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">全文检索</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Java基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">JVM堆、栈</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">内存溢出异常</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color3">GC</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring IOC</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring AOP</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">Spring 基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">spring-cloud-alibaba</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">注册中心</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">类加载器</a>
+    </li>
+    
+    <div class="clearfix"></div>
+</div>
+
+    
+    <div id="local-search-result">
+
+    </div>
+    
+    <nav id="title-list-nav">
+        
+        <a id="top" class="Spring "
+           href="/2019/12/03/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%20IoC/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="深入理解Spring IoC">深入理解Spring IoC</span>
+            <span class="post-date" title="2019-12-03 13:37:09">2019/12/03</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/Spring%E7%BB%9F%E4%B8%80%E8%B5%84%E6%BA%90%E5%8A%A0%E8%BD%BD%E7%AD%96%E7%95%A5/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Spring统一资源加载策略">Spring统一资源加载策略</span>
+            <span class="post-date" title="2019-12-04 15:09:37">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/%E5%8A%A0%E8%BD%BDBeanDefinition/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="加载BeanDefinition">加载BeanDefinition</span>
+            <span class="post-date" title="2019-12-04 15:08:52">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/06/%E6%B3%A8%E5%86%8CBeanDefinitions-%E4%B8%8A/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="注册BeanDefinitions-上">注册BeanDefinitions-上</span>
+            <span class="post-date" title="2019-12-06 11:22:47">2019/12/06</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/11/%E6%B3%A8%E5%86%8CBeanDefinitions-%E4%B8%8B/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="注册BeanDefinitions-下">注册BeanDefinitions-下</span>
+            <span class="post-date" title="2019-12-11 13:34:29">2019/12/11</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/20/%E5%BC%80%E5%90%AFBean%E7%9A%84%E5%8A%A0%E8%BD%BD/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="开启Bean的加载">开启Bean的加载</span>
+            <span class="post-date" title="2019-12-20 13:58:30">2019/12/20</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/24/%E4%BB%8E%E5%8D%95%E4%BE%8B%E7%BC%93%E5%AD%98%E4%B8%AD%E8%8E%B7%E5%8F%96%E5%8D%95%E4%BE%8B-Bean/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="从单例缓存中获取单例 Bean">从单例缓存中获取单例 Bean</span>
+            <span class="post-date" title="2019-12-24 14:54:46">2019/12/24</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/25/parentBeanFactory%E4%B8%8E%E4%BE%9D%E8%B5%96%E5%A4%84%E7%90%86/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="parentBeanFactory与依赖处理">parentBeanFactory与依赖处理</span>
+            <span class="post-date" title="2019-12-25 13:48:53">2019/12/25</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/25/%E5%88%86%E6%9E%90%E5%90%84scope%E7%9A%84Bean%E5%88%9B%E5%BB%BA/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="分析各scope的Bean创建">分析各scope的Bean创建</span>
+            <span class="post-date" title="2019-12-25 15:46:07">2019/12/25</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%B8%80%EF%BC%89%E4%B9%8B%E4%B8%BB%E6%B5%81%E7%A8%8B/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（一）之主流程">创建 Bean（一）之主流程</span>
+            <span class="post-date" title="2019-12-26 11:04:35">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%BA%8C%EF%BC%89%E4%B9%8B%E5%AE%9E%E4%BE%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1-1/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（二）之实例化 Bean 对象(1)">创建 Bean（二）之实例化 Bean 对象(1)</span>
+            <span class="post-date" title="2019-12-26 11:05:26">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%B8%89%EF%BC%89%E4%B9%8B%E5%AE%9E%E4%BE%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1-2/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（三）之实例化 Bean 对象(2)">创建 Bean（三）之实例化 Bean 对象(2)</span>
+            <span class="post-date" title="2019-12-26 21:37:35">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E5%9B%9B%EF%BC%89%E4%B9%8B%E5%B1%9E%E6%80%A7%E5%A1%AB%E5%85%85/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（四）之属性填充">创建 Bean（四）之属性填充</span>
+            <span class="post-date" title="2019-12-26 22:09:55">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%BA%94%EF%BC%89%E4%B9%8B%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean之创建 Bean（五）之循环依赖">Bean之创建 Bean（五）之循环依赖</span>
+            <span class="post-date" title="2019-12-27 09:59:39">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E5%85%AD%EF%BC%89%E4%B9%8B%E5%88%9D%E5%A7%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean之创建 Bean（六）之初始化 Bean 对象">Bean之创建 Bean（六）之初始化 Bean 对象</span>
+            <span class="post-date" title="2019-12-27 13:50:37">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean-%E6%80%BB%E7%BB%93/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean 总结">创建 Bean 总结</span>
+            <span class="post-date" title="2019-12-27 14:39:35">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/Aware-%E6%8E%A5%E5%8F%A3/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Aware 接口">Aware 接口</span>
+            <span class="post-date" title="2019-12-31 09:58:32">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/BeanPostProcessor/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="BeanPostProcessor">BeanPostProcessor</span>
+            <span class="post-date" title="2019-12-31 10:23:52">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/InitializingBean-%E5%92%8C-init-method/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="InitializingBean 和 init-method">InitializingBean 和 init-method</span>
+            <span class="post-date" title="2019-12-31 17:47:19">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/Bean-%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean 的生命周期">Bean 的生命周期</span>
+            <span class="post-date" title="2019-12-31 18:40:14">2019/12/31</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-TF-IDF%E7%AE%97%E6%B3%95%E3%80%81Scroll%E6%90%9C%E7%B4%A2/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-TF&amp;IDF算法、Scroll搜索">Elasticsearch-TF&amp;IDF算法、Scroll搜索</span>
+            <span class="post-date" title="2019-11-30 15:55:25">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-deep-paging%E3%80%81mapping%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-deep paging、mapping介绍">Elasticsearch-deep paging、mapping介绍</span>
+            <span class="post-date" title="2019-11-30 15:47:48">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-es%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E6%A1%88/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-es的持久化方案">Elasticsearch-es的持久化方案</span>
+            <span class="post-date" title="2019-11-30 16:06:50">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-shard%E3%80%81%E6%89%A9%E5%AE%B9%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-shard、扩容介绍">Elasticsearch-shard、扩容介绍</span>
+            <span class="post-date" title="2019-11-30 14:25:23">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E5%86%99%E4%B8%80%E8%87%B4%E6%80%A7%E3%80%81%E8%BF%94%E5%9B%9E%E8%A7%A3%E6%9E%90/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-写一致性、返回解析">Elasticsearch-写一致性、返回解析</span>
+            <span class="post-date" title="2019-11-30 15:29:27">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95%E3%80%81%E8%AF%B7%E6%B1%82%E5%8E%9F%E7%90%86/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-路由算法、请求原理">Elasticsearch-路由算法、请求原理</span>
+            <span class="post-date" title="2019-11-30 15:15:14">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E3%80%81%E8%BF%90%E8%A1%8C/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticssearch-安装、运行">Elasticssearch-安装、运行</span>
+            <span class="post-date" title="2019-11-30 13:45:18">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/12/02/Java%E3%80%90%E5%9F%BA%E7%A1%80%E3%80%91%E9%9D%A2%E8%AF%95%E9%A2%98/"
+           data-tag="Java基础"
+           data-author="" >
+            <span class="post-title" title="Java【基础】面试题">Java【基础】面试题</span>
+            <span class="post-date" title="2019-12-02 13:43:48">2019/12/02</span>
+        </a>
+        
+        <a  class="Java虚拟机 "
+           href="/2019/11/30/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E8%AF%A6%E8%A7%A3/"
+           data-tag="JVM堆、栈,内存溢出异常"
+           data-author="" >
+            <span class="post-title" title="Java内存区域详解">Java内存区域详解</span>
+            <span class="post-date" title="2019-11-30 16:22:50">2019/11/30</span>
+        </a>
+        
+        <a  class="Java虚拟机 "
+           href="/2019/11/30/Java%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%9C%BA%E5%88%B6/"
+           data-tag="GC"
+           data-author="" >
+            <span class="post-title" title="Java垃圾收集机制">Java垃圾收集机制</span>
+            <span class="post-date" title="2019-11-30 16:25:00">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/12/02/Spring%E9%9D%A2%E8%AF%95%E9%A2%98/"
+           data-tag="Spring IOC,Spring AOP,Spring 基础"
+           data-author="" >
+            <span class="post-title" title="Spring面试题">Spring面试题</span>
+            <span class="post-date" title="2019-12-02 16:55:45">2019/12/02</span>
+        </a>
+        
+        <a  class="微服务 nacos "
+           href="/2019/11/30/nacos-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"
+           data-tag="spring-cloud-alibaba,注册中心"
+           data-author="" >
+            <span class="post-title" title="nacos-注册中心">nacos-注册中心</span>
+            <span class="post-date" title="2019-11-30 14:32:46">2019/11/30</span>
+        </a>
+        
+        <a  class="微服务 nacos "
+           href="/2019/11/30/nacos-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/"
+           data-tag="spring-cloud-alibaba,注册中心"
+           data-author="" >
+            <span class="post-title" title="nacos-配置中心">nacos-配置中心</span>
+            <span class="post-date" title="2019-11-30 14:32:50">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/11/30/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3ClassLoader/"
+           data-tag="Java基础,类加载器"
+           data-author="" >
+            <span class="post-title" title="深入理解ClassLoader">深入理解ClassLoader</span>
+            <span class="post-date" title="2019-11-30 16:20:20">2019/11/30</span>
+        </a>
+        
+    </nav>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div class="post">
+    <div class="pjax">
+        <article id="post-Spring统一资源加载策略" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">Spring统一资源加载策略</h1>
+    
+    <div class="article-meta">
+        
+        <span class="top"><a href="javascript:" target="_blank" rel="noopener">置顶</a></span>
+        
+        
+        
+        <span class="book">
+            
+                <a href="javascript:" target="_blank" data-rel="Spring noopener">Spring</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+        创建时间:<time class="date" title='更新时间: 2019-12-27 16:08:51'>2019-12-04 15:09</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:3.9k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读:<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-统一资源-Resource体系"><span class="toc-text">1 统一资源 Resource体系</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-子类结构"><span class="toc-text">1.1 子类结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-AbstractResource"><span class="toc-text">1.2 AbstractResource</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-统一资源定位-ResourceLoader"><span class="toc-text">2 统一资源定位 ResourceLoader</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-DefaultResourceLoader"><span class="toc-text">2.1 DefaultResourceLoader</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-1-构造函数"><span class="toc-text">2.1.1 构造函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-2-getResource方法"><span class="toc-text">2.1.2 getResource方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-3-ProtocolResolver"><span class="toc-text">2.1.3 ProtocolResolver</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-4-示例"><span class="toc-text">2.1.4 示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-FileSystemResourceLoader"><span class="toc-text">2.2 FileSystemResourceLoader</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-1-FileSystemResourceLoader"><span class="toc-text">2.2.1 FileSystemResourceLoader</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-2-示例"><span class="toc-text">2.2.2 示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-ClassRelativeResourceLoader"><span class="toc-text">2.3 ClassRelativeResourceLoader</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-4-ResourcePatternResolver"><span class="toc-text">2.4 ResourcePatternResolver</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-5-PathMatchingResourcePatternResolver"><span class="toc-text">2.5 PathMatchingResourcePatternResolver</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-1-构造函数"><span class="toc-text">2.5.1 构造函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-2-getResource"><span class="toc-text">2.5.2 getResource</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-3-getResources"><span class="toc-text">2.5.3 getResources</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-小结"><span class="toc-text">3 小结</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <font size=3>
+
+<blockquote>
+<p>因为 Java 提供的资源定位器不满足需求，所以 Spring 必须实现自己的资源加载策略。</p>
+</blockquote>
+<p>该资源策略的要求：<br><font size=2></p>
+<ul>
+<li>职能清晰，资源的定义和资源的加载应该有一个清晰的界限。</li>
+<li>统一的抽象，统一的资源定义和资源加载策略。资源加载后要返回统一的抽象给客户端，客户端要对资源进行怎样的处理，应该由抽象资源接口来定义。</li>
+</ul>
+</font>
+
+<h1 id="1-统一资源-Resource体系"><a href="#1-统一资源-Resource体系" class="headerlink" title="1 统一资源 Resource体系"></a>1 统一资源 Resource体系</h1><p><code>org.springframework.core.io.Resource</code>是 Spring 框架所有资源的抽象和访问接口，它继承<code>org.springframework.core.io.InputStreamSource</code>接口。作为所有资源的统一抽象， Resource 定义了一些通用的方法，由子类<code>AbstractResource</code>提供统一的默认实现。通用定义如下：</p>
+<pre><code>public interface Resource extends InputStreamSource {
+
+    /**
+     * 资源是否存在
+     */
+    boolean exists();
+
+    /**
+     * 资源是否可读
+     */
+    default boolean isReadable() {
+        return true;
+    }
+
+    /**
+     * 资源所代表的句柄是否被一个 stream 打开了
+     */
+    default boolean isOpen() {
+        return false;
+    }
+
+    /**
+     * 是否为 File
+     */
+    default boolean isFile() {
+        return false;
+    }
+
+    /**
+     * 返回资源的 URL 的句柄
+     */
+    URL getURL() throws IOException;
+
+    /**
+     * 返回资源的 URI 的句柄
+     */
+    URI getURI() throws IOException;
+
+    /**
+     * 返回资源的 File 的句柄
+     */
+    File getFile() throws IOException;
+
+    /**
+     * 返回 ReadableByteChannel
+     */
+    default ReadableByteChannel readableChannel() throws IOException {
+        return java.nio.channels.Channels.newChannel(getInputStream());
+    }
+
+    /**
+     * 资源内容的长度
+     */
+    long contentLength() throws IOException;
+
+    /**
+     * 资源最后的修改时间
+     */
+    long lastModified() throws IOException;
+
+    /**
+     * 根据资源的相对路径创建新资源
+     */
+    Resource createRelative(String relativePath) throws IOException;
+
+    /**
+     * 资源的文件名
+     */
+    @Nullable
+    String getFilename();
+
+    /**
+     * 资源的描述
+     */
+    String getDescription();
+
+}</code></pre><h2 id="1-1-子类结构"><a href="#1-1-子类结构" class="headerlink" title="1.1 子类结构"></a>1.1 子类结构</h2><p><img src="/images/pasted-23.png" alt="Resource类图"></p>
+<p>从上图可以看到， Resource 根据资源的不同类型提供了不同的具体实现：</p>
+<font size=2>
+
+<ul>
+<li><strong>FileSystemResource</strong> ：对<code>java.io.File</code>类型资源的封装，只要是跟 File 打交道的，基本上与 FileSystemResource 也可以打交道。</li>
+<li><strong>ByteArrayResource</strong> ：对字节数组提供的数据的封装。如果通过 InputStream 形式访问该类型的资源，该实现会根据字节数组的数据构造一个相应的 ByteArrayInputStream。</li>
+<li><strong>UrlResource</strong> ：对<code>java.net.URL</code>类型资源的封装。内部委派 URL 进行具体的资源操作。</li>
+<li><strong>ClassPathResource</strong> ：class path 类型资源的实现。使用给定的 ClassLoader 或者给定的 Class 来加载资源。</li>
+<li><strong>InputStreamResource</strong> ：将给定的 InputStream 作为一种资源的 Resource 的实现类。</li>
+</ul>
+</font>
+
+
+<h2 id="1-2-AbstractResource"><a href="#1-2-AbstractResource" class="headerlink" title="1.2 AbstractResource"></a>1.2 AbstractResource</h2><p><code>org.springframework.core.io.AbstractResource</code>，是Resource接口的默认<strong>抽象</strong>实现，它实现了 Resource 接口的<strong>大部分公共实现</strong>，作为 Resource 接口中的重要组成，定义如下：</p>
+<pre><code>public abstract class AbstractResource implements Resource {
+
+    /**
+     * 判断文件是否存在，若判断过程产生异常（因为会调用SecurityManager来判断），就关闭对应的流
+     */
+    @Override
+    public boolean exists() {
+        try {
+          // 基于 File 进行判断
+            return getFile().exists();
+        }
+        catch (IOException ex) {
+            // Fall back to stream existence: can we open the stream?
+            // 基于 InputStream 进行判断
+            try {
+                InputStream is = getInputStream();
+                is.close();
+                return true;
+            } catch (Throwable isEx) {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * 直接返回true，表示可读
+     */
+    @Override
+    public boolean isReadable() {
+        return true;
+    }
+
+    /**
+     * 直接返回 false，表示未被打开
+     */
+    @Override
+    public boolean isOpen() {
+        return false;
+    }
+
+    /**
+     * 直接返回false，表示不为 File
+     */
+    @Override
+    public boolean isFile() {
+        return false;
+    }
+
+    /**
+     * 抛出 FileNotFoundException 异常，交给子类实现
+     */
+    @Override
+    public URL getURL() throws IOException {
+        throw new FileNotFoundException(getDescription() + &quot; cannot be resolved to URL&quot;);
+
+    }
+
+    /**
+     * 基于 getURL() 返回的 URL 构建 URI
+     */
+    @Override
+    public URI getURI() throws IOException {
+        URL url = getURL();
+        try {
+            return ResourceUtils.toURI(url);
+        } catch (URISyntaxException ex) {
+            throw new NestedIOException(&quot;Invalid URI [&quot; + url + &quot;]&quot;, ex);
+        }
+    }
+
+    /**
+     * 抛出 FileNotFoundException 异常，交给子类实现
+     */
+    @Override
+    public File getFile() throws IOException {
+        throw new FileNotFoundException(getDescription() + &quot; cannot be resolved to absolute file path&quot;);
+    }
+
+    /**
+     * 根据 getInputStream() 的返回结果构建 ReadableByteChannel
+     */
+    @Override
+    public ReadableByteChannel readableChannel() throws IOException {
+        return Channels.newChannel(getInputStream());
+    }
+
+    /**
+     * 获取资源的长度
+     *
+     * 这个资源内容长度实际就是资源的字节长度，通过全部读取一遍来判断
+     */
+    @Override
+    public long contentLength() throws IOException {
+        InputStream is = getInputStream();
+        try {
+            long size = 0;
+            byte[] buf = new byte[255]; // 每次最多读取 255 字节
+            int read;
+            while ((read = is.read(buf)) != -1) {
+                size += read;
+            }
+            return size;
+        } finally {
+            try {
+                is.close();
+            } catch (IOException ex) {
+            }
+        }
+    }
+
+    /**
+     * 返回资源最后的修改时间
+     */
+    @Override
+    public long lastModified() throws IOException {
+        long lastModified = getFileForLastModifiedCheck().lastModified();
+        if (lastModified == 0L) {
+            throw new FileNotFoundException(getDescription() +
+                    &quot; cannot be resolved in the file system for resolving its last-modified timestamp&quot;);
+        }
+        return lastModified;
+    }
+
+    protected File getFileForLastModifiedCheck() throws IOException {
+        return getFile();
+    }
+
+    /**
+     * 抛出 FileNotFoundException 异常，交给子类实现
+     */
+    @Override
+    public Resource createRelative(String relativePath) throws IOException {
+        throw new FileNotFoundException(&quot;Cannot create a relative resource for &quot; + getDescription());
+    }
+
+    /**
+     * 获取资源名称，默认返回 null ，交给子类实现
+     */
+    @Override
+    @Nullable
+    public String getFilename() {
+        return null;
+    }
+
+    /**
+     * 返回资源的描述
+     */
+    @Override
+    public String toString() {
+        return getDescription();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj == this ||
+            (obj instanceof Resource &amp;&amp; ((Resource) obj).getDescription().equals(getDescription())));
+    }
+
+    @Override
+    public int hashCode() {
+        return getDescription().hashCode();
+    }
+
+}</code></pre><p><em>如果我们想要实现自定义的 Resource ，记住不要实现 Resource 接口，而应该继承 AbstractResource 抽象类，然后根据当前的具体资源特性覆盖相应的方法即可。</em></p>
+<h1 id="2-统一资源定位-ResourceLoader"><a href="#2-统一资源定位-ResourceLoader" class="headerlink" title="2 统一资源定位 ResourceLoader"></a>2 统一资源定位 ResourceLoader</h1><blockquote>
+<p>开始就说了 Spring 将资源的定义和资源的加载区分开了，** Resource 定义了统一的资源，那资源的加载则由 ResourceLoader 来统一定义。**</p>
+</blockquote>
+<p><code>org.springframework.core.io.ResourceLoader</code>为 Spring 资源加载的统一抽象，具体的资源加载则由相应的实现类来完成，所以我们可以将 ResourceLoader 称作为统一资源定位器。其定义如下：</p>
+<pre><code>public interface ResourceLoader {
+
+    String CLASSPATH_URL_PREFIX = ResourceUtils.CLASSPATH_URL_PREFIX; // CLASSPATH URL 前缀。默认为：&quot;classpath:&quot;
+
+    Resource getResource(String location);
+
+    ClassLoader getClassLoader();
+
+}</code></pre><font size=2>
+
+<ul>
+<li><code>#getResource(String location)</code>方法，根据所提供资源路径 location 返回 Resource 实例，<strong>但是它不确保该 Resource 一定存在</strong>，需要调用 Resource#exist() 方法来判断。<ul>
+<li>该方法支持一下模式的资源：<ul>
+<li>URL 位置资源，如<code>file:C:/test.dat</code>。</li>
+<li>ClassPath 位置资源，如<code>classpath：test.dat</code>。</li>
+<li>相对路径资源，如<code>WEB-INF/test.dat</code>。</li>
+<li>返回的 Resource 实例根据实现不同而不同。<ul>
+<li>该方法的主要实现是在其子类 <strong>DefaultResourceLoader</strong> 中实现，具体过程在分析 <strong>DefaultResourceLoader</strong> 时详细说明。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>#getClassLoader()</code>方法，返回 ClassLoader 实例，对于想要获取 ResourceLoader 使用的 ClassLoader 用于来说，可以直接调用该方法来获取。在分析 Resource 时，提到了一个类 <strong>ClassPathResource</strong>，这个类是可以根据指定的 ClassLoader 来加载资源的。</li>
+</ul>
+</font>
+
+<p>作为 Spring 统一的资源加载器，它提供了统一的抽象，具体的实现则由相应的子类来负责实现，其类的类结构图如下：</p>
+<p><img src="/images/pasted-24.png" alt="ResourceLoader加载资源文件类图"></p>
+<h2 id="2-1-DefaultResourceLoader"><a href="#2-1-DefaultResourceLoader" class="headerlink" title="2.1 DefaultResourceLoader"></a>2.1 DefaultResourceLoader</h2><p>与 AbstractResource 相似， <strong>org.springframework.core.io.DefaultResourceLoader</strong> 是 ResourceLoader 的默认实现。</p>
+<h3 id="2-1-1-构造函数"><a href="#2-1-1-构造函数" class="headerlink" title="2.1.1 构造函数"></a>2.1.1 构造函数</h3><p>它接收 ClassLoader 作为构造函数的参数，或者使用无参的构造函数。</p>
+<font size=2>
+
+<ul>
+<li>使用<strong>无参</strong>的构造时，使用的 ClassLoader 为默认的 ClassLoader(<code>Thread.currentThread()#getContextClassLoader()</code>)。</li>
+<li>使用<strong>带参</strong>的构造时，可以通过<code>ClassUtils#getDefaultClassLoader()</code>获取。</li>
+<li>也可以调用<code>#setClassLoader()</code>方法进行后续设置。</li>
+</ul>
+</font>
+
+<p>代码如下：</p>
+<pre><code>@Nullable
+private ClassLoader classLoader;
+
+public DefaultResourceLoader() { // 无参构造函数
+    this.classLoader = ClassUtils.getDefaultClassLoader();
+}
+
+public DefaultResourceLoader(@Nullable ClassLoader classLoader) { // 带 ClassLoader 参数的构造函数
+    this.classLoader = classLoader;
+}
+
+public void setClassLoader(@Nullable ClassLoader classLoader) {
+    this.classLoader = classLoader;
+}
+
+@Override
+@Nullable
+public ClassLoader getClassLoader() {
+    return (this.classLoader != null ? this.classLoader : ClassUtils.getDefaultClassLoader());
+}</code></pre><h3 id="2-1-2-getResource方法"><a href="#2-1-2-getResource方法" class="headerlink" title="2.1.2 getResource方法"></a>2.1.2 getResource方法</h3><p>ResourceLoader 中最核心的方法是<code>#getResource(String localtion)</code>，它根据提供的 location 返回相应的 Resource。而 DefaultResourceLoader 对该方法提供了<strong>核心实现</strong>。</p>
+<pre><code>// DefaultResourceLoader.java
+
+@Override
+public Resource getResource(String location) {
+    Assert.notNull(location, &quot;Location must not be null&quot;);
+
+    // 首先，通过 ProtocolResolver 来加载资源
+    for (ProtocolResolver protocolResolver : this.protocolResolvers) {
+        Resource resource = protocolResolver.resolve(location, this);
+        if (resource != null) {
+            return resource;
+        }
+    }
+    // 其次，以 / 开头，返回 ClassPathContextResource 类型的资源
+    if (location.startsWith(&quot;/&quot;)) {
+        return getResourceByPath(location);
+    // 再次，以 classpath: 开头，返回 ClassPathResource 类型的资源
+    } else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
+        return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
+    // 然后，根据是否为文件 URL ，是则返回 FileUrlResource 类型的资源，否则返回 UrlResource 类型的资源
+    } else {
+        try {
+            // Try to parse the location as a URL...
+            URL url = new URL(location);
+            return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
+        } catch (MalformedURLException ex) {
+            // 最后，返回 ClassPathContextResource 类型的资源
+            // No URL -&gt; resolve as resource path.
+            return getResourceByPath(location);
+        }
+    }
+}</code></pre><font size=2>
+
+<ul>
+<li>首先，通过 ProtocolResolver 来加载资源，成功加载返回 Resource。</li>
+<li>其次，若<code>location</code>以<code>&quot;/&quot;</code>开头，则调用<code>#getResourceByPath()</code>方法，构造ClassPathContextResource类型资源并返回，代码如下<pre><code>protected Resource getResourceByPath(String path) {
+  return new ClassPathContextResource(path, getClassLoader());
+}</code></pre></li>
+<li>再次，若<code>location</code>以<code>”classpath:“</code>开头，则构造ClassPathResource类型资源并返回，在构造该资源是，通过<code>#getClassLoader</code>获取当前的 ClassLoader。</li>
+<li>然后，构造 URL ，尝试通过它进行资源定位，若没有抛出 MalformedURLException 异常，则判断是否为 FileURL , 如果是则构造 FileUrlResource 类型的资源，否则构造 UrlResource 类型的资源。</li>
+<li>最后，若在加载过程中抛出 MalformedURLException 异常，则委派<code>#getResourceByPath()</code>方法，实现资源定位加载。</li>
+</ul>
+</font>
+
+<h3 id="2-1-3-ProtocolResolver"><a href="#2-1-3-ProtocolResolver" class="headerlink" title="2.1.3 ProtocolResolver"></a>2.1.3 ProtocolResolver</h3><p><code>org.springframework.core.io.ProtocolResolver</code>,用户自定义资源解决策略，作为 DefaultResrouceLoader 的SPI：它允许用户自定义资源加载协议，而不需要继承ResourceLoader的子类。<br>在介绍 Resource 时，提到<strong>如果要实现自定义 Resource ，必须要继承 AbstractResource 实现</strong>，但有了 ProtocolResolver 后，我们不需要直接继承 DefaultResourceLoader ，改为实现 ProtocolResolver 接口也可以实现自定义的 ResourceLoader 。<br>ProtocolResolver 接口，只有一个方法，<code>Resource resolve(String location, ResourceLoader resourceLoader)</code>。代码如下：</p>
+<pre><code>/**
+ * 使用指定的 ResourceLoader ，解析指定的 location 。
+ * 若成功，则返回对应的 Resource 。
+ *
+ * @param location  资源路径
+ * @param resourceLoader  指定的加载器 ResourceLoader
+ * @return 返回为相应的 Resource
+ */
+@Nullable
+Resource resolve(String location, ResourceLoader resourceLoader);</code></pre><p>在 Spring 中你会发现该接口并没有实现类，它需要用户自定义，自定义的 Resolver 如何加入 Spring 体系呢？调用<code>DefaultResourceLoader#addProtocolResolver(ProtocolResolver)</code>方法即可。代码如下：</p>
+<pre><code>/**
+ * ProtocolResolver 集合
+ */
+private final Set&lt;ProtocolResolver&gt; protocolResolvers = new LinkedHashSet&lt;&gt;(4);
+
+public void addProtocolResolver(ProtocolResolver resolver) {
+    Assert.notNull(resolver, &quot;ProtocolResolver must not be null&quot;);
+    this.protocolResolvers.add(resolver);
+}</code></pre><h3 id="2-1-4-示例"><a href="#2-1-4-示例" class="headerlink" title="2.1.4 示例"></a>2.1.4 示例</h3><p>下面示例是演示 DefaultResourceLoader 加载资源的具体策略，代码如下：</p>
+<pre><code>ResourceLoader resourceLoader = new DefaultResourceLoader();
+
+Resource fileResource1 = resourceLoader.getResource(&quot;D:/Users/chenming673/Documents/spark.txt&quot;);
+System.out.println(&quot;fileResource1 is FileSystemResource:&quot; + (fileResource1 instanceof FileSystemResource));
+
+Resource fileResource2 = resourceLoader.getResource(&quot;/Users/chenming673/Documents/spark.txt&quot;);
+System.out.println(&quot;fileResource2 is ClassPathResource:&quot; + (fileResource2 instanceof ClassPathResource));
+
+Resource urlResource1 = resourceLoader.getResource(&quot;file:/Users/chenming673/Documents/spark.txt&quot;);
+System.out.println(&quot;urlResource1 is UrlResource:&quot; + (urlResource1 instanceof UrlResource));
+
+Resource urlResource2 = resourceLoader.getResource(&quot;http://www.baidu.com&quot;);
+System.out.println(&quot;urlResource1 is urlResource:&quot; + (urlResource2 instanceof  UrlResource));</code></pre><p>运行结果：</p>
+<pre><code>fileResource1 is FileSystemResource:false
+fileResource2 is ClassPathResource:true
+urlResource1 is UrlResource:true
+urlResource1 is urlResource:true</code></pre><font size=2>
+
+<ul>
+<li>其实对于<code>fileResource1</code>，我们更加希望是 FileSystemResource 资源类型，但事实它是 ClassPathResource 类型。为什么呢？ 在<code>DefaultResourceLoader#getResource()</code>方法的资源加载策略中，我们知道<code>D:/Users/chenming673/Documents/spark.txt</code>地址并不存在对应的资源。那么它就会抛出 MalformedURLException 异常，通过<code>DefaultResourceLoader#getResourceByPath()</code>方法构建一个 ClassPathResource 类型的资源返回。</li>
+<li>而<code>urlResource1</code>和<code>urlResource2</code>，指定有协议前缀的资源路径，则通过URL就可以定义，所以返回的都是 UrLResource 类型。</li>
+</ul>
+</font>
+
+<h2 id="2-2-FileSystemResourceLoader"><a href="#2-2-FileSystemResourceLoader" class="headerlink" title="2.2 FileSystemResourceLoader"></a>2.2 FileSystemResourceLoader</h2><p>从上面的示例，我们看到，其实 DefaultResourceLoader 对<code>#getResourceByPath(String)</code>方法处理其实不是很恰当，这个时候我们可以<code>org.springframework.core.io.FileSystemResourceLoader</code>。它继承 DefaultResourceLoader ，并且重写了<code>#getResourceByPath(String)</code>方法，使从文件系统加载资源并以 FileSystemResource 类型返回，这样我们就可以得到想要的资源类型。代码如下：</p>
+<pre><code>@Override
+protected Resource getResourceByPath(String path) {
+    // 截取首 /
+    if (path.startsWith(&quot;/&quot;)) {
+        path = path.substring(1);
+    }
+    // 创建 FileSystemContextResource 类型的资源
+    return new FileSystemContextResource(path);
+}</code></pre><h3 id="2-2-1-FileSystemResourceLoader"><a href="#2-2-1-FileSystemResourceLoader" class="headerlink" title="2.2.1 FileSystemResourceLoader"></a>2.2.1 FileSystemResourceLoader</h3><p>FileSystemResourceLoader，是 FileSystemResourceLoader 的内部类，它继承 FileSystemResource 类，实现了 ContextResource 接口。代码如下：</p>
+<pre><code>private static class FileSystemContextResource extends FileSystemResource implements ContextResource {
+
+    public FileSystemContextResource(String path) {
+        super(path);
+    }
+
+    @Override
+    public String getPathWithinContext() {
+        return getPath();
+    }
+}</code></pre><font size=2>
+
+<ul>
+<li>在构造器中，也是调用 FileSystemResource 的构造函数来构造 FileSystemResource。</li>
+<li>FileSystemContextResource 存在的意义是实现 ContextResource 接口，并实现对应的<code>#getPathWithinContext()</code>接口方法。</li>
+</ul>
+</font>
+
+<h3 id="2-2-2-示例"><a href="#2-2-2-示例" class="headerlink" title="2.2.2 示例"></a>2.2.2 示例</h3><p>在回头看一下【2.1.4示例】，如果将 DefaultResourceLoader 改成 FileSystemResourceLoader，则<code>fileResource1</code>为 FileSystemResource 类型的资源。</p>
+<h2 id="2-3-ClassRelativeResourceLoader"><a href="#2-3-ClassRelativeResourceLoader" class="headerlink" title="2.3 ClassRelativeResourceLoader"></a>2.3 ClassRelativeResourceLoader</h2><p><code>org.springframework.core.io.ClassRelativeResourceLoader</code>，是 DefaultResourceLoader 的另一个子类实现。和 FileSystemResource 在实现代码的结构上类似，也是重写<code>#getResourceByPath(String path)</code>方法，并返回对应的 ClassRelativeContextResource 的资源类型。</p>
+<blockquote>
+<p>ClassRelativeResourceLoader 扩展的功能是，可以根据给定的<code>class</code>所在包或者所在包的子包下加载资源。</p>
+</blockquote>
+<h2 id="2-4-ResourcePatternResolver"><a href="#2-4-ResourcePatternResolver" class="headerlink" title="2.4 ResourcePatternResolver"></a>2.4 ResourcePatternResolver</h2><p>ResourceLoader 的<code>Resource getResource(String location)</code>方法，每次只能根据 location  返回<strong>一个</strong> Resource。当需要加载多个资源时，我们除了多次调用<code>#getResource(String location)</code>方法以外，别无他法。<code>org.springframework.core.io.support.ResourcePatternResolver</code>是 ResourceLoader 的扩展，它支持根据指定的资源路径匹配模式每次返回<strong>多个</strong>Resource实例。代码如下：</p>
+<pre><code>public interface ResourcePatternResolver extends ResourceLoader {
+
+    String CLASSPATH_ALL_URL_PREFIX = &quot;classpath*:&quot;;
+
+    Resource[] getResources(String locationPattern) throws IOException;
+
+}</code></pre><font size=2>
+
+<ul>
+<li>ResourcePatternResolver 在 ResourceLoader 的基础上增加了<code>#getResources(String locationPattern)</code>方法，以支持根据路径匹配模式返回<strong>多个 Resource 实例</strong>。</li>
+<li>同时，也新增了一种新的协议前缀<code>&quot;classpath*:&quot;</code>，该协议前缀由其子类负责实现。</li>
+</ul>
+</font>
+
+
+<h2 id="2-5-PathMatchingResourcePatternResolver"><a href="#2-5-PathMatchingResourcePatternResolver" class="headerlink" title="2.5 PathMatchingResourcePatternResolver"></a>2.5 PathMatchingResourcePatternResolver</h2><p><code>org.springframework.core.io.support.PathMatchingResourcePatternResolver</code>，为 ResourcePatternResolver 最常用的子类，它除了支持 ResourceLoader 和 ResourcePatternResolver 新增的<code>&quot;classpath*:&quot;</code>前缀外，<strong>还支持Ant风格的路径匹配</strong></p>
+<h3 id="2-5-1-构造函数"><a href="#2-5-1-构造函数" class="headerlink" title="2.5.1 构造函数"></a>2.5.1 构造函数</h3><p>PathMatchingResourcePatternResolver 提供了三个构造函数，代码如下：</p>
+<pre><code>/**
+ * 内置的 ResourceLoader 资源定位器
+ */
+private final ResourceLoader resourceLoader;
+/**
+ * Ant 路径匹配器
+ */
+private PathMatcher pathMatcher = new AntPathMatcher();
+
+public PathMatchingResourcePatternResolver() {
+    this.resourceLoader = new DefaultResourceLoader();
+}
+
+public PathMatchingResourcePatternResolver(ResourceLoader resourceLoader) {
+    Assert.notNull(resourceLoader, &quot;ResourceLoader must not be null&quot;);
+    this.resourceLoader = resourceLoader;
+}
+
+public PathMatchingResourcePatternResolver(@Nullable ClassLoader classLoader) {
+    this.resourceLoader = new DefaultResourceLoader(classLoader);
+}</code></pre><font size=2>
+
+<ul>
+<li>PathMatchingResourcePatternResolver 在实例化的时候，可以指定一个 ResourceLoader，如果不指定的话，它会在内部构造一个 DefaultResourceLoader 。</li>
+<li><code>pathMatcher</code> 属性，默认为 AntPathMatcher 对象，用于支持 Ant 类型的路径匹配。</li>
+</ul>
+</font>
+
+
+<h3 id="2-5-2-getResource"><a href="#2-5-2-getResource" class="headerlink" title="2.5.2 getResource"></a>2.5.2 getResource</h3><pre><code>@Override
+public Resource getResource(String location) {
+    return getResourceLoader().getResource(location);
+}
+
+public ResourceLoader getResourceLoader() {
+    return this.resourceLoader;
+}</code></pre><p>该方法，直接委托给相应的 ResourceLoader 来实现。所以，如果我们在实例化的 PathMatchingResourcePatternResolver 的时候，未指定 ResourceLoader 参数的情况下，那么在加载资源时，其实就是 DefaultResourceLoader 的过程。<br><br/><br>其实在下面介绍的<code>Resource[] getResources(String locationPattern)</code>方法也相同，只不过返回的资源是<strong>多个</strong>而已。</p>
+<h3 id="2-5-3-getResources"><a href="#2-5-3-getResources" class="headerlink" title="2.5.3 getResources"></a>2.5.3 getResources</h3><pre><code>@Override
+public Resource[] getResources(String locationPattern) throws IOException {
+    Assert.notNull(locationPattern, &quot;Location pattern must not be null&quot;);
+    // 以 &quot;classpath*:&quot; 开头
+    if (locationPattern.startsWith(CLASSPATH_ALL_URL_PREFIX)) {
+        // 路径包含通配符
+        // a class path resource (multiple resources for same name possible)
+        if (getPathMatcher().isPattern(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()))) {
+            // a class path resource pattern
+            return findPathMatchingResources(locationPattern);
+        // 路径不包含通配符
+        } else {
+            // all class path resources with the given name
+            return findAllClassPathResources(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()));
+        }
+    // 不以 &quot;classpath*:&quot; 开头
+    } else {
+        // Generally only look for a pattern after a prefix here, // 通常只在这里的前缀后面查找模式
+        // and on Tomcat only after the &quot;*/&quot; separator for its &quot;war:&quot; protocol. 而在 Tomcat 上只有在 “*/ ”分隔符之后才为其 “war:” 协议
+        int prefixEnd = (locationPattern.startsWith(&quot;war:&quot;) ? locationPattern.indexOf(&quot;*/&quot;) + 1 :
+                locationPattern.indexOf(&#39;:&#39;) + 1);
+        // 路径包含通配符
+        if (getPathMatcher().isPattern(locationPattern.substring(prefixEnd))) {
+            // a file pattern
+            return findPathMatchingResources(locationPattern);
+        // 路径不包含通配符
+        } else {
+            // a single resource with the given name
+            return new Resource[] {getResourceLoader().getResource(locationPattern)};
+        }
+    }
+}</code></pre><font size=2>  
+
+<ul>
+<li>非<code>&quot;classpath*:&quot;</code>开头，并且路径<strong>不包含</strong>通配符，直接委托给相应的 ResourceLoader 来实现。</li>
+<li>其他情况，调用<code>#findAllClassPathResources()</code>或<code>#findPathMatchingResources()</code>方法，返回多个 Resource。</li>
+</ul>
+</font>
+
+
+
+<h1 id="3-小结"><a href="#3-小结" class="headerlink" title="3 小结"></a>3 小结</h1><p>至此 Spring 整个资源加载过程已经分析完毕。我省略了如何具体定位资源地址的代码。  </p>
+<font size=2>
+
+<ul>
+<li>Spring 提供了 Resource 和 ResourceLoader 来统一抽象整个资源及定位，使得资源与资源定位有了一个更加清晰的界限，并且提供了适合的 Default 类。</li>
+<li><strong>AbstractResource 为 Resource 的默认抽象实现</strong>，它对 Resource 接口做了一个统一的实现。子类继承该类后需要重写相应的方法即可，统一对于自定义 Resource 我们也是继承该类。</li>
+<li><strong>DefaultResourceLoader 同样也是 ResourceLoader 的默认实现</strong>，在自定义 ResourceLoader 时，我们除了继承该类以外，更推荐的用法是实现 <strong>ProtocolResolver</strong> 接口来实现自定义资源加载协议。</li>
+<li><strong>DefaultResourceLoader 每次只能返回单一的资源</strong>，所以 Spring 针对这个提供了另外一个接口 ResourcePatternResolver，该接口提供了根据指定的 locationPattern 返回多个资源的策略。其子类 PathMatchingResourcePatternResolver 是一个集大成者的 ResourceLoader，因为它即实现了<code>Resource getResource(String location)</code>方法，也实现了<code>Resource[] getResources(String locationPattern)</code>方法。</li>
+</ul>
+</font>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</font>
+      
+       
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">©2019-2022 Why</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full"><span class="min "></span></button>
+<button class="post-toc-menu"><span class="post-toc-menu-icons"></span></button>
+<div class="post-toc"><span class="post-toc-title">目录</span>
+    <div class="post-toc-content">
+
+    </div>
+</div>
+<a class="" id="rocket" href="javascript:void(0)" target="_blank" rel="noopener"></a>
+    </div>
+</div>
+<div class="acParent"></div>
+
+</body>
+<script src="//cdn.bootcss.com/jquery.pjax/2.0.1/jquery.pjax.min.js"></script>
+
+<script src="/js/script.js?v=1.0.1" ></script>
+<script>
+    var img_resize = 'default';
+    /*作者、标签的自动补全*/
+    $(function () {
+        $('.search').AutoComplete({
+            'data': ['#Spring','#源码分析','#es','#全文检索','#Java基础','#JVM堆、栈','#内存溢出异常','#GC','#Spring IOC','#Spring AOP','#Spring 基础','#spring-cloud-alibaba','#注册中心','#类加载器',],
+            'itemHeight': 20,
+            'width': 418
+        }).AutoComplete('show');
+    })
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $(".post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+        $('pre code').each(function(){
+            var lines = $(this).text().split('\n').length - 1, widther='';
+            if (lines>99) {
+                widther = 'widther'
+            }
+            var $numbering = $('<ul/>').addClass('pre-numbering ' + widther).attr("unselectable","on");
+            $(this).addClass('has-numbering ' + widther)
+                    .parent()
+                    .append($numbering);
+            for(var i=1;i<=lines;i++){
+                $numbering.append($('<li/>').text(i));
+            }
+        });
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<style>
+    pre{
+        position: relative;
+        margin-bottom: 24px;
+        border-radius: 10px;
+        border: 1px solid #e2dede;
+        background: #FFF;
+        overflow: hidden;
+    }
+    code.has-numbering{
+        margin-left: 30px;
+    }
+    code.has-numbering.widther{
+        margin-left: 35px;
+    }
+    .pre-numbering{
+        margin: 0px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        padding: 0.5em 3px 0.7em 5px;
+        border-right: 1px solid #C3CCD0;
+        text-align: right;
+        color: #AAA;
+        background-color: ;
+    }
+    .pre-numbering.widther {
+        width: 35px;
+    }
+</style>
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+        .nav .hide-list.fullscreen {
+            left: 492px
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+    .post .pjax article .article-entry>ol, .post .pjax article .article-entry>ul, .post .pjax article>ol, .post .pjax article>ul{
+        border: #e2dede solid 1px;
+        border-radius: 10px;
+        padding: 10px 32px 10px 56px;
+    }
+    .post .pjax article .article-entry li>ol, .post .pjax article .article-entry li>ul,.post .pjax article li>ol, .post .pjax article li>ul{
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    .post .pjax article .article-entry>ol>li, .post .pjax article .article-entry>ul>li,.post .pjax article>ol>li, .post .pjax article>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    .post .pjax article .article-entry li>ol>li, .post .pjax article .article-entry li>ul>li,.post .pjax article li>ol>li, .post .pjax article li>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+    .nav-right:before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.1;
+        background: url("/img/zzpic20363.jpg");
+        background-repeat: no-repeat;
+        background-position: 50% 0;
+        -ms-background-size: cover;
+        -o-background-size: cover;
+        -moz-background-size: cover;
+        -webkit-background-size: cover;
+        background-size: cover;
+    }
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>

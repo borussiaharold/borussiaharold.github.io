@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Java【基础】面试题 | Hello World</title>
+  <meta name="keywords" content=" Java基础 ">
+  <meta name="description" content="Java【基础】面试题 | Hello World">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta property="og:type" content="website">
+<meta property="og:title" content="categories">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;categories&#x2F;index.html">
+<meta property="og:site_name" content="Hello World">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-11-30T04:16:26.000Z">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/head.jpg">
+
+<link href="/css/style.css?v=1.0.1" rel="stylesheet">
+
+<link href="/css/hl_theme/darcula.css?v=1.0.1" rel="stylesheet">
+
+<link href="//cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="/js/jquery.autocomplete.min.js?v=1.0.1" ></script>
+
+<script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.0.1" ></script>
+
+</head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="false">
+  <input class="theme_blog_path" value="">
+</div>
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/head.jpg" />
+</a>
+<div class="author">
+    <span>王浩宇</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active">全部文章</div></li>
+    
+        
+            
+            <li><div data-rel="Spring">Spring</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="全文检索">全文检索</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="面试题">面试题</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="Java虚拟机">Java虚拟机</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="微服务"><i class="fold iconfont icon-right"></i>微服务</div>
+                
+                    <ul class="sub hide">
+                        
+                        <li><div data-rel="nacos">nacos</div>
+                            
+                        </li>
+                            
+                    </ul>
+                
+            </li>
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    
+    </div>
+    <div></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="34">
+<input type="hidden" id="yelog_site_word_count" value="60k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="back-title-list"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <form onkeydown="if(event.keyCode==13){return false;}">
+        <input class="search" type="text" placeholder="以 in: 开头进行全文搜索" autocomplete="off"id="local-search-input" >
+        <i class="cross"></i>
+        <span>
+            <label for="tagswitch">Tags:</label>
+            <input id="tagswitch" type="checkbox" style="display: none" />
+            <i id="tagsWitchIcon"></i>
+        </span>
+    </form>
+    <div class="tags-list">
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color3">es</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">全文检索</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Java基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">JVM堆、栈</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">内存溢出异常</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color3">GC</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring IOC</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring AOP</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">Spring 基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">spring-cloud-alibaba</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">注册中心</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">类加载器</a>
+    </li>
+    
+    <div class="clearfix"></div>
+</div>
+
+    
+    <div id="local-search-result">
+
+    </div>
+    
+    <nav id="title-list-nav">
+        
+        <a id="top" class="Spring "
+           href="/2019/12/03/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%20IoC/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="深入理解Spring IoC">深入理解Spring IoC</span>
+            <span class="post-date" title="2019-12-03 13:37:09">2019/12/03</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/Spring%E7%BB%9F%E4%B8%80%E8%B5%84%E6%BA%90%E5%8A%A0%E8%BD%BD%E7%AD%96%E7%95%A5/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Spring统一资源加载策略">Spring统一资源加载策略</span>
+            <span class="post-date" title="2019-12-04 15:09:37">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/%E5%8A%A0%E8%BD%BDBeanDefinition/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="加载BeanDefinition">加载BeanDefinition</span>
+            <span class="post-date" title="2019-12-04 15:08:52">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/06/%E6%B3%A8%E5%86%8CBeanDefinitions-%E4%B8%8A/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="注册BeanDefinitions-上">注册BeanDefinitions-上</span>
+            <span class="post-date" title="2019-12-06 11:22:47">2019/12/06</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/11/%E6%B3%A8%E5%86%8CBeanDefinitions-%E4%B8%8B/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="注册BeanDefinitions-下">注册BeanDefinitions-下</span>
+            <span class="post-date" title="2019-12-11 13:34:29">2019/12/11</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/20/%E5%BC%80%E5%90%AFBean%E7%9A%84%E5%8A%A0%E8%BD%BD/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="开启Bean的加载">开启Bean的加载</span>
+            <span class="post-date" title="2019-12-20 13:58:30">2019/12/20</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/24/%E4%BB%8E%E5%8D%95%E4%BE%8B%E7%BC%93%E5%AD%98%E4%B8%AD%E8%8E%B7%E5%8F%96%E5%8D%95%E4%BE%8B-Bean/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="从单例缓存中获取单例 Bean">从单例缓存中获取单例 Bean</span>
+            <span class="post-date" title="2019-12-24 14:54:46">2019/12/24</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/25/parentBeanFactory%E4%B8%8E%E4%BE%9D%E8%B5%96%E5%A4%84%E7%90%86/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="parentBeanFactory与依赖处理">parentBeanFactory与依赖处理</span>
+            <span class="post-date" title="2019-12-25 13:48:53">2019/12/25</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/25/%E5%88%86%E6%9E%90%E5%90%84scope%E7%9A%84Bean%E5%88%9B%E5%BB%BA/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="分析各scope的Bean创建">分析各scope的Bean创建</span>
+            <span class="post-date" title="2019-12-25 15:46:07">2019/12/25</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%B8%80%EF%BC%89%E4%B9%8B%E4%B8%BB%E6%B5%81%E7%A8%8B/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（一）之主流程">创建 Bean（一）之主流程</span>
+            <span class="post-date" title="2019-12-26 11:04:35">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%BA%8C%EF%BC%89%E4%B9%8B%E5%AE%9E%E4%BE%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1-1/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（二）之实例化 Bean 对象(1)">创建 Bean（二）之实例化 Bean 对象(1)</span>
+            <span class="post-date" title="2019-12-26 11:05:26">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%B8%89%EF%BC%89%E4%B9%8B%E5%AE%9E%E4%BE%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1-2/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（三）之实例化 Bean 对象(2)">创建 Bean（三）之实例化 Bean 对象(2)</span>
+            <span class="post-date" title="2019-12-26 21:37:35">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E5%9B%9B%EF%BC%89%E4%B9%8B%E5%B1%9E%E6%80%A7%E5%A1%AB%E5%85%85/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（四）之属性填充">创建 Bean（四）之属性填充</span>
+            <span class="post-date" title="2019-12-26 22:09:55">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%BA%94%EF%BC%89%E4%B9%8B%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean之创建 Bean（五）之循环依赖">Bean之创建 Bean（五）之循环依赖</span>
+            <span class="post-date" title="2019-12-27 09:59:39">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E5%85%AD%EF%BC%89%E4%B9%8B%E5%88%9D%E5%A7%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean之创建 Bean（六）之初始化 Bean 对象">Bean之创建 Bean（六）之初始化 Bean 对象</span>
+            <span class="post-date" title="2019-12-27 13:50:37">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean-%E6%80%BB%E7%BB%93/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean 总结">创建 Bean 总结</span>
+            <span class="post-date" title="2019-12-27 14:39:35">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/Aware-%E6%8E%A5%E5%8F%A3/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Aware 接口">Aware 接口</span>
+            <span class="post-date" title="2019-12-31 09:58:32">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/BeanPostProcessor/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="BeanPostProcessor">BeanPostProcessor</span>
+            <span class="post-date" title="2019-12-31 10:23:52">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/InitializingBean-%E5%92%8C-init-method/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="InitializingBean 和 init-method">InitializingBean 和 init-method</span>
+            <span class="post-date" title="2019-12-31 17:47:19">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/Bean-%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean 的生命周期">Bean 的生命周期</span>
+            <span class="post-date" title="2019-12-31 18:40:14">2019/12/31</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-TF-IDF%E7%AE%97%E6%B3%95%E3%80%81Scroll%E6%90%9C%E7%B4%A2/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-TF&amp;IDF算法、Scroll搜索">Elasticsearch-TF&amp;IDF算法、Scroll搜索</span>
+            <span class="post-date" title="2019-11-30 15:55:25">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-deep-paging%E3%80%81mapping%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-deep paging、mapping介绍">Elasticsearch-deep paging、mapping介绍</span>
+            <span class="post-date" title="2019-11-30 15:47:48">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-es%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E6%A1%88/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-es的持久化方案">Elasticsearch-es的持久化方案</span>
+            <span class="post-date" title="2019-11-30 16:06:50">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-shard%E3%80%81%E6%89%A9%E5%AE%B9%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-shard、扩容介绍">Elasticsearch-shard、扩容介绍</span>
+            <span class="post-date" title="2019-11-30 14:25:23">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E5%86%99%E4%B8%80%E8%87%B4%E6%80%A7%E3%80%81%E8%BF%94%E5%9B%9E%E8%A7%A3%E6%9E%90/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-写一致性、返回解析">Elasticsearch-写一致性、返回解析</span>
+            <span class="post-date" title="2019-11-30 15:29:27">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95%E3%80%81%E8%AF%B7%E6%B1%82%E5%8E%9F%E7%90%86/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-路由算法、请求原理">Elasticsearch-路由算法、请求原理</span>
+            <span class="post-date" title="2019-11-30 15:15:14">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E3%80%81%E8%BF%90%E8%A1%8C/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticssearch-安装、运行">Elasticssearch-安装、运行</span>
+            <span class="post-date" title="2019-11-30 13:45:18">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/12/02/Java%E3%80%90%E5%9F%BA%E7%A1%80%E3%80%91%E9%9D%A2%E8%AF%95%E9%A2%98/"
+           data-tag="Java基础"
+           data-author="" >
+            <span class="post-title" title="Java【基础】面试题">Java【基础】面试题</span>
+            <span class="post-date" title="2019-12-02 13:43:48">2019/12/02</span>
+        </a>
+        
+        <a  class="Java虚拟机 "
+           href="/2019/11/30/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E8%AF%A6%E8%A7%A3/"
+           data-tag="JVM堆、栈,内存溢出异常"
+           data-author="" >
+            <span class="post-title" title="Java内存区域详解">Java内存区域详解</span>
+            <span class="post-date" title="2019-11-30 16:22:50">2019/11/30</span>
+        </a>
+        
+        <a  class="Java虚拟机 "
+           href="/2019/11/30/Java%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%9C%BA%E5%88%B6/"
+           data-tag="GC"
+           data-author="" >
+            <span class="post-title" title="Java垃圾收集机制">Java垃圾收集机制</span>
+            <span class="post-date" title="2019-11-30 16:25:00">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/12/02/Spring%E9%9D%A2%E8%AF%95%E9%A2%98/"
+           data-tag="Spring IOC,Spring AOP,Spring 基础"
+           data-author="" >
+            <span class="post-title" title="Spring面试题">Spring面试题</span>
+            <span class="post-date" title="2019-12-02 16:55:45">2019/12/02</span>
+        </a>
+        
+        <a  class="微服务 nacos "
+           href="/2019/11/30/nacos-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"
+           data-tag="spring-cloud-alibaba,注册中心"
+           data-author="" >
+            <span class="post-title" title="nacos-注册中心">nacos-注册中心</span>
+            <span class="post-date" title="2019-11-30 14:32:46">2019/11/30</span>
+        </a>
+        
+        <a  class="微服务 nacos "
+           href="/2019/11/30/nacos-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/"
+           data-tag="spring-cloud-alibaba,注册中心"
+           data-author="" >
+            <span class="post-title" title="nacos-配置中心">nacos-配置中心</span>
+            <span class="post-date" title="2019-11-30 14:32:50">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/11/30/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3ClassLoader/"
+           data-tag="Java基础,类加载器"
+           data-author="" >
+            <span class="post-title" title="深入理解ClassLoader">深入理解ClassLoader</span>
+            <span class="post-date" title="2019-11-30 16:20:20">2019/11/30</span>
+        </a>
+        
+    </nav>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div class="post">
+    <div class="pjax">
+        <article id="post-Java【基础】面试题" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">Java【基础】面试题</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            
+                <a href="javascript:" target="_blank" data-rel="面试题 noopener">面试题</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color2">Java基础</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+        创建时间:<time class="date" title='更新时间: 2019-12-02 16:28:26'>2019-12-02 13:43</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:2.7k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读:<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Java的引用级别有什么区别？"><span class="toc-text">Java的引用级别有什么区别？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Exception和Error的区别？"><span class="toc-text">Exception和Error的区别？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ClassNotFoundException和NoClassDefFoundError有什么区别？"><span class="toc-text">ClassNotFoundException和NoClassDefFoundError有什么区别？</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#final、finally、finalize有什么区别？"><span class="toc-text">final、finally、finalize有什么区别？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#final"><span class="toc-text">final</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#finally"><span class="toc-text">finally</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#finalizefinalize是Object对象的一个方法，JDK9以后标记为不推荐使用。"><span class="toc-text">finalizefinalize是Object对象的一个方法，JDK9以后标记为不推荐使用。</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#重载和重写的区别？"><span class="toc-text">重载和重写的区别？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Java-中的几种基本数据类型是什么？占多少字节？占多少位？"><span class="toc-text">Java 中的几种基本数据类型是什么？占多少字节？占多少位？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#非static方法中能调用static变量吗？"><span class="toc-text">非static方法中能调用static变量吗？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#String、StringBuffer、StringBuilder-的区别？"><span class="toc-text">String、StringBuffer、StringBuilder 的区别？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#equals-与-的区别？"><span class="toc-text">equals 与 == 的区别？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#java-lang-Object-对象中-hashCode-和-equals-方法的关系？"><span class="toc-text">java.lang.Object 对象中 hashCode 和 equals 方法的关系？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#什么是序列化？"><span class="toc-text">什么是序列化？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#如何序列化？"><span class="toc-text">如何序列化？</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#如何实现对象克隆？"><span class="toc-text">如何实现对象克隆？</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <font size=3>
+
+<h1 id="Java的引用级别有什么区别？"><a href="#Java的引用级别有什么区别？" class="headerlink" title="Java的引用级别有什么区别？"></a><strong>Java的引用级别有什么区别？</strong></h1><blockquote>
+<p> 不同的引用类型，主要体现的是对象的不同的可达性和对垃圾收集的影响。  </p>
+</blockquote>
+<ul>
+<li>强引用<ul>
+<li>最常见的普通对象引用，只要还有强引用指向一个对象，就表示这个对象活着，垃圾收集器不会碰这种对象。但是只要超过了引用的作用域或者显示的将强引用对象赋值为null，就是可以被垃圾回收。</li>
+</ul>
+</li>
+<li>软引用<ul>
+<li>相对比强引用弱化一些的引用，可以让对象豁免一些垃圾收集，只有当JVM认为内存不足时，才会去试图回收软引用对象。JVM会确保在抛出OOM以前将软引用指向的对象清理掉。通常来实现内存敏感的缓存。</li>
+</ul>
+</li>
+<li>弱引用<ul>
+<li>它和软引用类似，但是它不能使对象豁免垃圾收集，仅仅是提供一种访问在弱引用状态下对象的路径。比如维护一种非强制性的映射关系。</li>
+</ul>
+</li>
+<li>虚引用<ul>
+<li>无法通过虚引用访问对象，虚引用仅仅是提供了一种finalize后做某些事情的机制。  </li>
+</ul>
+</li>
+</ul>
+<p><strong>所有的引用类型都是在java.lang.Reference抽象类的子类，通过get()方法可以获得。</strong></p>
+<h1 id="Exception和Error的区别？"><a href="#Exception和Error的区别？" class="headerlink" title="Exception和Error的区别？"></a><strong>Exception和Error的区别？</strong></h1><blockquote>
+<p>Exception和Error都是继承Throw类，在Java中只有Throwable类的实例才可以throw和catch，它是异常处理机制的基本组成。</p>
+</blockquote>
+<p>Exception和Error是两种不同的设计理念，Exception是程序正常运行中可以被预料到的意外形况，可以进行相应的处理。 Error是在正常情况以外，突然出现的问题。大部分的Error都会导致程序的崩溃，不可恢复。很多时候，我们是很难显性的看到Error的，例如OOM。<br>Exceptoin分为<strong>可检查异常</strong>和<strong>不可检查异常</strong>两种：  </p>
+<ul>
+<li>可检查异常必须显示的进行捕获处理，这时编译期检查的一部分，例如当我们使用File对象的时候，经常出现的文件不存在异常，这种异常是编译器在编译时帮我们想到的异常情况。  </li>
+<li>不可检查异常就是runtime exception，是程序在运行期间发生的异常，比如从List中取值的代码，可能平时都是正常运行的，突然就出现了脚标越界的异常，但是下一次执行又正常了，这种异常就是不可检查的，因为它的动态的。 </li>
+</ul>
+<h2 id="ClassNotFoundException和NoClassDefFoundError有什么区别？"><a href="#ClassNotFoundException和NoClassDefFoundError有什么区别？" class="headerlink" title="ClassNotFoundException和NoClassDefFoundError有什么区别？"></a>ClassNotFoundException和NoClassDefFoundError有什么区别？</h2><ul>
+<li>首先，它们一个的Exception的实例，一个是Error的实例，这就是最大的区别。</li>
+<li>ClassNotFoundException体现在，当程序运行期间尝试使用类加载去加载某一个Class文件，但是在classpath中没有找到，例如通过反射Class.forName()去实例化某一个类，如果它不存在，就抛出这个Exception。</li>
+<li>NoClassDefFoundError体现在，一个类在编译期间存在，但是运行时找不到这个类的定义，JVM就抛出这个Error。</li>
+</ul>
+<p><img src="/images/pasted-2.png" alt="异常错误关系图"></p>
+<p><strong>要理解Throwable、Exception、Error的设计和分类，要知道它们三者之间的关系，并且有一个原则就是尽量小的范围去catch异常，不要catch Exception这种根本不知道为什么出错的异常。异常的处理腰围后续排查做准备，不要为后续工作增加负担。</strong><br>如果从性能的方面出发，我们要知道Java的异常在实例每一个Exception时都会对当时的栈进行快照，这是一个相对比较重的操作，如果发生的频繁了那么性能开销不低。当我们的服务出现反应慢、吞吐量下降时，优化的一个思路可能从检查频繁的Exception出发。</p>
+<h1 id="final、finally、finalize有什么区别？"><a href="#final、finally、finalize有什么区别？" class="headerlink" title="final、finally、finalize有什么区别？"></a><strong>final、finally、finalize有什么区别？</strong></h1><blockquote>
+<p>这就是一个垃圾的题，感觉没什么用。</p>
+</blockquote>
+<h2 id="final"><a href="#final" class="headerlink" title="final"></a>final</h2><p>final可以修饰类、方法、变量。修饰后的类代表不可以继承，修饰后的变量是不可以修改的，而final的方法也不可以重写。<br><strong>但是final并不等于immutable。</strong>一个List变量，我们只能约束这个List不可以改变，但是不能约束它调用add方法。假如我们就是想要一个immutable类怎么办？ </p>
+<ol>
+<li>将class声明成final，这样别人就不能通过继承来扩展。</li>
+<li>将所有成员变量定位为private和final，并且不要使用setter方法。</li>
+<li>在构造对象时，成员变量使用深度拷贝来初始化，而不是直接赋值，因为你无法确定输入对象不被其他人修改。深度拷贝可以使用JSON来实现。对象–JSON–对象。</li>
+<li>如果需要提供getter方法，那么使用copy-on-write原则。及写入操作时通过复制一个全新的对象，然后将old对象指向new对象，释放锁。读取操作没有枷锁，多线程下不保证数据一致性。</li>
+</ol>
+<h2 id="finally"><a href="#finally" class="headerlink" title="finally"></a>finally</h2><p>finally是java异常处理的一种机制，try-catch-finally。保证在try语句后一定会执行finally中的代码。大部分的时候我们都是将资源流在这里关闭，但是更推荐使用JDK7以后的try-catch-resource语句。<br><em>主要是实现AutoCloseable接口</em></p>
+<pre><code>//通过实现AutoCloseable接口，JVM会自动调用内部的close方法
+public class Resource implements AutoCloseable {
+    public void sayHello() {
+        System.out.println(&quot;hello&quot;);
+    }
+
+    @Override
+    public void close() throws Exception {
+        System.out.println(&quot;Resource is closed&quot;);
+    }
+}
+
+public class CloseResourceIn7 {
+    public static void main(String[] args) {
+        //将资源流在try语句的括号中声明，如果有多个资源使用分号分割。
+        try(Resource resource = new Resource()) {
+            resource.sayHello();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre><h2 id="finalizefinalize是Object对象的一个方法，JDK9以后标记为不推荐使用。"><a href="#finalizefinalize是Object对象的一个方法，JDK9以后标记为不推荐使用。" class="headerlink" title="finalizefinalize是Object对象的一个方法，JDK9以后标记为不推荐使用。"></a>finalizefinalize是Object对象的一个方法，JDK9以后标记为不推荐使用。</h2><h1 id="重载和重写的区别？"><a href="#重载和重写的区别？" class="headerlink" title="重载和重写的区别？"></a><strong>重载和重写的区别？</strong></h1><pre><code>class main{
+ public static void main(String[] arrgs){
+     Animal o = new Dog();
+        o.test1(&quot;main&quot;);
+        o.test1(o);
+        //问：打印什么？为什么？
+    }
+}
+
+class Amimal{
+ public void test1(String str){
+     //打印：1
+    }
+
+    public void test1(Animal item){
+     //打印：2
+    }
+
+    public void test1(Dog item){
+     //打印：3
+    }
+}
+
+class Dgo extends Animal{
+    public void test1(String str){
+     //打印：str
+    }
+}</code></pre><blockquote>
+<p>输入：str、2。结果就是重载与重写<strong>最重要</strong>区别，动态编译与静态编译。</p>
+</blockquote>
+<ul>
+<li>重写：<ul>
+<li>方法名、返回值、参数值相同。</li>
+<li>子类不能缩小父类方法的访问权限。</li>
+<li>子类不可以抛出比父类更多的异常，但是也不抛。</li>
+<li>方法被定义为final的，不可以重写。</li>
+<li>动态编译：在运行时根据实际类型来确定，每个类的方法区都有它自己的虚拟方法表。  </li>
+</ul>
+</li>
+<li>重载：<ul>
+<li>参数类型、个数、顺序至少有一项不同。</li>
+<li>不可以只变化返回值。</li>
+<li>静态编辑：在编译时根据静态类型来确定，Animal o = new Dog(); Animal就是静态类型，编译期可知。</li>
+</ul>
+</li>
+</ul>
+<h1 id="Java-中的几种基本数据类型是什么？占多少字节？占多少位？"><a href="#Java-中的几种基本数据类型是什么？占多少字节？占多少位？" class="headerlink" title="Java 中的几种基本数据类型是什么？占多少字节？占多少位？"></a><strong>Java 中的几种基本数据类型是什么？占多少字节？占多少位？</strong></h1><blockquote>
+<p>Java 支持的数据类型包括基本数据类型和引用类型。</p>
+</blockquote>
+<p>基本数据类型：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th align="center">字节</th>
+<th align="center">位</th>
+<th align="center">取值范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>boolean</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>byte</td>
+<td align="center">1</td>
+<td align="center">8</td>
+<td align="center">-2的7次方到2的7次方-1</td>
+</tr>
+<tr>
+<td>short</td>
+<td align="center">2</td>
+<td align="center">16</td>
+<td align="center">-2的15次方到2的15次方-1</td>
+</tr>
+<tr>
+<td>char</td>
+<td align="center">2</td>
+<td align="center">16</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>int</td>
+<td align="center">4</td>
+<td align="center">32</td>
+<td align="center">-2的31次方到2的31次方-1</td>
+</tr>
+<tr>
+<td>float</td>
+<td align="center">4</td>
+<td align="center">32</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>long</td>
+<td align="center">8</td>
+<td align="center">64</td>
+<td align="center">-2的63次方到2的63次方-1</td>
+</tr>
+<tr>
+<td>double</td>
+<td align="center">8</td>
+<td align="center">64</td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<p>引用数据类型：</p>
+<ul>
+<li>包括类、接口、数组等。</li>
+</ul>
+<h1 id="非static方法中能调用static变量吗？"><a href="#非static方法中能调用static变量吗？" class="headerlink" title="非static方法中能调用static变量吗？"></a><strong>非static方法中能调用static变量吗？</strong></h1><p>不可以，<code>static</code>变量是属于类等，它在所有实例中的值都是不变的。在了解<strong>类加载机制</strong>后我们就知道，<code>static</code>变量在<strong>连接</strong>阶段就拥有了默认值，这时类还没有经历<strong>初始化</strong>阶段。</p>
+<h1 id="String、StringBuffer、StringBuilder-的区别？"><a href="#String、StringBuffer、StringBuilder-的区别？" class="headerlink" title="String、StringBuffer、StringBuilder 的区别？"></a><strong>String、StringBuffer、StringBuilder 的区别？</strong></h1><blockquote>
+<p>Java 平台提供了两种类型的字符串：String 和 StringBuffer/StringBuilder，它们可以储存和操作字符串。</p>
+</blockquote>
+<p>String：只读字符串，String类是final的内容不可改变。  </p>
+<blockquote>
+<p>每次对 String 类型进行改变的时候，都会生成一个新的 String 对象，然后将指针指向新的 String 对象。</p>
+</blockquote>
+<p>StringBuffer/StringBuilder：可以直接进行修改自身，它俩的操作完全相同，区别在于StringBuilder是单线程有线程安全问题。</p>
+<blockquote>
+<p>有时我们为了避免每个线程重复创建 StringBuilder 对象，会通过 ThreadLocal + StringBuilder 的方式，进行对 StringBuilder 的重用。</p>
+</blockquote>
+<h1 id="equals-与-的区别？"><a href="#equals-与-的区别？" class="headerlink" title="equals 与 == 的区别？"></a><strong>equals 与 == 的区别？</strong></h1><p><code>==</code>对比的是对象堆空间的地址，如果两个不同的对象说同一个内存地址，就是true。<code>equals</code>是Object对象的方法，判断的是具体的值。</p>
+<h1 id="java-lang-Object-对象中-hashCode-和-equals-方法的关系？"><a href="#java-lang-Object-对象中-hashCode-和-equals-方法的关系？" class="headerlink" title="java.lang.Object 对象中 hashCode 和 equals 方法的关系？"></a><strong>java.lang.Object 对象中 hashCode 和 equals 方法的关系？</strong></h1><p>当我们准备重写equals方法时，大部分的时候都要连带着重写hashCode方法。这主要是为了在集合中使用这个对象的时候避免<strong>哈希碰撞</strong>当发生。两个不同的对象，它们的哈希值是可能一样的。</p>
+<ul>
+<li>equals不相等，hashCode可能相等。</li>
+<li>equals相等，就要重写hashCode方法，保证hashCode相等。//大部分时候使用31这个质数来操作。</li>
+</ul>
+<h1 id="什么是序列化？"><a href="#什么是序列化？" class="headerlink" title="什么是序列化？"></a><strong>什么是序列化？</strong></h1><blockquote>
+<p>序列化就是一种用来处理对象流的机制，所谓对象流也就是将对象的内容进行流化。</p>
+</blockquote>
+<ul>
+<li>可以对流话后的对象进行读写操作，可以传输于网络。</li>
+<li>序列化是为了解决在对象流进行读写操作时引发的问题。</li>
+</ul>
+<p>反序列化的过程则是与序列化相反。</p>
+<blockquote>
+<p>但是我们要知道，序列化并不是局限的把对象转换成二进制数组，将一个对象换成成XML、JSON也是序列化。</p>
+</blockquote>
+<h2 id="如何序列化？"><a href="#如何序列化？" class="headerlink" title="如何序列化？"></a>如何序列化？</h2><blockquote>
+<p>下面的例子是使用Java内置的方案，实际场景中我们可以使用Google Protobuf序列化方案。</p>
+</blockquote>
+<p>将需要被序列化的类，实现<strong>Serializable</strong>接口，该接口没有具体的序列化方法，仅仅是标记当前的类可以被序列化。</p>
+<ul>
+<li>序列化<ul>
+<li>使用一个输出流（如：FileOutputStream）来构造一个ObjectOutputStream（对象流）。</li>
+<li>使用，ObjectOutputStream的<code>writeObject(Object obj)</code>方法，就可以将参数<code>obj</code>的对象序列化。</li>
+</ul>
+</li>
+<li>反序列化<ul>
+<li>想要恢复序列化，需要使用输入流。</li>
+</ul>
+</li>
+</ul>
+<p><em>如果有一些变量不想序列化可以使用<code>transient</code>关键字修饰，这个关键字只能修饰变量。</em></p>
+<h1 id="如何实现对象克隆？"><a href="#如何实现对象克隆？" class="headerlink" title="如何实现对象克隆？"></a>如何实现对象克隆？</h1><ul>
+<li>实现Cloneable接口，重写Object类中的clone方法，就可以实现浅克隆和深克隆。</li>
+<li>通过序列化与反序列化来实现深克隆。</li>
+</ul>
+<p><em>使用序列化时要注意避免修改序列化对象，如果修改了很可能造成，以前序列化出来的对象反序列化失败。</em></p>
+<blockquote>
+<p>之所以区分深克隆和浅克隆主要的关键在于对象引用，浅克隆出来的对象它们的对象引用说指向同一个对象，深克隆的对象所有的一切都是自己独有的。</p>
+</blockquote>
+</font>
+      
+       
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">©2019-2022 Why</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full"><span class="min "></span></button>
+<button class="post-toc-menu"><span class="post-toc-menu-icons"></span></button>
+<div class="post-toc"><span class="post-toc-title">目录</span>
+    <div class="post-toc-content">
+
+    </div>
+</div>
+<a class="" id="rocket" href="javascript:void(0)" target="_blank" rel="noopener"></a>
+    </div>
+</div>
+<div class="acParent"></div>
+
+</body>
+<script src="//cdn.bootcss.com/jquery.pjax/2.0.1/jquery.pjax.min.js"></script>
+
+<script src="/js/script.js?v=1.0.1" ></script>
+<script>
+    var img_resize = 'default';
+    /*作者、标签的自动补全*/
+    $(function () {
+        $('.search').AutoComplete({
+            'data': ['#Spring','#源码分析','#es','#全文检索','#Java基础','#JVM堆、栈','#内存溢出异常','#GC','#Spring IOC','#Spring AOP','#Spring 基础','#spring-cloud-alibaba','#注册中心','#类加载器',],
+            'itemHeight': 20,
+            'width': 418
+        }).AutoComplete('show');
+    })
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $(".post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+        $('pre code').each(function(){
+            var lines = $(this).text().split('\n').length - 1, widther='';
+            if (lines>99) {
+                widther = 'widther'
+            }
+            var $numbering = $('<ul/>').addClass('pre-numbering ' + widther).attr("unselectable","on");
+            $(this).addClass('has-numbering ' + widther)
+                    .parent()
+                    .append($numbering);
+            for(var i=1;i<=lines;i++){
+                $numbering.append($('<li/>').text(i));
+            }
+        });
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<style>
+    pre{
+        position: relative;
+        margin-bottom: 24px;
+        border-radius: 10px;
+        border: 1px solid #e2dede;
+        background: #FFF;
+        overflow: hidden;
+    }
+    code.has-numbering{
+        margin-left: 30px;
+    }
+    code.has-numbering.widther{
+        margin-left: 35px;
+    }
+    .pre-numbering{
+        margin: 0px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        padding: 0.5em 3px 0.7em 5px;
+        border-right: 1px solid #C3CCD0;
+        text-align: right;
+        color: #AAA;
+        background-color: ;
+    }
+    .pre-numbering.widther {
+        width: 35px;
+    }
+</style>
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+        .nav .hide-list.fullscreen {
+            left: 492px
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+    .post .pjax article .article-entry>ol, .post .pjax article .article-entry>ul, .post .pjax article>ol, .post .pjax article>ul{
+        border: #e2dede solid 1px;
+        border-radius: 10px;
+        padding: 10px 32px 10px 56px;
+    }
+    .post .pjax article .article-entry li>ol, .post .pjax article .article-entry li>ul,.post .pjax article li>ol, .post .pjax article li>ul{
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    .post .pjax article .article-entry>ol>li, .post .pjax article .article-entry>ul>li,.post .pjax article>ol>li, .post .pjax article>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    .post .pjax article .article-entry li>ol>li, .post .pjax article .article-entry li>ul>li,.post .pjax article li>ol>li, .post .pjax article li>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+    .nav-right:before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.1;
+        background: url("/img/zzpic20363.jpg");
+        background-repeat: no-repeat;
+        background-position: 50% 0;
+        -ms-background-size: cover;
+        -o-background-size: cover;
+        -moz-background-size: cover;
+        -webkit-background-size: cover;
+        background-size: cover;
+    }
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>

@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Elasticsearch-shard、扩容介绍 | Hello World</title>
+  <meta name="keywords" content=" es , 全文检索 ">
+  <meta name="description" content="Elasticsearch-shard、扩容介绍 | Hello World">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta property="og:type" content="website">
+<meta property="og:title" content="categories">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;categories&#x2F;index.html">
+<meta property="og:site_name" content="Hello World">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-11-30T04:16:26.000Z">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/head.jpg">
+
+<link href="/css/style.css?v=1.0.1" rel="stylesheet">
+
+<link href="/css/hl_theme/darcula.css?v=1.0.1" rel="stylesheet">
+
+<link href="//cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="/js/jquery.autocomplete.min.js?v=1.0.1" ></script>
+
+<script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.0.1" ></script>
+
+</head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="false">
+  <input class="theme_blog_path" value="">
+</div>
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/head.jpg" />
+</a>
+<div class="author">
+    <span>王浩宇</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active">全部文章</div></li>
+    
+        
+            
+            <li><div data-rel="Spring">Spring</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="全文检索">全文检索</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="面试题">面试题</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="Java虚拟机">Java虚拟机</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="微服务"><i class="fold iconfont icon-right"></i>微服务</div>
+                
+                    <ul class="sub hide">
+                        
+                        <li><div data-rel="nacos">nacos</div>
+                            
+                        </li>
+                            
+                    </ul>
+                
+            </li>
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    
+    </div>
+    <div></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="34">
+<input type="hidden" id="yelog_site_word_count" value="60k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="back-title-list"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <form onkeydown="if(event.keyCode==13){return false;}">
+        <input class="search" type="text" placeholder="以 in: 开头进行全文搜索" autocomplete="off"id="local-search-input" >
+        <i class="cross"></i>
+        <span>
+            <label for="tagswitch">Tags:</label>
+            <input id="tagswitch" type="checkbox" style="display: none" />
+            <i id="tagsWitchIcon"></i>
+        </span>
+    </form>
+    <div class="tags-list">
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color3">es</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">全文检索</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Java基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">JVM堆、栈</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">内存溢出异常</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color3">GC</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring IOC</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring AOP</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">Spring 基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">spring-cloud-alibaba</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">注册中心</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">类加载器</a>
+    </li>
+    
+    <div class="clearfix"></div>
+</div>
+
+    
+    <div id="local-search-result">
+
+    </div>
+    
+    <nav id="title-list-nav">
+        
+        <a id="top" class="Spring "
+           href="/2019/12/03/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%20IoC/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="深入理解Spring IoC">深入理解Spring IoC</span>
+            <span class="post-date" title="2019-12-03 13:37:09">2019/12/03</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/Spring%E7%BB%9F%E4%B8%80%E8%B5%84%E6%BA%90%E5%8A%A0%E8%BD%BD%E7%AD%96%E7%95%A5/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Spring统一资源加载策略">Spring统一资源加载策略</span>
+            <span class="post-date" title="2019-12-04 15:09:37">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/%E5%8A%A0%E8%BD%BDBeanDefinition/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="加载BeanDefinition">加载BeanDefinition</span>
+            <span class="post-date" title="2019-12-04 15:08:52">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/06/%E6%B3%A8%E5%86%8CBeanDefinitions-%E4%B8%8A/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="注册BeanDefinitions-上">注册BeanDefinitions-上</span>
+            <span class="post-date" title="2019-12-06 11:22:47">2019/12/06</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/11/%E6%B3%A8%E5%86%8CBeanDefinitions-%E4%B8%8B/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="注册BeanDefinitions-下">注册BeanDefinitions-下</span>
+            <span class="post-date" title="2019-12-11 13:34:29">2019/12/11</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/20/%E5%BC%80%E5%90%AFBean%E7%9A%84%E5%8A%A0%E8%BD%BD/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="开启Bean的加载">开启Bean的加载</span>
+            <span class="post-date" title="2019-12-20 13:58:30">2019/12/20</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/24/%E4%BB%8E%E5%8D%95%E4%BE%8B%E7%BC%93%E5%AD%98%E4%B8%AD%E8%8E%B7%E5%8F%96%E5%8D%95%E4%BE%8B-Bean/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="从单例缓存中获取单例 Bean">从单例缓存中获取单例 Bean</span>
+            <span class="post-date" title="2019-12-24 14:54:46">2019/12/24</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/25/parentBeanFactory%E4%B8%8E%E4%BE%9D%E8%B5%96%E5%A4%84%E7%90%86/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="parentBeanFactory与依赖处理">parentBeanFactory与依赖处理</span>
+            <span class="post-date" title="2019-12-25 13:48:53">2019/12/25</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/25/%E5%88%86%E6%9E%90%E5%90%84scope%E7%9A%84Bean%E5%88%9B%E5%BB%BA/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="分析各scope的Bean创建">分析各scope的Bean创建</span>
+            <span class="post-date" title="2019-12-25 15:46:07">2019/12/25</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%B8%80%EF%BC%89%E4%B9%8B%E4%B8%BB%E6%B5%81%E7%A8%8B/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（一）之主流程">创建 Bean（一）之主流程</span>
+            <span class="post-date" title="2019-12-26 11:04:35">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%BA%8C%EF%BC%89%E4%B9%8B%E5%AE%9E%E4%BE%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1-1/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（二）之实例化 Bean 对象(1)">创建 Bean（二）之实例化 Bean 对象(1)</span>
+            <span class="post-date" title="2019-12-26 11:05:26">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%B8%89%EF%BC%89%E4%B9%8B%E5%AE%9E%E4%BE%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1-2/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（三）之实例化 Bean 对象(2)">创建 Bean（三）之实例化 Bean 对象(2)</span>
+            <span class="post-date" title="2019-12-26 21:37:35">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E5%9B%9B%EF%BC%89%E4%B9%8B%E5%B1%9E%E6%80%A7%E5%A1%AB%E5%85%85/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（四）之属性填充">创建 Bean（四）之属性填充</span>
+            <span class="post-date" title="2019-12-26 22:09:55">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%BA%94%EF%BC%89%E4%B9%8B%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean之创建 Bean（五）之循环依赖">Bean之创建 Bean（五）之循环依赖</span>
+            <span class="post-date" title="2019-12-27 09:59:39">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E5%85%AD%EF%BC%89%E4%B9%8B%E5%88%9D%E5%A7%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean之创建 Bean（六）之初始化 Bean 对象">Bean之创建 Bean（六）之初始化 Bean 对象</span>
+            <span class="post-date" title="2019-12-27 13:50:37">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean-%E6%80%BB%E7%BB%93/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean 总结">创建 Bean 总结</span>
+            <span class="post-date" title="2019-12-27 14:39:35">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/Aware-%E6%8E%A5%E5%8F%A3/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Aware 接口">Aware 接口</span>
+            <span class="post-date" title="2019-12-31 09:58:32">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/BeanPostProcessor/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="BeanPostProcessor">BeanPostProcessor</span>
+            <span class="post-date" title="2019-12-31 10:23:52">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/InitializingBean-%E5%92%8C-init-method/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="InitializingBean 和 init-method">InitializingBean 和 init-method</span>
+            <span class="post-date" title="2019-12-31 17:47:19">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/Bean-%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean 的生命周期">Bean 的生命周期</span>
+            <span class="post-date" title="2019-12-31 18:40:14">2019/12/31</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-TF-IDF%E7%AE%97%E6%B3%95%E3%80%81Scroll%E6%90%9C%E7%B4%A2/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-TF&amp;IDF算法、Scroll搜索">Elasticsearch-TF&amp;IDF算法、Scroll搜索</span>
+            <span class="post-date" title="2019-11-30 15:55:25">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-deep-paging%E3%80%81mapping%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-deep paging、mapping介绍">Elasticsearch-deep paging、mapping介绍</span>
+            <span class="post-date" title="2019-11-30 15:47:48">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-es%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E6%A1%88/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-es的持久化方案">Elasticsearch-es的持久化方案</span>
+            <span class="post-date" title="2019-11-30 16:06:50">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-shard%E3%80%81%E6%89%A9%E5%AE%B9%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-shard、扩容介绍">Elasticsearch-shard、扩容介绍</span>
+            <span class="post-date" title="2019-11-30 14:25:23">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E5%86%99%E4%B8%80%E8%87%B4%E6%80%A7%E3%80%81%E8%BF%94%E5%9B%9E%E8%A7%A3%E6%9E%90/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-写一致性、返回解析">Elasticsearch-写一致性、返回解析</span>
+            <span class="post-date" title="2019-11-30 15:29:27">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95%E3%80%81%E8%AF%B7%E6%B1%82%E5%8E%9F%E7%90%86/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-路由算法、请求原理">Elasticsearch-路由算法、请求原理</span>
+            <span class="post-date" title="2019-11-30 15:15:14">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E3%80%81%E8%BF%90%E8%A1%8C/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticssearch-安装、运行">Elasticssearch-安装、运行</span>
+            <span class="post-date" title="2019-11-30 13:45:18">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/12/02/Java%E3%80%90%E5%9F%BA%E7%A1%80%E3%80%91%E9%9D%A2%E8%AF%95%E9%A2%98/"
+           data-tag="Java基础"
+           data-author="" >
+            <span class="post-title" title="Java【基础】面试题">Java【基础】面试题</span>
+            <span class="post-date" title="2019-12-02 13:43:48">2019/12/02</span>
+        </a>
+        
+        <a  class="Java虚拟机 "
+           href="/2019/11/30/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E8%AF%A6%E8%A7%A3/"
+           data-tag="JVM堆、栈,内存溢出异常"
+           data-author="" >
+            <span class="post-title" title="Java内存区域详解">Java内存区域详解</span>
+            <span class="post-date" title="2019-11-30 16:22:50">2019/11/30</span>
+        </a>
+        
+        <a  class="Java虚拟机 "
+           href="/2019/11/30/Java%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%9C%BA%E5%88%B6/"
+           data-tag="GC"
+           data-author="" >
+            <span class="post-title" title="Java垃圾收集机制">Java垃圾收集机制</span>
+            <span class="post-date" title="2019-11-30 16:25:00">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/12/02/Spring%E9%9D%A2%E8%AF%95%E9%A2%98/"
+           data-tag="Spring IOC,Spring AOP,Spring 基础"
+           data-author="" >
+            <span class="post-title" title="Spring面试题">Spring面试题</span>
+            <span class="post-date" title="2019-12-02 16:55:45">2019/12/02</span>
+        </a>
+        
+        <a  class="微服务 nacos "
+           href="/2019/11/30/nacos-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"
+           data-tag="spring-cloud-alibaba,注册中心"
+           data-author="" >
+            <span class="post-title" title="nacos-注册中心">nacos-注册中心</span>
+            <span class="post-date" title="2019-11-30 14:32:46">2019/11/30</span>
+        </a>
+        
+        <a  class="微服务 nacos "
+           href="/2019/11/30/nacos-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/"
+           data-tag="spring-cloud-alibaba,注册中心"
+           data-author="" >
+            <span class="post-title" title="nacos-配置中心">nacos-配置中心</span>
+            <span class="post-date" title="2019-11-30 14:32:50">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/11/30/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3ClassLoader/"
+           data-tag="Java基础,类加载器"
+           data-author="" >
+            <span class="post-title" title="深入理解ClassLoader">深入理解ClassLoader</span>
+            <span class="post-date" title="2019-11-30 16:20:20">2019/11/30</span>
+        </a>
+        
+    </nav>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div class="post">
+    <div class="pjax">
+        <article id="post-Elasticsearch-shard、扩容介绍" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">Elasticsearch-shard、扩容介绍</h1>
+    
+    <div class="article-meta">
+        
+        
+        
+        <span class="book">
+            
+                <a href="javascript:" target="_blank" data-rel="全文检索 noopener">全文检索</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color3">es</a>
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color5">全文检索</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+        创建时间:<time class="date" title='更新时间: 2019-12-02 16:01:21'>2019-11-30 14:25</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:1.5k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读:<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#什么是shard？"><span class="toc-text">什么是shard？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#es的扩容"><span class="toc-text">es的扩容</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#扩容的极限"><span class="toc-text">扩容的极限</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#尽可能的提高容错性"><span class="toc-text">尽可能的提高容错性</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分布式透明隐藏特性"><span class="toc-text">分布式透明隐藏特性</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="什么是shard？"><a href="#什么是shard？" class="headerlink" title="什么是shard？"></a>什么是shard？</h1><p>&emsp; 首先我们明确一个概念，每个index都是默认拥有5个P shard和与之对应的R shard组成。也就是说一个index拥有10个shard。我们的document通过es的处理保存在不同的P shard和R shard上。<strong>每一个shard都是磁盘上的某一块具体物理地址</strong>。<br>&emsp; Es为了保证高可用，在node宕机时不会造成服务无法访问、数据丢失等因素，它选择<strong>冗余的存储数据</strong>来避免。</p>
+<ul>
+<li>每一个index包含多个shard，最少是由1个P sahrd组成。在创建index时，P shard的数量就已经确定，后期无法进行更改。但是R shard是可以随时进行数量调整的。</li>
+<li>每一个shard都是一个最小的工作单元，它承担了部分数据。是一个完整的Lucene实例，拥有完整的创建索引、处理请求的能力。这也就说明，一个R shard在P shard宕机时，是完全可以自主处理该shard组下的所有请求的。</li>
+<li>在node发生变化时，shard会自动在node中进行负载均衡的分配，这一切都是es来帮助我们处理的。</li>
+<li>每个document一定只保存在一个P shard以及对应的R shard中。不可能同时存在两个P shard中。</li>
+<li>P shard不能和自己的R shard在同一个node上，但可以和其他的R shard在同一个node。</li>
+</ul>
+<pre><code>PUT /创建的索引
+{
+    &quot;settings&quot;:{
+        &quot;number_of_shards&quot;:5,
+        &quot;number_of_replicas&quot;1
+    }
+}</code></pre><h1 id="es的扩容"><a href="#es的扩容" class="headerlink" title="es的扩容"></a>es的扩容</h1><p>&emsp; es的扩容就像任何其他分布式应用扩容一样，分为垂直扩容与水平扩种两种。es会自动对扩容后的note进行负载均衡。</p>
+<ul>
+<li>垂直扩容：更新服务器的大小，服务器总数量不变。比如：两台16G内存的服务器（共32G），将其中一台替换为32G，服务器总数量=2，但是内存扩容到48G。</li>
+<li>水平扩容：增加服务器数量，服务器总数量变化。比如：两台16G内存的服务区（共32G），新增一台16G服务器，服务器总数量=3，内存扩容到48G。 </li>
+</ul>
+<h2 id="扩容的极限"><a href="#扩容的极限" class="headerlink" title="扩容的极限"></a>扩容的极限</h2><p>&emsp; 通过扩容机制以及shard的特性，我们引出一个扩容极限的问题。那么什么是扩容极限？<br>&emsp; 我们知道每一个shard其实都是硬盘内的一个区域，它耗费着系统的IO/CPU/Memery资源。那么也就是说，如果一台node，上面只有1个shard岂不是就能占用全部的资源，这时也是es性能最好的时候。<br>&emsp; 但是这又引出了另一个问题，我们知道一个index，默认是有10个shard（5P 5R），也就是说当我们扩容到了10台node，就发生了扩容极限。我们每一个shard已经占用了当前note的全部资源。如果这时发生了性能问题，也就是说我们的10台note的集群都无法不足时，还要继续进行扩容。<br>处理方法就是：增加node，然后新增R shard，来继续进行负载均衡。不过这里要注意的是，我们在进行settings时，是以P shard的倍数进行设置。<br>&emsp; 举例：默认5P，每一个搭配1R，总shard数=10   |    修改R shard为2。默认5P，每一个搭配2R，总shard数=15。这时你的扩容极限就变为了15台。  </p>
+<h2 id="尽可能的提高容错性"><a href="#尽可能的提高容错性" class="headerlink" title="尽可能的提高容错性"></a>尽可能的提高容错性</h2><p>&emsp; 当我们某一个node发生各种异常情况宕机，但是不影响服务的使用，保证数据查询的正确性。允许最多的note宕机，那么就越高可用、高容错。假如100台note，我们最多允许99台node宕机还能保证服务和数据正常。那么这就是超级高可用和超级高容错。。要是100台node，100个note都宕机了，还是能用，那这就太神了。。。<br>&emsp; 在3台note下，9个shard（3P 6R）的配置，容错性就很不错，我们最多同时允许2台note宕机</p>
+<h1 id="分布式透明隐藏特性"><a href="#分布式透明隐藏特性" class="headerlink" title="分布式透明隐藏特性"></a>分布式透明隐藏特性</h1><p>&emsp; es是一套分布式系统，之所以分布式就是为了处理大数据。如果数量很小或者纯单机应用，那还不如用Solor或者直接用Lucene来实现。但是es的优势又不光光体现在分布式，它相比较前两者更简单好用，解压即用。为此它在内部实现了很多机制没有暴露给我们开发者。</p>
+<ul>
+<li>自动分片机制，当我们保存document时不需要考虑这个document要保存在什么shard上。取的时候也不需要特意指定shard。</li>
+<li>集群发现机制，es使node自动加入相关或者默认的集群中接受集群的管理。</li>
+<li>shard的负载均衡，es对各个node中的shard进行负载均衡，尽量不使某一个note压力过大。</li>
+<li>请求路由，当我们准备从es获取数据使，我们并不需要关心真实的命中node和shard。只需访问一个es地址，es会自动将数据进行汇集处理响应回来。</li>
+<li>集群扩容，当note的数量发生改变，shard需要重新进行分配。如何分配，怎么分配这些es都帮我们处理了。</li>
+<li>master宕机node升级，假如我们的master节点发生了宕机，es会自动将某一个node升级为master节点，不会发生服务中断的情况。当master回归使，回来时master就变成了一个普通的node。</li>
+<li>master节点主要是管理es集群的元数据，比如索引的创建和删除。node的创建和删除。master不承担所有的请求，也就不会造成性能瓶颈。</li>
+<li>节点对等分布式架构：在es架构中，每一个node都能接受处理所有的请求，任何一个node接受请求后，都可以路由到相关node。最先接受请求的node，统一处理后将数据响应。也就是说集群中的所有node都是平等的，不存在master能做的事node不能做。</li>
+</ul>
+
+      
+       
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">©2019-2022 Why</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full"><span class="min "></span></button>
+<button class="post-toc-menu"><span class="post-toc-menu-icons"></span></button>
+<div class="post-toc"><span class="post-toc-title">目录</span>
+    <div class="post-toc-content">
+
+    </div>
+</div>
+<a class="" id="rocket" href="javascript:void(0)" target="_blank" rel="noopener"></a>
+    </div>
+</div>
+<div class="acParent"></div>
+
+</body>
+<script src="//cdn.bootcss.com/jquery.pjax/2.0.1/jquery.pjax.min.js"></script>
+
+<script src="/js/script.js?v=1.0.1" ></script>
+<script>
+    var img_resize = 'default';
+    /*作者、标签的自动补全*/
+    $(function () {
+        $('.search').AutoComplete({
+            'data': ['#Spring','#源码分析','#es','#全文检索','#Java基础','#JVM堆、栈','#内存溢出异常','#GC','#Spring IOC','#Spring AOP','#Spring 基础','#spring-cloud-alibaba','#注册中心','#类加载器',],
+            'itemHeight': 20,
+            'width': 418
+        }).AutoComplete('show');
+    })
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $(".post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+        $('pre code').each(function(){
+            var lines = $(this).text().split('\n').length - 1, widther='';
+            if (lines>99) {
+                widther = 'widther'
+            }
+            var $numbering = $('<ul/>').addClass('pre-numbering ' + widther).attr("unselectable","on");
+            $(this).addClass('has-numbering ' + widther)
+                    .parent()
+                    .append($numbering);
+            for(var i=1;i<=lines;i++){
+                $numbering.append($('<li/>').text(i));
+            }
+        });
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<style>
+    pre{
+        position: relative;
+        margin-bottom: 24px;
+        border-radius: 10px;
+        border: 1px solid #e2dede;
+        background: #FFF;
+        overflow: hidden;
+    }
+    code.has-numbering{
+        margin-left: 30px;
+    }
+    code.has-numbering.widther{
+        margin-left: 35px;
+    }
+    .pre-numbering{
+        margin: 0px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        padding: 0.5em 3px 0.7em 5px;
+        border-right: 1px solid #C3CCD0;
+        text-align: right;
+        color: #AAA;
+        background-color: ;
+    }
+    .pre-numbering.widther {
+        width: 35px;
+    }
+</style>
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+        .nav .hide-list.fullscreen {
+            left: 492px
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+    .post .pjax article .article-entry>ol, .post .pjax article .article-entry>ul, .post .pjax article>ol, .post .pjax article>ul{
+        border: #e2dede solid 1px;
+        border-radius: 10px;
+        padding: 10px 32px 10px 56px;
+    }
+    .post .pjax article .article-entry li>ol, .post .pjax article .article-entry li>ul,.post .pjax article li>ol, .post .pjax article li>ul{
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    .post .pjax article .article-entry>ol>li, .post .pjax article .article-entry>ul>li,.post .pjax article>ol>li, .post .pjax article>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    .post .pjax article .article-entry li>ol>li, .post .pjax article .article-entry li>ul>li,.post .pjax article li>ol>li, .post .pjax article li>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+    .nav-right:before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.1;
+        background: url("/img/zzpic20363.jpg");
+        background-repeat: no-repeat;
+        background-position: 50% 0;
+        -ms-background-size: cover;
+        -o-background-size: cover;
+        -moz-background-size: cover;
+        -webkit-background-size: cover;
+        background-size: cover;
+    }
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>

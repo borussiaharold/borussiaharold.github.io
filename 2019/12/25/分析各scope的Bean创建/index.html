@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>分析各scope的Bean创建 | Hello World</title>
+  <meta name="keywords" content=" Spring , 源码分析 ">
+  <meta name="description" content="分析各scope的Bean创建 | Hello World">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta property="og:type" content="website">
+<meta property="og:title" content="categories">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;categories&#x2F;index.html">
+<meta property="og:site_name" content="Hello World">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-11-30T04:16:26.000Z">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/head.jpg">
+
+<link href="/css/style.css?v=1.0.1" rel="stylesheet">
+
+<link href="/css/hl_theme/darcula.css?v=1.0.1" rel="stylesheet">
+
+<link href="//cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="/js/jquery.autocomplete.min.js?v=1.0.1" ></script>
+
+<script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.0.1" ></script>
+
+</head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="false">
+  <input class="theme_blog_path" value="">
+</div>
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/head.jpg" />
+</a>
+<div class="author">
+    <span>王浩宇</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active">全部文章</div></li>
+    
+        
+            
+            <li><div data-rel="Spring">Spring</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="全文检索">全文检索</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="面试题">面试题</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="Java虚拟机">Java虚拟机</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="微服务"><i class="fold iconfont icon-right"></i>微服务</div>
+                
+                    <ul class="sub hide">
+                        
+                        <li><div data-rel="nacos">nacos</div>
+                            
+                        </li>
+                            
+                    </ul>
+                
+            </li>
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    
+    </div>
+    <div></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="34">
+<input type="hidden" id="yelog_site_word_count" value="60k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="back-title-list"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <form onkeydown="if(event.keyCode==13){return false;}">
+        <input class="search" type="text" placeholder="以 in: 开头进行全文搜索" autocomplete="off"id="local-search-input" >
+        <i class="cross"></i>
+        <span>
+            <label for="tagswitch">Tags:</label>
+            <input id="tagswitch" type="checkbox" style="display: none" />
+            <i id="tagsWitchIcon"></i>
+        </span>
+    </form>
+    <div class="tags-list">
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color3">es</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">全文检索</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Java基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">JVM堆、栈</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">内存溢出异常</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color3">GC</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring IOC</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring AOP</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">Spring 基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">spring-cloud-alibaba</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">注册中心</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">类加载器</a>
+    </li>
+    
+    <div class="clearfix"></div>
+</div>
+
+    
+    <div id="local-search-result">
+
+    </div>
+    
+    <nav id="title-list-nav">
+        
+        <a id="top" class="Spring "
+           href="/2019/12/03/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%20IoC/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="深入理解Spring IoC">深入理解Spring IoC</span>
+            <span class="post-date" title="2019-12-03 13:37:09">2019/12/03</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/Spring%E7%BB%9F%E4%B8%80%E8%B5%84%E6%BA%90%E5%8A%A0%E8%BD%BD%E7%AD%96%E7%95%A5/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Spring统一资源加载策略">Spring统一资源加载策略</span>
+            <span class="post-date" title="2019-12-04 15:09:37">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/%E5%8A%A0%E8%BD%BDBeanDefinition/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="加载BeanDefinition">加载BeanDefinition</span>
+            <span class="post-date" title="2019-12-04 15:08:52">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/06/%E6%B3%A8%E5%86%8CBeanDefinitions-%E4%B8%8A/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="注册BeanDefinitions-上">注册BeanDefinitions-上</span>
+            <span class="post-date" title="2019-12-06 11:22:47">2019/12/06</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/11/%E6%B3%A8%E5%86%8CBeanDefinitions-%E4%B8%8B/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="注册BeanDefinitions-下">注册BeanDefinitions-下</span>
+            <span class="post-date" title="2019-12-11 13:34:29">2019/12/11</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/20/%E5%BC%80%E5%90%AFBean%E7%9A%84%E5%8A%A0%E8%BD%BD/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="开启Bean的加载">开启Bean的加载</span>
+            <span class="post-date" title="2019-12-20 13:58:30">2019/12/20</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/24/%E4%BB%8E%E5%8D%95%E4%BE%8B%E7%BC%93%E5%AD%98%E4%B8%AD%E8%8E%B7%E5%8F%96%E5%8D%95%E4%BE%8B-Bean/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="从单例缓存中获取单例 Bean">从单例缓存中获取单例 Bean</span>
+            <span class="post-date" title="2019-12-24 14:54:46">2019/12/24</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/25/parentBeanFactory%E4%B8%8E%E4%BE%9D%E8%B5%96%E5%A4%84%E7%90%86/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="parentBeanFactory与依赖处理">parentBeanFactory与依赖处理</span>
+            <span class="post-date" title="2019-12-25 13:48:53">2019/12/25</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/25/%E5%88%86%E6%9E%90%E5%90%84scope%E7%9A%84Bean%E5%88%9B%E5%BB%BA/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="分析各scope的Bean创建">分析各scope的Bean创建</span>
+            <span class="post-date" title="2019-12-25 15:46:07">2019/12/25</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%B8%80%EF%BC%89%E4%B9%8B%E4%B8%BB%E6%B5%81%E7%A8%8B/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（一）之主流程">创建 Bean（一）之主流程</span>
+            <span class="post-date" title="2019-12-26 11:04:35">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%BA%8C%EF%BC%89%E4%B9%8B%E5%AE%9E%E4%BE%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1-1/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（二）之实例化 Bean 对象(1)">创建 Bean（二）之实例化 Bean 对象(1)</span>
+            <span class="post-date" title="2019-12-26 11:05:26">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%B8%89%EF%BC%89%E4%B9%8B%E5%AE%9E%E4%BE%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1-2/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（三）之实例化 Bean 对象(2)">创建 Bean（三）之实例化 Bean 对象(2)</span>
+            <span class="post-date" title="2019-12-26 21:37:35">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E5%9B%9B%EF%BC%89%E4%B9%8B%E5%B1%9E%E6%80%A7%E5%A1%AB%E5%85%85/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（四）之属性填充">创建 Bean（四）之属性填充</span>
+            <span class="post-date" title="2019-12-26 22:09:55">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%BA%94%EF%BC%89%E4%B9%8B%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean之创建 Bean（五）之循环依赖">Bean之创建 Bean（五）之循环依赖</span>
+            <span class="post-date" title="2019-12-27 09:59:39">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E5%85%AD%EF%BC%89%E4%B9%8B%E5%88%9D%E5%A7%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean之创建 Bean（六）之初始化 Bean 对象">Bean之创建 Bean（六）之初始化 Bean 对象</span>
+            <span class="post-date" title="2019-12-27 13:50:37">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean-%E6%80%BB%E7%BB%93/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean 总结">创建 Bean 总结</span>
+            <span class="post-date" title="2019-12-27 14:39:35">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/Aware-%E6%8E%A5%E5%8F%A3/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Aware 接口">Aware 接口</span>
+            <span class="post-date" title="2019-12-31 09:58:32">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/BeanPostProcessor/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="BeanPostProcessor">BeanPostProcessor</span>
+            <span class="post-date" title="2019-12-31 10:23:52">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/InitializingBean-%E5%92%8C-init-method/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="InitializingBean 和 init-method">InitializingBean 和 init-method</span>
+            <span class="post-date" title="2019-12-31 17:47:19">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/Bean-%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean 的生命周期">Bean 的生命周期</span>
+            <span class="post-date" title="2019-12-31 18:40:14">2019/12/31</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-TF-IDF%E7%AE%97%E6%B3%95%E3%80%81Scroll%E6%90%9C%E7%B4%A2/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-TF&amp;IDF算法、Scroll搜索">Elasticsearch-TF&amp;IDF算法、Scroll搜索</span>
+            <span class="post-date" title="2019-11-30 15:55:25">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-deep-paging%E3%80%81mapping%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-deep paging、mapping介绍">Elasticsearch-deep paging、mapping介绍</span>
+            <span class="post-date" title="2019-11-30 15:47:48">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-es%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E6%A1%88/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-es的持久化方案">Elasticsearch-es的持久化方案</span>
+            <span class="post-date" title="2019-11-30 16:06:50">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-shard%E3%80%81%E6%89%A9%E5%AE%B9%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-shard、扩容介绍">Elasticsearch-shard、扩容介绍</span>
+            <span class="post-date" title="2019-11-30 14:25:23">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E5%86%99%E4%B8%80%E8%87%B4%E6%80%A7%E3%80%81%E8%BF%94%E5%9B%9E%E8%A7%A3%E6%9E%90/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-写一致性、返回解析">Elasticsearch-写一致性、返回解析</span>
+            <span class="post-date" title="2019-11-30 15:29:27">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95%E3%80%81%E8%AF%B7%E6%B1%82%E5%8E%9F%E7%90%86/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-路由算法、请求原理">Elasticsearch-路由算法、请求原理</span>
+            <span class="post-date" title="2019-11-30 15:15:14">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E3%80%81%E8%BF%90%E8%A1%8C/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticssearch-安装、运行">Elasticssearch-安装、运行</span>
+            <span class="post-date" title="2019-11-30 13:45:18">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/12/02/Java%E3%80%90%E5%9F%BA%E7%A1%80%E3%80%91%E9%9D%A2%E8%AF%95%E9%A2%98/"
+           data-tag="Java基础"
+           data-author="" >
+            <span class="post-title" title="Java【基础】面试题">Java【基础】面试题</span>
+            <span class="post-date" title="2019-12-02 13:43:48">2019/12/02</span>
+        </a>
+        
+        <a  class="Java虚拟机 "
+           href="/2019/11/30/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E8%AF%A6%E8%A7%A3/"
+           data-tag="JVM堆、栈,内存溢出异常"
+           data-author="" >
+            <span class="post-title" title="Java内存区域详解">Java内存区域详解</span>
+            <span class="post-date" title="2019-11-30 16:22:50">2019/11/30</span>
+        </a>
+        
+        <a  class="Java虚拟机 "
+           href="/2019/11/30/Java%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%9C%BA%E5%88%B6/"
+           data-tag="GC"
+           data-author="" >
+            <span class="post-title" title="Java垃圾收集机制">Java垃圾收集机制</span>
+            <span class="post-date" title="2019-11-30 16:25:00">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/12/02/Spring%E9%9D%A2%E8%AF%95%E9%A2%98/"
+           data-tag="Spring IOC,Spring AOP,Spring 基础"
+           data-author="" >
+            <span class="post-title" title="Spring面试题">Spring面试题</span>
+            <span class="post-date" title="2019-12-02 16:55:45">2019/12/02</span>
+        </a>
+        
+        <a  class="微服务 nacos "
+           href="/2019/11/30/nacos-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"
+           data-tag="spring-cloud-alibaba,注册中心"
+           data-author="" >
+            <span class="post-title" title="nacos-注册中心">nacos-注册中心</span>
+            <span class="post-date" title="2019-11-30 14:32:46">2019/11/30</span>
+        </a>
+        
+        <a  class="微服务 nacos "
+           href="/2019/11/30/nacos-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/"
+           data-tag="spring-cloud-alibaba,注册中心"
+           data-author="" >
+            <span class="post-title" title="nacos-配置中心">nacos-配置中心</span>
+            <span class="post-date" title="2019-11-30 14:32:50">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/11/30/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3ClassLoader/"
+           data-tag="Java基础,类加载器"
+           data-author="" >
+            <span class="post-title" title="深入理解ClassLoader">深入理解ClassLoader</span>
+            <span class="post-date" title="2019-11-30 16:20:20">2019/11/30</span>
+        </a>
+        
+    </nav>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div class="post">
+    <div class="pjax">
+        <article id="post-分析各scope的Bean创建" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">分析各scope的Bean创建</h1>
+    
+    <div class="article-meta">
+        
+        <span class="top"><a href="javascript:" target="_blank" rel="noopener">置顶</a></span>
+        
+        
+        
+        <span class="book">
+            
+                <a href="javascript:" target="_blank" data-rel="Spring noopener">Spring</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+        创建时间:<time class="date" title='更新时间: 2019-12-27 16:06:58'>2019-12-25 15:46</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:1.9k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读:<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-singleton"><span class="toc-text">1 singleton</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-addSingleton"><span class="toc-text">1.1 addSingleton</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-原型模式"><span class="toc-text">2 原型模式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-beforePrototypeCreation】"><span class="toc-text">2.1 beforePrototypeCreation】</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-afterSingletonCreation"><span class="toc-text">2.2 afterSingletonCreation</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-其他作用域"><span class="toc-text">3 其他作用域</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-总结"><span class="toc-text">4 总结</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <font size=3>
+
+<br/>
+
+
+<p>在 Spring 中存在着不同的 scope，默认是 singleton，还有 property、request 等其他的 scope。他们的初始化步骤各不相同。</p>
+<h1 id="1-singleton"><a href="#1-singleton" class="headerlink" title="1 singleton"></a>1 singleton</h1><p>Spring 的 scope 默认为 singleton，其初始化代码如下：</p>
+<pre><code>// AbstractBeanFactory.java
+
+if (mbd.isSingleton()) { // 单例模式
+    sharedInstance = getSingleton(beanName, () -&gt; {
+        try {
+            return createBean(beanName, mbd, args);
+        }
+        catch (BeansException ex) {
+            // 显式从单例缓存中删除 Bean 实例
+            // 因为单例模式下为了解决循环依赖，可能他已经存在了，所以销毁它。 TODO 芋艿
+            destroySingleton(beanName);
+            throw ex;
+        }
+    });
+    // &lt;x&gt;
+    bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
+}
+</code></pre><p>在上文中已经分析了从缓存中获取单例默认的 Bean。但如果<strong>缓存中不存在呢</strong>？则需要从头开始加载 Bean，这个过程由<code>#getSingleton(...)</code>方法实现。代码如下：</p>
+<pre><code>// DefaultSingletonBeanRegistry.java
+
+public Object getSingleton(String beanName, ObjectFactory&lt;?&gt; singletonFactory) {
+    Assert.notNull(beanName, &quot;Bean name must not be null&quot;);
+    // 全局加锁
+    synchronized (this.singletonObjects) {
+        // 【1】 从缓存中检查一遍
+        // 因为 singleton 模式其实就是复用已经创建的 bean 所以这步骤必须检查
+        Object singletonObject = this.singletonObjects.get(beanName);
+        //  为空，开始加载过程
+        if (singletonObject == null) {
+            if (this.singletonsCurrentlyInDestruction) {
+                throw new BeanCreationNotAllowedException(beanName,
+                        &quot;Singleton bean creation not allowed while singletons of this factory are in destruction &quot; +
+                        &quot;(Do not request a bean from a BeanFactory in a destroy method implementation!)&quot;);
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug(&quot;Creating shared instance of singleton bean &#39;&quot; + beanName + &quot;&#39;&quot;);
+            }
+            // 【2】 加载前置处理
+            beforeSingletonCreation(beanName);
+            boolean newSingleton = false;
+            boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
+            if (recordSuppressedExceptions) {
+                this.suppressedExceptions = new LinkedHashSet&lt;&gt;();
+            }
+            try {
+                // 【3】 初始化 bean
+                // 这个过程其实是调用 createBean() 方法
+                singletonObject = singletonFactory.getObject();
+                newSingleton = true;
+            } catch (IllegalStateException ex) {
+                singletonObject = this.singletonObjects.get(beanName);
+                if (singletonObject == null) {
+                    throw ex;
+                }
+            } catch (BeanCreationException ex) {
+                if (recordSuppressedExceptions) {
+                    for (Exception suppressedException : this.suppressedExceptions) {
+                        ex.addRelatedCause(suppressedException);
+                    }
+                }
+                throw ex;
+            } finally {
+                if (recordSuppressedExceptions) {
+                    this.suppressedExceptions = null;
+                }
+                // 【4】 后置处理
+                afterSingletonCreation(beanName);
+            }
+            // 【5】 加入缓存中
+            if (newSingleton) {
+                addSingleton(beanName, singletonObject);
+            }
+        }
+        return singletonObject;
+    }</code></pre><p>其实这个过程并没有创建 Bean 对象，仅仅做了一部分的准备和预处理步骤。真正获取单例 Bean 的方法，由【3】处的<code>singletonFactory.getObject()</code>方法实现，而<code>singletonFactory</code>参数由回调方法产生。</p>
+<font size=2>
+
+<ul>
+<li>【1】处，再次检查缓存中是否已经加载过，如果已经加载了则直接返回，否则开始加载过程。</li>
+<li>【2】处，调用<code>#beforeSingletonCreation(...)</code>方法，记录加载单例 Bean 之前的加载状态，即前置处理。</li>
+<li>【3】处，调用参数传递的 ObjectFactory 的<code>#getObject()</code>方法实例化。<strong>极其重要，后续详讲</strong></li>
+<li>【4】处，调用<code>#afterSingletonCreation(...)</code>方法，进行加载单例后的后置处理。</li>
+<li>【5】处，调用<code>#addSingleton(...)</code>方法，将结果记录到缓存中，同时删除加载 Bean 过程中所记录的一切服务状态。详见【1.1 addSingleton】</li>
+</ul>
+</font>
+
+<h2 id="1-1-addSingleton"><a href="#1-1-addSingleton" class="headerlink" title="1.1 addSingleton"></a>1.1 addSingleton</h2><pre><code>// DefaultSingletonBeanRegistry.java
+
+/**
+ * 存放的是单例 bean 的映射。
+ *
+ * 对应关系为 bean name --&gt; bean instance
+ */
+private final Map&lt;String, Object&gt; singletonObjects = new ConcurrentHashMap&lt;&gt;(256);
+
+/**
+ * 存放的是【早期】的单例 bean 的映射。
+ *
+ * 对应关系也是 bean name --&gt; bean instance。
+ *
+ * 它与 {@link #singletonObjects} 的区别区别在，于 earlySingletonObjects 中存放的 bean 不一定是完整的。
+ *
+ * 从 {@link #getSingleton(String)} 方法中，中我们可以了解，bean 在创建过程中就已经加入到 earlySingletonObjects 中了，
+ * 所以当在 bean 的创建过程中就可以通过 getBean() 方法获取。
+ * 这个 Map 也是解决【循环依赖】的关键所在。
+ **/
+private final Map&lt;String, ObjectFactory&lt;?&gt;&gt; singletonFactories = new HashMap&lt;&gt;(16);
+
+/**
+ * 存放的是 ObjectFactory 的映射，可以理解为创建单例 bean 的 factory 。
+ *
+ * 对应关系是 bean name --&gt; ObjectFactory
+ */
+private final Map&lt;String, Object&gt; earlySingletonObjects = new HashMap&lt;&gt;(16);
+
+/** Set of registered singletons, containing the bean names in registration order. */
+private final Set&lt;String&gt; registeredSingletons = new LinkedHashSet&lt;&gt;(256);
+
+protected void addSingleton(String beanName, Object singletonObject) {
+    synchronized (this.singletonObjects) {
+        this.singletonObjects.put(beanName, singletonObject);
+        this.singletonFactories.remove(beanName);
+        this.earlySingletonObjects.remove(beanName);
+        this.registeredSingletons.add(beanName);
+    }
+}</code></pre><font size=2>
+
+<p>一个 put、一个 add、两个 remove 操作。</p>
+<ul>
+<li>【put】<code>singletonObjects</code>属性，单例 Bean 的缓存。</li>
+<li>【remove】<code>singletonFactories</code>属性，单例 BeanFactory 的缓存。</li>
+<li>【remove】<code>earlySingletonObjects</code>属性，早期创建的单例 Bean 的缓存。</li>
+<li>【add】<code>registeredSingletons</code>属性，已经注册的单例缓存。</li>
+</ul>
+</font>
+
+<h1 id="2-原型模式"><a href="#2-原型模式" class="headerlink" title="2 原型模式"></a>2 原型模式</h1><pre><code>// AbstractBeanFactory.java
+
+else if (mbd.isPrototype()) {
+    Object prototypeInstance = null;
+    try {
+       // 【1】 加载前置处理
+        beforePrototypeCreation(beanName);
+        // 【2】 创建 Bean 对象
+        prototypeInstance = createBean(beanName, mbd, args);
+    } finally {
+       // 【3】 加载后置处理
+        afterPrototypeCreation(beanName);
+    }
+    // 【4】 从 Bean 实例中获取对象
+    bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
+}</code></pre><p>原型模式的初始化比较简单，直接创建一个新的 Bean 实例就可以，过程如下：</p>
+<font size=2>
+
+<ul>
+<li>【1】处，调用<code>#beforePrototypeCreation(...)</code>方法，记录加载原型模式之前的加载状态，即前置处理。详见【2.1 beforePrototypeCreation】</li>
+<li>【2】处，调用<code>#createBean(...)</code>方法，创建一个 Bean 实例对象。<strong>超级重要！后续详讲</strong></li>
+<li>【3】处，调用<code>#afterPrototypeCreation(...)</code>方法，进行加载原型模式之后的加载状态，即后置处理。详见【2.3 afterPrototypeCreation】</li>
+<li>【4】处，加载了单例 Bean 后，调用<code>#getObjectForBeanInstance(...)</code>方法，从 Bean 实例中获取对象。该方法已经在【【源码】IoC加载Bean之从单例缓存中获取单例 Bean】详细说明。</font>
+
+
+</li>
+</ul>
+<h2 id="2-1-beforePrototypeCreation】"><a href="#2-1-beforePrototypeCreation】" class="headerlink" title="2.1 beforePrototypeCreation】"></a>2.1 beforePrototypeCreation】</h2><pre><code>
+// AbstractBeanFactory.java
+
+private final ThreadLocal&lt;Object&gt; prototypesCurrentlyInCreation =
+        new NamedThreadLocal&lt;&gt;(&quot;Prototype beans currently in creation&quot;);
+
+protected void beforePrototypeCreation(String beanName) {
+    Object curVal = this.prototypesCurrentlyInCreation.get();
+    if (curVal == null) { // String
+        this.prototypesCurrentlyInCreation.set(beanName);
+    } else if (curVal instanceof String) { // String =&gt; Set
+        Set&lt;String&gt; beanNameSet = new HashSet&lt;&gt;(2);
+        beanNameSet.add((String) curVal);
+        beanNameSet.add(beanName);
+        this.prototypesCurrentlyInCreation.set(beanNameSet);
+    } else { // Set
+        Set&lt;String&gt; beanNameSet = (Set&lt;String&gt;) curVal;
+        beanNameSet.add(beanName);
+    }
+}
+</code></pre><h2 id="2-2-afterSingletonCreation"><a href="#2-2-afterSingletonCreation" class="headerlink" title="2.2 afterSingletonCreation"></a>2.2 afterSingletonCreation</h2><pre><code>// AbstractBeanFactory.java
+
+protected void afterPrototypeCreation(String beanName) {
+    Object curVal = this.prototypesCurrentlyInCreation.get();
+    if (curVal instanceof String) { // String =&gt; null
+        this.prototypesCurrentlyInCreation.remove();
+    } else if (curVal instanceof Set) { // Set
+        Set&lt;String&gt; beanNameSet = (Set&lt;String&gt;) curVal;
+        beanNameSet.remove(beanName);
+        if (beanNameSet.isEmpty()) { // Set =&gt; null
+            this.prototypesCurrentlyInCreation.remove();
+        }
+    }
+}</code></pre><h1 id="3-其他作用域"><a href="#3-其他作用域" class="headerlink" title="3 其他作用域"></a>3 其他作用域</h1><pre><code>// AbstractBeanFactory.java
+
+else {
+    // 获得 scopeName 对应的 Scope 对象
+    String scopeName = mbd.getScope();
+    final Scope scope = this.scopes.get(scopeName);
+    if (scope == null) {
+        throw new IllegalStateException(&quot;No Scope registered for scope name &#39;&quot; + scopeName + &quot;&#39;&quot;);
+    }
+    try {
+        // 从指定的 scope 下创建 bean
+        Object scopedInstance = scope.get(beanName, () -&gt; {
+            // 加载前置处理
+            beforePrototypeCreation(beanName);
+            try {
+                // 创建 Bean 对象
+                return createBean(beanName, mbd, args);
+            } finally {
+                // 加载后缀处理
+                afterPrototypeCreation(beanName);
+            }
+        });
+        // 从 Bean 实例中获取对象
+        bean = getObjectForBeanInstance(scopedInstance, name, beanName, mbd);
+    } catch (IllegalStateException ex) {
+        throw new BeanCreationException(beanName,
+                &quot;Scope &#39;&quot; + scopeName + &quot;&#39; is not active for the current thread; consider &quot; +
+                &quot;defining a scoped proxy for this bean if you intend to refer to it from a singleton&quot;,
+                ex);
+    }
+}
+</code></pre><p><strong>核心路程和原型模式一样</strong>，只不过获取 Bean 的实例由<code>Scope#get(...)</code>方法来实现。代码如下：</p>
+<pre><code>// SimpleThreadScope.java
+
+private final ThreadLocal&lt;Map&lt;String, Object&gt;&gt; threadScope =
+    new NamedThreadLocal&lt;Map&lt;String, Object&gt;&gt;(&quot;SimpleThreadScope&quot;) {
+        @Override
+        protected Map&lt;String, Object&gt; initialValue() {
+            return new HashMap&lt;&gt;();
+        }
+    };
+
+@Override
+public Object get(String name, ObjectFactory&lt;?&gt; objectFactory) {
+    // 获取 scope 缓存
+    Map&lt;String, Object&gt; scope = this.threadScope.get();
+    Object scopedObject = scope.get(name);
+    if (scopedObject == null) {
+        scopedObject = objectFactory.getObject();
+        // 加入缓存
+        scope.put(name, scopedObject);
+    }
+    return scopedObject;
+}</code></pre><p><code>org.springframework.beans.factory.config.Scope</code>接口，有多种不同的实现，对应不同的 scope。</p>
+<h1 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h1><p>对于上面三个模块，其中最重要的<strong>有两个方法</strong>：</p>
+<font size=2>
+
+<ul>
+<li>一个是<code>#createBean(...)</code>方法。<ul>
+<li>后续详细说明。</li>
+</ul>
+</li>
+<li>一个是<code>#getObjectForBeanInstance()</code>方法。<ul>
+<li>在前面的【【源码】IoC加载Bean之从单例缓存中获取单例 Bean】已经详细说明。</li>
+</ul>
+</li>
+</ul>
+<p>这两个方法，在上面三个模块中<strong>都有调用</strong>。</p>
+</font>
+
+<blockquote>
+<p>getObjectForBeanInstance 方法主要是验证我们得到的 Bean 的正确性。其实就是检测当前的 Bean 是否是 FactoryBean 的类型。<br>如果是，name需要调用该 Bean 对应的 FactoryBean 实例的<code>#getObject()</code>方法，作为返回值。<br>无论是从缓存中获取的 Bean 还是通过不同的 scope 策略加载的 Bean 都只是最原始的 Bean 状态，并不一定是我们需要的 Bean。<br>举个例子，加入我们需要工厂 Bean 进行处理。那么这里得到的其实是工厂 Bean 的初始状态，但是我们真正需要的是工厂 Bean 定义的<code>factiry-method</code>方法返回的 Bean，而<code>getObjectForBeanInstance</code>方法，就是完成这个工作的。</p>
+</blockquote>
+</font>
+      
+       
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">©2019-2022 Why</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full"><span class="min "></span></button>
+<button class="post-toc-menu"><span class="post-toc-menu-icons"></span></button>
+<div class="post-toc"><span class="post-toc-title">目录</span>
+    <div class="post-toc-content">
+
+    </div>
+</div>
+<a class="" id="rocket" href="javascript:void(0)" target="_blank" rel="noopener"></a>
+    </div>
+</div>
+<div class="acParent"></div>
+
+</body>
+<script src="//cdn.bootcss.com/jquery.pjax/2.0.1/jquery.pjax.min.js"></script>
+
+<script src="/js/script.js?v=1.0.1" ></script>
+<script>
+    var img_resize = 'default';
+    /*作者、标签的自动补全*/
+    $(function () {
+        $('.search').AutoComplete({
+            'data': ['#Spring','#源码分析','#es','#全文检索','#Java基础','#JVM堆、栈','#内存溢出异常','#GC','#Spring IOC','#Spring AOP','#Spring 基础','#spring-cloud-alibaba','#注册中心','#类加载器',],
+            'itemHeight': 20,
+            'width': 418
+        }).AutoComplete('show');
+    })
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $(".post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+        $('pre code').each(function(){
+            var lines = $(this).text().split('\n').length - 1, widther='';
+            if (lines>99) {
+                widther = 'widther'
+            }
+            var $numbering = $('<ul/>').addClass('pre-numbering ' + widther).attr("unselectable","on");
+            $(this).addClass('has-numbering ' + widther)
+                    .parent()
+                    .append($numbering);
+            for(var i=1;i<=lines;i++){
+                $numbering.append($('<li/>').text(i));
+            }
+        });
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<style>
+    pre{
+        position: relative;
+        margin-bottom: 24px;
+        border-radius: 10px;
+        border: 1px solid #e2dede;
+        background: #FFF;
+        overflow: hidden;
+    }
+    code.has-numbering{
+        margin-left: 30px;
+    }
+    code.has-numbering.widther{
+        margin-left: 35px;
+    }
+    .pre-numbering{
+        margin: 0px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        padding: 0.5em 3px 0.7em 5px;
+        border-right: 1px solid #C3CCD0;
+        text-align: right;
+        color: #AAA;
+        background-color: ;
+    }
+    .pre-numbering.widther {
+        width: 35px;
+    }
+</style>
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+        .nav .hide-list.fullscreen {
+            left: 492px
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+    .post .pjax article .article-entry>ol, .post .pjax article .article-entry>ul, .post .pjax article>ol, .post .pjax article>ul{
+        border: #e2dede solid 1px;
+        border-radius: 10px;
+        padding: 10px 32px 10px 56px;
+    }
+    .post .pjax article .article-entry li>ol, .post .pjax article .article-entry li>ul,.post .pjax article li>ol, .post .pjax article li>ul{
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    .post .pjax article .article-entry>ol>li, .post .pjax article .article-entry>ul>li,.post .pjax article>ol>li, .post .pjax article>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    .post .pjax article .article-entry li>ol>li, .post .pjax article .article-entry li>ul>li,.post .pjax article li>ol>li, .post .pjax article li>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+    .nav-right:before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.1;
+        background: url("/img/zzpic20363.jpg");
+        background-repeat: no-repeat;
+        background-position: 50% 0;
+        -ms-background-size: cover;
+        -o-background-size: cover;
+        -moz-background-size: cover;
+        -webkit-background-size: cover;
+        background-size: cover;
+    }
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>

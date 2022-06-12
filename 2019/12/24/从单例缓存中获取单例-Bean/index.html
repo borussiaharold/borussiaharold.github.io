@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>从单例缓存中获取单例 Bean | Hello World</title>
+  <meta name="keywords" content=" Spring , 源码分析 ">
+  <meta name="description" content="从单例缓存中获取单例 Bean | Hello World">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta property="og:type" content="website">
+<meta property="og:title" content="categories">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;categories&#x2F;index.html">
+<meta property="og:site_name" content="Hello World">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-11-30T04:16:26.000Z">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/head.jpg">
+
+<link href="/css/style.css?v=1.0.1" rel="stylesheet">
+
+<link href="/css/hl_theme/darcula.css?v=1.0.1" rel="stylesheet">
+
+<link href="//cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="/js/jquery.autocomplete.min.js?v=1.0.1" ></script>
+
+<script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.0.1" ></script>
+
+</head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="false">
+  <input class="theme_blog_path" value="">
+</div>
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/head.jpg" />
+</a>
+<div class="author">
+    <span>王浩宇</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active">全部文章</div></li>
+    
+        
+            
+            <li><div data-rel="Spring">Spring</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="全文检索">全文检索</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="面试题">面试题</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="Java虚拟机">Java虚拟机</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="微服务"><i class="fold iconfont icon-right"></i>微服务</div>
+                
+                    <ul class="sub hide">
+                        
+                        <li><div data-rel="nacos">nacos</div>
+                            
+                        </li>
+                            
+                    </ul>
+                
+            </li>
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    
+    </div>
+    <div></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="34">
+<input type="hidden" id="yelog_site_word_count" value="60k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="back-title-list"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <form onkeydown="if(event.keyCode==13){return false;}">
+        <input class="search" type="text" placeholder="以 in: 开头进行全文搜索" autocomplete="off"id="local-search-input" >
+        <i class="cross"></i>
+        <span>
+            <label for="tagswitch">Tags:</label>
+            <input id="tagswitch" type="checkbox" style="display: none" />
+            <i id="tagsWitchIcon"></i>
+        </span>
+    </form>
+    <div class="tags-list">
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color3">es</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">全文检索</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Java基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">JVM堆、栈</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">内存溢出异常</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color3">GC</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring IOC</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring AOP</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">Spring 基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">spring-cloud-alibaba</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">注册中心</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">类加载器</a>
+    </li>
+    
+    <div class="clearfix"></div>
+</div>
+
+    
+    <div id="local-search-result">
+
+    </div>
+    
+    <nav id="title-list-nav">
+        
+        <a id="top" class="Spring "
+           href="/2019/12/03/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%20IoC/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="深入理解Spring IoC">深入理解Spring IoC</span>
+            <span class="post-date" title="2019-12-03 13:37:09">2019/12/03</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/Spring%E7%BB%9F%E4%B8%80%E8%B5%84%E6%BA%90%E5%8A%A0%E8%BD%BD%E7%AD%96%E7%95%A5/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Spring统一资源加载策略">Spring统一资源加载策略</span>
+            <span class="post-date" title="2019-12-04 15:09:37">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/%E5%8A%A0%E8%BD%BDBeanDefinition/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="加载BeanDefinition">加载BeanDefinition</span>
+            <span class="post-date" title="2019-12-04 15:08:52">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/06/%E6%B3%A8%E5%86%8CBeanDefinitions-%E4%B8%8A/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="注册BeanDefinitions-上">注册BeanDefinitions-上</span>
+            <span class="post-date" title="2019-12-06 11:22:47">2019/12/06</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/11/%E6%B3%A8%E5%86%8CBeanDefinitions-%E4%B8%8B/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="注册BeanDefinitions-下">注册BeanDefinitions-下</span>
+            <span class="post-date" title="2019-12-11 13:34:29">2019/12/11</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/20/%E5%BC%80%E5%90%AFBean%E7%9A%84%E5%8A%A0%E8%BD%BD/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="开启Bean的加载">开启Bean的加载</span>
+            <span class="post-date" title="2019-12-20 13:58:30">2019/12/20</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/24/%E4%BB%8E%E5%8D%95%E4%BE%8B%E7%BC%93%E5%AD%98%E4%B8%AD%E8%8E%B7%E5%8F%96%E5%8D%95%E4%BE%8B-Bean/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="从单例缓存中获取单例 Bean">从单例缓存中获取单例 Bean</span>
+            <span class="post-date" title="2019-12-24 14:54:46">2019/12/24</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/25/parentBeanFactory%E4%B8%8E%E4%BE%9D%E8%B5%96%E5%A4%84%E7%90%86/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="parentBeanFactory与依赖处理">parentBeanFactory与依赖处理</span>
+            <span class="post-date" title="2019-12-25 13:48:53">2019/12/25</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/25/%E5%88%86%E6%9E%90%E5%90%84scope%E7%9A%84Bean%E5%88%9B%E5%BB%BA/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="分析各scope的Bean创建">分析各scope的Bean创建</span>
+            <span class="post-date" title="2019-12-25 15:46:07">2019/12/25</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%B8%80%EF%BC%89%E4%B9%8B%E4%B8%BB%E6%B5%81%E7%A8%8B/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（一）之主流程">创建 Bean（一）之主流程</span>
+            <span class="post-date" title="2019-12-26 11:04:35">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%BA%8C%EF%BC%89%E4%B9%8B%E5%AE%9E%E4%BE%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1-1/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（二）之实例化 Bean 对象(1)">创建 Bean（二）之实例化 Bean 对象(1)</span>
+            <span class="post-date" title="2019-12-26 11:05:26">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%B8%89%EF%BC%89%E4%B9%8B%E5%AE%9E%E4%BE%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1-2/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（三）之实例化 Bean 对象(2)">创建 Bean（三）之实例化 Bean 对象(2)</span>
+            <span class="post-date" title="2019-12-26 21:37:35">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E5%9B%9B%EF%BC%89%E4%B9%8B%E5%B1%9E%E6%80%A7%E5%A1%AB%E5%85%85/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（四）之属性填充">创建 Bean（四）之属性填充</span>
+            <span class="post-date" title="2019-12-26 22:09:55">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%BA%94%EF%BC%89%E4%B9%8B%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean之创建 Bean（五）之循环依赖">Bean之创建 Bean（五）之循环依赖</span>
+            <span class="post-date" title="2019-12-27 09:59:39">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E5%85%AD%EF%BC%89%E4%B9%8B%E5%88%9D%E5%A7%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean之创建 Bean（六）之初始化 Bean 对象">Bean之创建 Bean（六）之初始化 Bean 对象</span>
+            <span class="post-date" title="2019-12-27 13:50:37">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean-%E6%80%BB%E7%BB%93/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean 总结">创建 Bean 总结</span>
+            <span class="post-date" title="2019-12-27 14:39:35">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/Aware-%E6%8E%A5%E5%8F%A3/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Aware 接口">Aware 接口</span>
+            <span class="post-date" title="2019-12-31 09:58:32">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/BeanPostProcessor/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="BeanPostProcessor">BeanPostProcessor</span>
+            <span class="post-date" title="2019-12-31 10:23:52">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/InitializingBean-%E5%92%8C-init-method/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="InitializingBean 和 init-method">InitializingBean 和 init-method</span>
+            <span class="post-date" title="2019-12-31 17:47:19">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/Bean-%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean 的生命周期">Bean 的生命周期</span>
+            <span class="post-date" title="2019-12-31 18:40:14">2019/12/31</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-TF-IDF%E7%AE%97%E6%B3%95%E3%80%81Scroll%E6%90%9C%E7%B4%A2/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-TF&amp;IDF算法、Scroll搜索">Elasticsearch-TF&amp;IDF算法、Scroll搜索</span>
+            <span class="post-date" title="2019-11-30 15:55:25">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-deep-paging%E3%80%81mapping%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-deep paging、mapping介绍">Elasticsearch-deep paging、mapping介绍</span>
+            <span class="post-date" title="2019-11-30 15:47:48">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-es%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E6%A1%88/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-es的持久化方案">Elasticsearch-es的持久化方案</span>
+            <span class="post-date" title="2019-11-30 16:06:50">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-shard%E3%80%81%E6%89%A9%E5%AE%B9%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-shard、扩容介绍">Elasticsearch-shard、扩容介绍</span>
+            <span class="post-date" title="2019-11-30 14:25:23">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E5%86%99%E4%B8%80%E8%87%B4%E6%80%A7%E3%80%81%E8%BF%94%E5%9B%9E%E8%A7%A3%E6%9E%90/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-写一致性、返回解析">Elasticsearch-写一致性、返回解析</span>
+            <span class="post-date" title="2019-11-30 15:29:27">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95%E3%80%81%E8%AF%B7%E6%B1%82%E5%8E%9F%E7%90%86/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-路由算法、请求原理">Elasticsearch-路由算法、请求原理</span>
+            <span class="post-date" title="2019-11-30 15:15:14">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E3%80%81%E8%BF%90%E8%A1%8C/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticssearch-安装、运行">Elasticssearch-安装、运行</span>
+            <span class="post-date" title="2019-11-30 13:45:18">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/12/02/Java%E3%80%90%E5%9F%BA%E7%A1%80%E3%80%91%E9%9D%A2%E8%AF%95%E9%A2%98/"
+           data-tag="Java基础"
+           data-author="" >
+            <span class="post-title" title="Java【基础】面试题">Java【基础】面试题</span>
+            <span class="post-date" title="2019-12-02 13:43:48">2019/12/02</span>
+        </a>
+        
+        <a  class="Java虚拟机 "
+           href="/2019/11/30/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E8%AF%A6%E8%A7%A3/"
+           data-tag="JVM堆、栈,内存溢出异常"
+           data-author="" >
+            <span class="post-title" title="Java内存区域详解">Java内存区域详解</span>
+            <span class="post-date" title="2019-11-30 16:22:50">2019/11/30</span>
+        </a>
+        
+        <a  class="Java虚拟机 "
+           href="/2019/11/30/Java%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%9C%BA%E5%88%B6/"
+           data-tag="GC"
+           data-author="" >
+            <span class="post-title" title="Java垃圾收集机制">Java垃圾收集机制</span>
+            <span class="post-date" title="2019-11-30 16:25:00">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/12/02/Spring%E9%9D%A2%E8%AF%95%E9%A2%98/"
+           data-tag="Spring IOC,Spring AOP,Spring 基础"
+           data-author="" >
+            <span class="post-title" title="Spring面试题">Spring面试题</span>
+            <span class="post-date" title="2019-12-02 16:55:45">2019/12/02</span>
+        </a>
+        
+        <a  class="微服务 nacos "
+           href="/2019/11/30/nacos-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"
+           data-tag="spring-cloud-alibaba,注册中心"
+           data-author="" >
+            <span class="post-title" title="nacos-注册中心">nacos-注册中心</span>
+            <span class="post-date" title="2019-11-30 14:32:46">2019/11/30</span>
+        </a>
+        
+        <a  class="微服务 nacos "
+           href="/2019/11/30/nacos-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/"
+           data-tag="spring-cloud-alibaba,注册中心"
+           data-author="" >
+            <span class="post-title" title="nacos-配置中心">nacos-配置中心</span>
+            <span class="post-date" title="2019-11-30 14:32:50">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/11/30/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3ClassLoader/"
+           data-tag="Java基础,类加载器"
+           data-author="" >
+            <span class="post-title" title="深入理解ClassLoader">深入理解ClassLoader</span>
+            <span class="post-date" title="2019-11-30 16:20:20">2019/11/30</span>
+        </a>
+        
+    </nav>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div class="post">
+    <div class="pjax">
+        <article id="post-从单例缓存中获取单例-Bean" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">从单例缓存中获取单例 Bean</h1>
+    
+    <div class="article-meta">
+        
+        <span class="top"><a href="javascript:" target="_blank" rel="noopener">置顶</a></span>
+        
+        
+        
+        <span class="book">
+            
+                <a href="javascript:" target="_blank" data-rel="Spring noopener">Spring</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+        创建时间:<time class="date" title='更新时间: 2019-12-27 16:06:57'>2019-12-24 14:54</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:3k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读:<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-getSingleTon方法"><span class="toc-text">1 getSingleTon方法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-isSingletonCurrentlyInCreation"><span class="toc-text">1.1 isSingletonCurrentlyInCreation</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-getObjectForBeanInstance"><span class="toc-text">2 getObjectForBeanInstance</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-getObjectFromFactoryBean"><span class="toc-text">2.1 getObjectFromFactoryBean</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-isSingletonCurrentlyInCreation"><span class="toc-text">2.2 isSingletonCurrentlyInCreation</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-1-beforeSingletonCreation"><span class="toc-text">2.2.1 beforeSingletonCreation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-2-afterSingletonCreation"><span class="toc-text">2.2.2 afterSingletonCreation</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-postProcessObjectFromFactoryBean"><span class="toc-text">2.3 postProcessObjectFromFactoryBean</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-1-重写postProcessObjectFromFactoryBean"><span class="toc-text">2.3.1 重写postProcessObjectFromFactoryBean</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-小结"><span class="toc-text">3 小结</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <font size=3>
+
+<br/>
+
+<p>从这篇开始我们开始加载 Bean 的第一个步骤，从缓存中获取 Bean。代码如下：</p>
+<pre><code>// AbstractBeanFactory.java
+
+// 从缓存中或者实例工厂中获取 Bean 对象
+// Eagerly check singleton cache for manually registered singletons.
+Object sharedInstance = getSingleton(beanName);
+if (sharedInstance != null &amp;&amp; args == null) {
+    if (logger.isTraceEnabled()) {
+        if (isSingletonCurrentlyInCreation(beanName)) {
+            logger.trace(&quot;Returning eagerly cached instance of singleton bean &#39;&quot; + beanName +
+                    &quot;&#39; that is not fully initialized yet - a consequence of a circular reference&quot;);
+        } else {
+            logger.trace(&quot;Returning cached instance of singleton bean &#39;&quot; + beanName + &quot;&#39;&quot;);
+        }
+    }
+    // 完成 FactoryBean 的相关处理，并用来获取 FactoryBean 的处理结果
+    bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
+}</code></pre><p>调用<code>#getSingleton(String beanName)</code>方法，从缓存中获取 Bean。</p>
+<h1 id="1-getSingleTon方法"><a href="#1-getSingleTon方法" class="headerlink" title="1 getSingleTon方法"></a>1 getSingleTon方法</h1><p>在上一篇提到过，Spring 对单例模式的 Bean 只会创建一次，后续如果在有操作，则直接从单例缓存中获取，该过程就体现在<code>#getSingleton(String beanName)</code>方法中。代码如下：</p>
+<pre><code>// DefaultSingletonBeanRegistry.java
+
+@Override
+@Nullable
+public Object getSingleton(String beanName) {
+    return getSingleton(beanName, true);
+}
+
+@Nullable
+protected Object getSingleton(String beanName, boolean allowEarlyReference) {
+    // 从单例缓冲中加载 bean
+    Object singletonObject = this.singletonObjects.get(beanName);
+    // 缓存中的 bean 为空，且当前 bean 正在创建
+    if (singletonObject == null &amp;&amp; isSingletonCurrentlyInCreation(beanName)) {
+        // 加锁
+        synchronized (this.singletonObjects) {
+            // 从 earlySingletonObjects 获取
+            singletonObject = this.earlySingletonObjects.get(beanName);
+            // earlySingletonObjects 中没有，且允许提前创建
+            if (singletonObject == null &amp;&amp; allowEarlyReference) {
+                // 从 singletonFactories 中获取对应的 ObjectFactory
+                ObjectFactory&lt;?&gt; singletonFactory = this.singletonFactories.get(beanName);
+                if (singletonFactory != null) {
+                    // 获得 bean
+                    singletonObject = singletonFactory.getObject();
+                    // 添加 bean 到 earlySingletonObjects 中
+                    this.earlySingletonObjects.put(beanName, singletonObject);
+                    // 从 singletonFactories 中移除对应的 ObjectFactory
+                    this.singletonFactories.remove(beanName);
+                }
+            }
+        }
+    }
+    return singletonObject;
+}</code></pre><p>这块的代码非常简单，过程如下：</p>
+<font size=2>
+
+<ul>
+<li><ol>
+<li>从<code>singletonObjects</code>中，获取 Bean 对象。</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>若为空且当前 Bean 正在创建中，则从<code>earlySingletonObjects</code>中获取 Bean 对象。</li>
+</ol>
+</li>
+<li><ol start="3">
+<li>若为空且允许提前创建，则从<code>singletonFactories</code>中获取相应的 ObjectFactory 对象。若不为空，则调用其<code>ObjectFactory#getObject(String name)</code>方法，创建 Bean 对象，然后将其加入到<code>earlySingletonObjects</code>，然后从<code>singletonFactories</code>移除。</li>
+</ol>
+</li>
+<li>总体逻辑，就是根据<code>beanName</code>一次检测这三个Map，若为空，从下一个，否则返回。这三个Map都有各自的功能，代码如下：</li>
+</ul>
+<pre><code>// DefaultSingletonBeanRegistry.java
+
+/**
+ * 存放的是单例 bean 的映射。
+ * 对应关系为 bean name --&gt; bean instance
+ */
+private final Map&lt;String, Object&gt; singletonObjects = new ConcurrentHashMap&lt;&gt;(256);
+
+/**
+ * 存放的是 ObjectFactory，可以理解为创建单例 bean 的 factory 。
+ * 对应关系是 bean name --&gt; ObjectFactory
+ **/
+private final Map&lt;String, ObjectFactory&lt;?&gt;&gt; singletonFactories = new HashMap&lt;&gt;(16);
+
+/**
+ * 存放的是早期的 bean，对应关系也是 bean name --&gt; bean instance。
+ * 它与 {@link #singletonFactories} 区别在于 earlySingletonObjects 中存放的 bean 不一定是完整。
+ *
+ * 从 {@link #getSingleton(String)} 方法中，我们可以了解，bean 在创建过程中就已经加入到 earlySingletonObjects 中了。
+ * 所以当在 bean 的创建过程中，就可以通过 getBean() 方法获取。
+ * 这个 Map 也是【循环依赖】的关键所在。
+ */
+private final Map&lt;String, Object&gt; earlySingletonObjects = new HashMap&lt;&gt;(16);
+</code></pre></font>
+
+<h2 id="1-1-isSingletonCurrentlyInCreation"><a href="#1-1-isSingletonCurrentlyInCreation" class="headerlink" title="1.1 isSingletonCurrentlyInCreation"></a>1.1 isSingletonCurrentlyInCreation</h2><p>在上面代码中，有一个非常重要的检测方法<code>#isSingletonCurrentlyInCreation(String beanName)</code>方法，该方法用于判断该<code>beanName</code>对应的 Bean <strong>是否在创建过程中</strong>，注意这个过程讲的是整个工厂中。代码如下：</p>
+<pre><code>// DefaultSingletonBeanRegistry.java
+
+/**
+ * Names of beans that are currently in creation.
+ *
+ * 正在创建中的单例 Bean 的名字的集合
+ */
+private final Set&lt;String&gt; singletonsCurrentlyInCreation =
+        Collections.newSetFromMap(new ConcurrentHashMap&lt;&gt;(16));
+</code></pre><p>从这段代码中，我们可以推测，在 Bean 创建过程中会将其加入到<code>singletonsCurrentlyInCreation</code>集合中，具体是什么时候加的，后续再详细说明。</p>
+<h1 id="2-getObjectForBeanInstance"><a href="#2-getObjectForBeanInstance" class="headerlink" title="2 getObjectForBeanInstance"></a>2 getObjectForBeanInstance</h1><p>到这里从缓存中获取 Bean 的过程已经分析完毕了，我们在看开篇的代码段，从缓存中获取 Bean 后，若其不为<code>null</code>且<code>args</code>为空，则会调用<code>#getObjectForBeanInstance(...)</code>方法，进行处理。</p>
+<font size=2>
+
+<ul>
+<li>为什么会有这一段？因为我们从缓存获取的 Bean 是<strong>最原始</strong>的 Bean，并不定是我们最终想要的 Bean。</li>
+<li>怎么办呢？调用<code>#getObjectForBeanInstance(...)</code>方法，进行处理，该方法的定义为获取给定 Bean 实例的对象，该对象要么是 Bean 实例本身，要么就是 FactoryBean 创建的 Bean 对象。</li>
+</ul>
+</font>
+
+<p>代码如下：</p>
+<pre><code>// AbstractBeanFactory.java
+
+protected Object getObjectForBeanInstance(
+        Object beanInstance, String name, String beanName, @Nullable RootBeanDefinition mbd) {
+    // 【1】 若为工厂类引用（name 以 &amp; 开头）
+    if (BeanFactoryUtils.isFactoryDereference(name)) {
+        // 如果是 NullBean，则直接返回
+        if (beanInstance instanceof NullBean) {
+            return beanInstance;
+        }
+        // 如果 beanInstance 不是 FactoryBean 类型，则抛出异常
+        if (!(beanInstance instanceof FactoryBean)) {
+            throw new BeanIsNotAFactoryException(transformedBeanName(name), beanInstance.getClass());
+        }
+    }
+
+    // 【2】 到这里我们就有了一个 Bean 实例，当然该实例可能是会是是一个正常的 bean 又或者是一个 FactoryBean
+    // 如果是 FactoryBean，我我们则创建该 Bean
+    if (!(beanInstance instanceof FactoryBean) || BeanFactoryUtils.isFactoryDereference(name)) {
+        return beanInstance;
+    }
+
+    Object object = null;
+    // 【3】 若 BeanDefinition 为 null，则从缓存中加载 Bean 对象
+    if (mbd == null) {
+        object = getCachedObjectForFactoryBean(beanName);
+    }
+    // 若 object 依然为空，则可以确认，beanInstance 一定是 FactoryBean 。从而，使用 FactoryBean 获得 Bean 对象
+    if (object == null) {
+        // Return bean instance from factory.
+        FactoryBean&lt;?&gt; factory = (FactoryBean&lt;?&gt;) beanInstance;
+        // containsBeanDefinition 检测 beanDefinitionMap 中也就是在所有已经加载的类中
+        // 检测是否定义 beanName
+        if (mbd == null &amp;&amp; containsBeanDefinition(beanName)) {
+            // 将存储 XML 配置文件的 GenericBeanDefinition 转换为 RootBeanDefinition，
+            // 如果指定 BeanName 是子 Bean 的话同时会合并父类的相关属性
+            mbd = getMergedLocalBeanDefinition(beanName);
+        }
+        // 是否是用户定义的，而不是应用程序本身定义的
+        boolean synthetic = (mbd != null &amp;&amp; mbd.isSynthetic());
+        // 核心处理方法，使用 FactoryBean 获得 Bean 对象
+        object = getObjectFromFactoryBean(factory, beanName, !synthetic);
+    }
+    return object;
+}
+</code></pre><font size=2>
+
+<ul>
+<li>【1】处，若<code>name</code>为工厂相关的（也就是包含工厂类的前缀&amp;），且<code>beanInstance</code>为 NullBean 类型直接返回，如果<code>beanInstance</code> 不为 FactoryBean 类型则抛出 BeanIsNotAFactoryException 异常。这里主要是<strong>检验 beanInstance 的正确性</strong>。</li>
+<li>【2】处，如果<code>beanInstance</code>不为 FactoryBean 类型或者<code>name</code>也不是工厂相关的，则直接返回<code>beanInstance</code>这个 Bean 对象。<strong>这里主要是对非 FactoryBean类型处理</strong>。</li>
+<li>【3】处，如果 BeanDefinition 为空，则从<code>factoryBeanObjectCache</code>集合中加载 Bean 对象。如果还是空，则可以断定<code>beanInstance</code>一定是 FactoryBean 类型，则委托<code>#getObjectFromFactoryBean(...)</code>方法，进行处理。<strong>使用 FactoryBean 获得 Bean 对象</strong>。</li>
+</ul>
+</font>
+
+
+<h2 id="2-1-getObjectFromFactoryBean"><a href="#2-1-getObjectFromFactoryBean" class="headerlink" title="2.1 getObjectFromFactoryBean"></a>2.1 getObjectFromFactoryBean</h2><p>在上面的代码中可以看出，<code>#getObjectForBeanInstance(...)</code>方法，分成两种情况：</p>
+<font size=2>
+
+<ul>
+<li>第一种，当该实例对象为<strong>非 FactoryBean 类型</strong>，直接返回给定的 Bean 实例对象<code>beanInstance</code>。</li>
+<li>第二种，当该实例对象为<strong>FactoryBean 类型</strong>，从 FactoryBean 中，获取 Bean 实例对象。</li>
+</ul>
+</font>
+
+<p>第二种，通过<code>#getObjectFromFactoryBean(...)</code>方法来实现，代码如下：</p>
+<pre><code>// FactoryBeanRegistrySupport.java
+
+/**
+ * 缓存 FactoryBean 创建的单例 Bean 对象的映射
+ * beanName ===&gt; Bean 对象
+ */
+private final Map&lt;String, Object&gt; factoryBeanObjectCache = new ConcurrentHashMap&lt;&gt;(16);
+
+protected Object getObjectFromFactoryBean(FactoryBean&lt;?&gt; factory, String beanName, boolean shouldPostProcess) {
+    // 【1】 为单例模式且缓存中存在
+    if (factory.isSingleton() &amp;&amp; containsSingleton(beanName)) {
+        synchronized (getSingletonMutex()) { // 【1.1】 单例锁
+            // 【1.2】 从缓存中获取指定的 factoryBean
+            Object object = this.factoryBeanObjectCache.get(beanName);
+            if (object == null) {
+                // 为空，则从 FactoryBean 中获取对象
+                object = doGetObjectFromFactoryBean(factory, beanName);
+                // 从缓存中获取
+                Object alreadyThere = this.factoryBeanObjectCache.get(beanName);
+                if (alreadyThere != null) {
+                    object = alreadyThere;
+                } else {
+                    // 【1.3】 需要后续处理
+                    if (shouldPostProcess) {
+                        // 若该 Bean 处于创建中，则返回非处理对象，而不是存储它
+                        if (isSingletonCurrentlyInCreation(beanName)) {
+                            // Temporarily return non-post-processed object, not storing it yet..
+                            return object;
+                        }
+                        // 单例 Bean 的前置处理
+                        beforeSingletonCreation(beanName);
+                        try {
+                            // 对从 FactoryBean 获取的对象进行后处理
+                            // 生成的对象将暴露给 bean 引用
+                            object = postProcessObjectFromFactoryBean(object, beanName);
+                        } catch (Throwable ex) {
+                            throw new BeanCreationException(beanName,
+                                    &quot;Post-processing of FactoryBean&#39;s singleton object failed&quot;, ex);
+                        } finally {
+                            // 单例 Bean 的后置处理
+                            afterSingletonCreation(beanName);
+                        }
+                    }
+                    // 【1.4】 添加到 factoryBeanObjectCache 中，进行缓存
+                    if (containsSingleton(beanName)) {
+                        this.factoryBeanObjectCache.put(beanName, object);
+                    }
+                }
+            }
+            return object;
+        }
+    // 【2】
+    } else {
+        // 为空，则从 FactoryBean 中获取对象
+        Object object = doGetObjectFromFactoryBean(factory, beanName);
+        // 需要后续处理
+        if (shouldPostProcess) {
+            try {
+                // 对从 FactoryBean 获取的对象进行后处理
+                // 生成的对象将暴露给 bean 引用
+                object = postProcessObjectFromFactoryBean(object, beanName);
+            }
+            catch (Throwable ex) {
+                throw new BeanCreationException(beanName, &quot;Post-processing of FactoryBean&#39;s object failed&quot;, ex);
+            }
+        }
+        return object;
+    }
+}</code></pre><p>主要流程如下：</p>
+<font size=2>
+
+<ul>
+<li>若为单例且单例 Bean 缓存中存在，则【1】进行后续处理，否则，【2】从 FactoryBean 中获取 Bean 实例对象。</li>
+<li>【1.1】首先，获取锁。我们在前面的代码中看到了大量的锁，锁住的对象都是<code>this.singletonObjects</code>,主要是因为在单例模式中必须要保证全局唯一性。代码如下：</li>
+</ul>
+<pre><code>// DefaultSingletonBeanRegistry.java
+
+/**
+ * 存放的是单例 bean 的映射。
+ *
+ * 对应关系为 bean name --&gt; bean instance
+ */
+private final Map&lt;String, Object&gt; singletonObjects = new ConcurrentHashMap&lt;&gt;(256);
+
+public final Object getSingletonMutex() {
+    return this.singletonObjects;
+}</code></pre><ul>
+<li>【1.2】然后，从<code>factoryBeanObjectCache</code>缓存中获取实例对象 <code>object</code>，若<code>object</code>为空，则调用<code>#doGetObjectFromFactoryBean(...)</code>方法，从 FactoryBean 获取对象，其实内部就是调用<code>FactoryBean#getObject()</code>方法，代码如下：</li>
+</ul>
+<pre><code>rivate Object doGetObjectFromFactoryBean(final FactoryBean&lt;?&gt; factory, final String beanName)
+    throws BeanCreationException {
+    Object object;
+    try {
+        // 需要权限验证
+        if (System.getSecurityManager() != null) {
+            AccessControlContext acc = getAccessControlContext();
+            try {
+                // 【x】 从 FactoryBean 中，获得 Bean 对象
+                object = AccessController.doPrivileged((PrivilegedExceptionAction&lt;Object&gt;) factory::getObject, acc);
+            } catch (PrivilegedActionException pae) {
+                throw pae.getException();
+            }
+        } else {
+            // 【x】 从 FactoryBean 中，获得 Bean 对象
+            object = factory.getObject();
+        }
+    } catch (FactoryBeanNotInitializedException ex) {
+        throw new BeanCurrentlyInCreationException(beanName, ex.toString());
+    } catch (Throwable ex) {
+        throw new BeanCreationException(beanName, &quot;FactoryBean threw exception on object creation&quot;, ex);
+    }
+    // Do not accept a null value for a FactoryBean that&#39;s not fully
+    // initialized yet: Many FactoryBeans just return null then.
+    if (object == null) {
+        if (isSingletonCurrentlyInCreation(beanName)) {
+            throw new BeanCurrentlyInCreationException(
+                    beanName, &quot;FactoryBean which is currently in creation returned null from getObject&quot;);
+        }
+        object = new NullBean();
+    }
+    return object;
+}
+</code></pre><ul>
+<li><p>【x】处，可以看到内部调用了<code>FactoryBean#getObject()</code>方法，获取 Bean 对象。</p>
+</li>
+<li><p>【1.3】如果需要后续进行处理，则进一步处理，步骤如下：</p>
+<ul>
+<li>若该 Bean 处理创建中，则返回<strong>非处理的 Bean 对象</strong>，而不是存储它。</li>
+<li>调用<code>#beforeSingletonCreation(...)</code>方法，进行创建之前的处理，默认实现将该 Bean 表示为当前创建的。</li>
+<li>调用<code>#postProcessObjectFromFactoryBean(...)</code>方法，对 FactoryBean 获取的 Bean实例对象进行后置处理，详见【2.3 postProcessObjectFromFactoryBean】</li>
+</ul>
+</li>
+<li><p>【1.4】最后，加入到<code>factoryBeanObjectCache</code>缓存中。</p>
+</li>
+</ul>
+<p><strong>该方法应该就是创建 Bean 实例对象的核心方法之一，这里我们关注三个方法：</strong></p>
+<ul>
+<li><code>#beforeSingletonCreation(...)</code></li>
+<li><code>#afterSingletonCreation(...)</code></li>
+<li><code>#postProcessObjectFromFactoryBean(...)</code></font>
+
+</li>
+</ul>
+<h2 id="2-2-isSingletonCurrentlyInCreation"><a href="#2-2-isSingletonCurrentlyInCreation" class="headerlink" title="2.2 isSingletonCurrentlyInCreation"></a>2.2 isSingletonCurrentlyInCreation</h2><p>这个方法非常的重要，因为<strong>他们记录着 Bean 的加载状态，是检测当前 Bean 是否处于创建中的关键之处，对解决 Bean 循环依赖起着关键作用</strong>。</p>
+<font size=2>
+
+<ul>
+<li><code>#beforeSingletonCreation(...)</code>方法，用于添加标志，<strong>当前 Bean 正处于创建中</strong>。</li>
+<li><code>#afterSingletonCreation(...)</code>方法，用于移除标记，<strong>当前 Bean 不处于创建中</strong>。</li>
+</ul>
+<p>其实开篇已经提到了，<code>#isSingletonCurrentlyInCreation(...)</code>方法，是用于检测当前 Bean 是否处于创建之中，代码如下：</p>
+<pre><code>// DefaultSingletonBeanRegistry.java
+
+/**
+ * 正在创建中的单例 Bean 的名字的集合
+ */
+private final Set&lt;String&gt; singletonsCurrentlyInCreation =
+        Collections.newSetFromMap(new ConcurrentHashMap&lt;&gt;(16));
+</code></pre><ul>
+<li>是根据<code>singletonsCurrentlyInCreation</code>集合中是否包含了<code>beanName</code>。</li>
+</ul>
+</font>
+
+<h3 id="2-2-1-beforeSingletonCreation"><a href="#2-2-1-beforeSingletonCreation" class="headerlink" title="2.2.1 beforeSingletonCreation"></a>2.2.1 beforeSingletonCreation</h3><p>集合的元素，则一定是在<code>#beforeSingletonCreation(...)</code>方法中添加的，代码如下：</p>
+<pre><code>// DefaultSingletonBeanRegistry.java
+
+protected void beforeSingletonCreation(String beanName) {
+    if (!this.inCreationCheckExclusions.contains(beanName)
+            &amp;&amp; !this.singletonsCurrentlyInCreation.add(beanName)) { // 添加
+        throw new BeanCurrentlyInCreationException(beanName); // 如果添加失败，则抛出 BeanCurrentlyInCreationException 异常。
+    }
+}</code></pre><h3 id="2-2-2-afterSingletonCreation"><a href="#2-2-2-afterSingletonCreation" class="headerlink" title="2.2.2 afterSingletonCreation"></a>2.2.2 afterSingletonCreation</h3><p><code>#afterSingletonCreation(...)</code>方法，为移除，则一定就是对<code>singletonsCurrentlyInCreation</code>的 remove。代码如下：</p>
+<pre><code>// DefaultSingletonBeanRegistry.java
+
+protected void afterSingletonCreation(String beanName) {
+    if (!this.inCreationCheckExclusions.contains(beanName) &amp;&amp;
+            !this.singletonsCurrentlyInCreation.remove(beanName)) { // 移除
+        // 如果移除失败，则抛出 IllegalStateException 异常
+        throw new IllegalStateException(&quot;Singleton &#39;&quot; + beanName + &quot;&#39; isn&#39;t currently in creation&quot;);
+    }
+}</code></pre><h2 id="2-3-postProcessObjectFromFactoryBean"><a href="#2-3-postProcessObjectFromFactoryBean" class="headerlink" title="2.3 postProcessObjectFromFactoryBean"></a>2.3 postProcessObjectFromFactoryBean</h2><p><code>#postProcessObjectFromFactoryBean(...)</code>方法，对从 FactoryBean 处获取的 Bean 实例对象进行后置处理。其默认实现是直接返回 object 对象，不做任何处理，代码如下：</p>
+<pre><code>// DefaultSingletonBeanRegistry.java
+
+protected Object postProcessObjectFromFactoryBean(Object object, String beanName) throws BeansException {
+    return object;
+}</code></pre><h3 id="2-3-1-重写postProcessObjectFromFactoryBean"><a href="#2-3-1-重写postProcessObjectFromFactoryBean" class="headerlink" title="2.3.1 重写postProcessObjectFromFactoryBean"></a>2.3.1 重写postProcessObjectFromFactoryBean</h3><p>当前，子类可以重写，例如应用后置处理。<code>org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory</code>抽象类，对其提供了实现，代码如下：</p>
+<pre><code>// AbstractAutowireCapableBeanFactory.java
+
+protected Object postProcessObjectFromFactoryBean(Object object, String beanName) {
+    return applyBeanPostProcessorsAfterInitialization(object, beanName);
+}</code></pre><p>该方法的定义为：对所有<code>{@code postProcessAfterInitialization}</code>进行回调注册 BeanProcessor，让他们能够后置处理从 FactoryBean 中获取的对象，代码如下：</p>
+<pre><code>// AbstractAutowireCapableBeanFactory.java
+
+@Override
+public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
+        throws BeansException {
+    Object result = existingBean;
+    // 遍历 BeanPostProcessor
+    for (BeanPostProcessor processor : getBeanPostProcessors()) {
+        // 处理
+        Object current = processor.postProcessAfterInitialization(result, beanName);
+        // 返回空，则返回 result
+        if (current == null) {
+            return result;
+        }
+        // 修改 result
+        result = current;
+    }
+    return result;
+}</code></pre><p>对于后置处理器，这里我们不做过多阐述，后面会专门的博文进行详细介绍，这里我们只需要记住一点：尽可能保证所有 bean 初始化后都会调用注册的<code>BeanPostProcessor#postProcessAfterInitialization(...)</code>方法进行处理，在实际开发过程中大可以针对此特性设计自己的业务逻辑。</p>
+<h1 id="3-小结"><a href="#3-小结" class="headerlink" title="3 小结"></a>3 小结</h1><p>至此，从缓存中获取 Bean 对象过程已经分析完毕了。那么如果单例缓存中没有获得 Bean 怎么办？Spring 是如何处理的？</p>
+</font>
+      
+       
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">©2019-2022 Why</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full"><span class="min "></span></button>
+<button class="post-toc-menu"><span class="post-toc-menu-icons"></span></button>
+<div class="post-toc"><span class="post-toc-title">目录</span>
+    <div class="post-toc-content">
+
+    </div>
+</div>
+<a class="" id="rocket" href="javascript:void(0)" target="_blank" rel="noopener"></a>
+    </div>
+</div>
+<div class="acParent"></div>
+
+</body>
+<script src="//cdn.bootcss.com/jquery.pjax/2.0.1/jquery.pjax.min.js"></script>
+
+<script src="/js/script.js?v=1.0.1" ></script>
+<script>
+    var img_resize = 'default';
+    /*作者、标签的自动补全*/
+    $(function () {
+        $('.search').AutoComplete({
+            'data': ['#Spring','#源码分析','#es','#全文检索','#Java基础','#JVM堆、栈','#内存溢出异常','#GC','#Spring IOC','#Spring AOP','#Spring 基础','#spring-cloud-alibaba','#注册中心','#类加载器',],
+            'itemHeight': 20,
+            'width': 418
+        }).AutoComplete('show');
+    })
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $(".post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+        $('pre code').each(function(){
+            var lines = $(this).text().split('\n').length - 1, widther='';
+            if (lines>99) {
+                widther = 'widther'
+            }
+            var $numbering = $('<ul/>').addClass('pre-numbering ' + widther).attr("unselectable","on");
+            $(this).addClass('has-numbering ' + widther)
+                    .parent()
+                    .append($numbering);
+            for(var i=1;i<=lines;i++){
+                $numbering.append($('<li/>').text(i));
+            }
+        });
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<style>
+    pre{
+        position: relative;
+        margin-bottom: 24px;
+        border-radius: 10px;
+        border: 1px solid #e2dede;
+        background: #FFF;
+        overflow: hidden;
+    }
+    code.has-numbering{
+        margin-left: 30px;
+    }
+    code.has-numbering.widther{
+        margin-left: 35px;
+    }
+    .pre-numbering{
+        margin: 0px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        padding: 0.5em 3px 0.7em 5px;
+        border-right: 1px solid #C3CCD0;
+        text-align: right;
+        color: #AAA;
+        background-color: ;
+    }
+    .pre-numbering.widther {
+        width: 35px;
+    }
+</style>
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+        .nav .hide-list.fullscreen {
+            left: 492px
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+    .post .pjax article .article-entry>ol, .post .pjax article .article-entry>ul, .post .pjax article>ol, .post .pjax article>ul{
+        border: #e2dede solid 1px;
+        border-radius: 10px;
+        padding: 10px 32px 10px 56px;
+    }
+    .post .pjax article .article-entry li>ol, .post .pjax article .article-entry li>ul,.post .pjax article li>ol, .post .pjax article li>ul{
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    .post .pjax article .article-entry>ol>li, .post .pjax article .article-entry>ul>li,.post .pjax article>ol>li, .post .pjax article>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    .post .pjax article .article-entry li>ol>li, .post .pjax article .article-entry li>ul>li,.post .pjax article li>ol>li, .post .pjax article li>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+    .nav-right:before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.1;
+        background: url("/img/zzpic20363.jpg");
+        background-repeat: no-repeat;
+        background-position: 50% 0;
+        -ms-background-size: cover;
+        -o-background-size: cover;
+        -moz-background-size: cover;
+        -webkit-background-size: cover;
+        background-size: cover;
+    }
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>

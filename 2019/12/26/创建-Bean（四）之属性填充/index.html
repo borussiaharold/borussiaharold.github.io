@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>创建 Bean（四）之属性填充 | Hello World</title>
+  <meta name="keywords" content=" Spring , 源码分析 ">
+  <meta name="description" content="创建 Bean（四）之属性填充 | Hello World">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta property="og:type" content="website">
+<meta property="og:title" content="categories">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;categories&#x2F;index.html">
+<meta property="og:site_name" content="Hello World">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-11-30T04:16:26.000Z">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="icon" href="/img/head.jpg">
+
+<link href="/css/style.css?v=1.0.1" rel="stylesheet">
+
+<link href="/css/hl_theme/darcula.css?v=1.0.1" rel="stylesheet">
+
+<link href="//cdn.bootcss.com/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="/js/jquery.autocomplete.min.js?v=1.0.1" ></script>
+
+<script src="//cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="//cdn.bootcss.com/nprogress/0.2.0/nprogress.min.js"></script>
+
+
+
+<script src="//cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.min.js" ></script>
+
+<script src="/js/iconfont.js?v=1.0.1" ></script>
+
+</head>
+<div style="display: none">
+  <input class="theme_disqus_on" value="false">
+  <input class="theme_preload_comment" value="false">
+  <input class="theme_blog_path" value="">
+</div>
+
+<body>
+<aside class="nav">
+    <div class="nav-left">
+        <a href="/" class="avatar_target">
+    <img class="avatar" src="/img/head.jpg" />
+</a>
+<div class="author">
+    <span>王浩宇</span>
+</div>
+
+<div class="icon">
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+</div>
+
+
+
+
+<ul>
+    <li><div class="all active">全部文章</div></li>
+    
+        
+            
+            <li><div data-rel="Spring">Spring</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="全文检索">全文检索</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="面试题">面试题</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="Java虚拟机">Java虚拟机</div>
+                
+            </li>
+            
+        
+    
+        
+            
+            <li><div data-rel="微服务"><i class="fold iconfont icon-right"></i>微服务</div>
+                
+                    <ul class="sub hide">
+                        
+                        <li><div data-rel="nacos">nacos</div>
+                            
+                        </li>
+                            
+                    </ul>
+                
+            </li>
+            
+        
+    
+        
+            
+        
+    
+</ul>
+<div class="left-bottom">
+    <div class="menus">
+    
+    
+    
+    
+    </div>
+    <div></div>
+</div>
+<input type="hidden" id="yelog_site_posts_number" value="34">
+<input type="hidden" id="yelog_site_word_count" value="60k">
+<div style="display: none">
+    <span id="busuanzi_value_site_uv"></span>
+    <span id="busuanzi_value_site_pv"></span>
+</div>
+
+    </div>
+    <div class="nav-right">
+        <div class="friends-area">
+    <div class="friends-title">
+        友情链接
+        <i class="back-title-list"></i>
+    </div>
+    <div class="friends-content">
+        <ul>
+            
+        </ul>
+    </div>
+</div>
+        <div class="title-list">
+    <form onkeydown="if(event.keyCode==13){return false;}">
+        <input class="search" type="text" placeholder="以 in: 开头进行全文搜索" autocomplete="off"id="local-search-input" >
+        <i class="cross"></i>
+        <span>
+            <label for="tagswitch">Tags:</label>
+            <input id="tagswitch" type="checkbox" style="display: none" />
+            <i id="tagsWitchIcon"></i>
+        </span>
+    </form>
+    <div class="tags-list">
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color3">es</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">全文检索</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">Java基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">JVM堆、栈</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color2">内存溢出异常</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color3">GC</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring IOC</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">Spring AOP</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">Spring 基础</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color1">spring-cloud-alibaba</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">注册中心</a>
+    </li>
+    
+    <li class="article-tag-list-item">
+        <a href="javascript:" target="_blank" rel="noopener" class="color5">类加载器</a>
+    </li>
+    
+    <div class="clearfix"></div>
+</div>
+
+    
+    <div id="local-search-result">
+
+    </div>
+    
+    <nav id="title-list-nav">
+        
+        <a id="top" class="Spring "
+           href="/2019/12/03/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%20IoC/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="深入理解Spring IoC">深入理解Spring IoC</span>
+            <span class="post-date" title="2019-12-03 13:37:09">2019/12/03</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/Spring%E7%BB%9F%E4%B8%80%E8%B5%84%E6%BA%90%E5%8A%A0%E8%BD%BD%E7%AD%96%E7%95%A5/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Spring统一资源加载策略">Spring统一资源加载策略</span>
+            <span class="post-date" title="2019-12-04 15:09:37">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/04/%E5%8A%A0%E8%BD%BDBeanDefinition/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="加载BeanDefinition">加载BeanDefinition</span>
+            <span class="post-date" title="2019-12-04 15:08:52">2019/12/04</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/06/%E6%B3%A8%E5%86%8CBeanDefinitions-%E4%B8%8A/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="注册BeanDefinitions-上">注册BeanDefinitions-上</span>
+            <span class="post-date" title="2019-12-06 11:22:47">2019/12/06</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/11/%E6%B3%A8%E5%86%8CBeanDefinitions-%E4%B8%8B/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="注册BeanDefinitions-下">注册BeanDefinitions-下</span>
+            <span class="post-date" title="2019-12-11 13:34:29">2019/12/11</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/20/%E5%BC%80%E5%90%AFBean%E7%9A%84%E5%8A%A0%E8%BD%BD/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="开启Bean的加载">开启Bean的加载</span>
+            <span class="post-date" title="2019-12-20 13:58:30">2019/12/20</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/24/%E4%BB%8E%E5%8D%95%E4%BE%8B%E7%BC%93%E5%AD%98%E4%B8%AD%E8%8E%B7%E5%8F%96%E5%8D%95%E4%BE%8B-Bean/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="从单例缓存中获取单例 Bean">从单例缓存中获取单例 Bean</span>
+            <span class="post-date" title="2019-12-24 14:54:46">2019/12/24</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/25/parentBeanFactory%E4%B8%8E%E4%BE%9D%E8%B5%96%E5%A4%84%E7%90%86/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="parentBeanFactory与依赖处理">parentBeanFactory与依赖处理</span>
+            <span class="post-date" title="2019-12-25 13:48:53">2019/12/25</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/25/%E5%88%86%E6%9E%90%E5%90%84scope%E7%9A%84Bean%E5%88%9B%E5%BB%BA/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="分析各scope的Bean创建">分析各scope的Bean创建</span>
+            <span class="post-date" title="2019-12-25 15:46:07">2019/12/25</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%B8%80%EF%BC%89%E4%B9%8B%E4%B8%BB%E6%B5%81%E7%A8%8B/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（一）之主流程">创建 Bean（一）之主流程</span>
+            <span class="post-date" title="2019-12-26 11:04:35">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%BA%8C%EF%BC%89%E4%B9%8B%E5%AE%9E%E4%BE%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1-1/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（二）之实例化 Bean 对象(1)">创建 Bean（二）之实例化 Bean 对象(1)</span>
+            <span class="post-date" title="2019-12-26 11:05:26">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%B8%89%EF%BC%89%E4%B9%8B%E5%AE%9E%E4%BE%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1-2/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（三）之实例化 Bean 对象(2)">创建 Bean（三）之实例化 Bean 对象(2)</span>
+            <span class="post-date" title="2019-12-26 21:37:35">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/26/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E5%9B%9B%EF%BC%89%E4%B9%8B%E5%B1%9E%E6%80%A7%E5%A1%AB%E5%85%85/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean（四）之属性填充">创建 Bean（四）之属性填充</span>
+            <span class="post-date" title="2019-12-26 22:09:55">2019/12/26</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E4%BA%94%EF%BC%89%E4%B9%8B%E5%BE%AA%E7%8E%AF%E4%BE%9D%E8%B5%96/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean之创建 Bean（五）之循环依赖">Bean之创建 Bean（五）之循环依赖</span>
+            <span class="post-date" title="2019-12-27 09:59:39">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean%EF%BC%88%E5%85%AD%EF%BC%89%E4%B9%8B%E5%88%9D%E5%A7%8B%E5%8C%96-Bean-%E5%AF%B9%E8%B1%A1/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean之创建 Bean（六）之初始化 Bean 对象">Bean之创建 Bean（六）之初始化 Bean 对象</span>
+            <span class="post-date" title="2019-12-27 13:50:37">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/27/%E5%88%9B%E5%BB%BA-Bean-%E6%80%BB%E7%BB%93/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="创建 Bean 总结">创建 Bean 总结</span>
+            <span class="post-date" title="2019-12-27 14:39:35">2019/12/27</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/Aware-%E6%8E%A5%E5%8F%A3/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Aware 接口">Aware 接口</span>
+            <span class="post-date" title="2019-12-31 09:58:32">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/BeanPostProcessor/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="BeanPostProcessor">BeanPostProcessor</span>
+            <span class="post-date" title="2019-12-31 10:23:52">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/InitializingBean-%E5%92%8C-init-method/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="InitializingBean 和 init-method">InitializingBean 和 init-method</span>
+            <span class="post-date" title="2019-12-31 17:47:19">2019/12/31</span>
+        </a>
+        
+        <a id="top" class="Spring "
+           href="/2019/12/31/Bean-%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"
+           data-tag="Spring,源码分析"
+           data-author="" >
+            <span class="post-title" title="Bean 的生命周期">Bean 的生命周期</span>
+            <span class="post-date" title="2019-12-31 18:40:14">2019/12/31</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-TF-IDF%E7%AE%97%E6%B3%95%E3%80%81Scroll%E6%90%9C%E7%B4%A2/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-TF&amp;IDF算法、Scroll搜索">Elasticsearch-TF&amp;IDF算法、Scroll搜索</span>
+            <span class="post-date" title="2019-11-30 15:55:25">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-deep-paging%E3%80%81mapping%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-deep paging、mapping介绍">Elasticsearch-deep paging、mapping介绍</span>
+            <span class="post-date" title="2019-11-30 15:47:48">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-es%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%96%B9%E6%A1%88/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-es的持久化方案">Elasticsearch-es的持久化方案</span>
+            <span class="post-date" title="2019-11-30 16:06:50">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-shard%E3%80%81%E6%89%A9%E5%AE%B9%E4%BB%8B%E7%BB%8D/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-shard、扩容介绍">Elasticsearch-shard、扩容介绍</span>
+            <span class="post-date" title="2019-11-30 14:25:23">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E5%86%99%E4%B8%80%E8%87%B4%E6%80%A7%E3%80%81%E8%BF%94%E5%9B%9E%E8%A7%A3%E6%9E%90/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-写一致性、返回解析">Elasticsearch-写一致性、返回解析</span>
+            <span class="post-date" title="2019-11-30 15:29:27">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticsearch-%E8%B7%AF%E7%94%B1%E7%AE%97%E6%B3%95%E3%80%81%E8%AF%B7%E6%B1%82%E5%8E%9F%E7%90%86/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticsearch-路由算法、请求原理">Elasticsearch-路由算法、请求原理</span>
+            <span class="post-date" title="2019-11-30 15:15:14">2019/11/30</span>
+        </a>
+        
+        <a  class="全文检索 "
+           href="/2019/11/30/Elasticssearch-%E5%AE%89%E8%A3%85%E3%80%81%E8%BF%90%E8%A1%8C/"
+           data-tag="es,全文检索"
+           data-author="" >
+            <span class="post-title" title="Elasticssearch-安装、运行">Elasticssearch-安装、运行</span>
+            <span class="post-date" title="2019-11-30 13:45:18">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/12/02/Java%E3%80%90%E5%9F%BA%E7%A1%80%E3%80%91%E9%9D%A2%E8%AF%95%E9%A2%98/"
+           data-tag="Java基础"
+           data-author="" >
+            <span class="post-title" title="Java【基础】面试题">Java【基础】面试题</span>
+            <span class="post-date" title="2019-12-02 13:43:48">2019/12/02</span>
+        </a>
+        
+        <a  class="Java虚拟机 "
+           href="/2019/11/30/Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E8%AF%A6%E8%A7%A3/"
+           data-tag="JVM堆、栈,内存溢出异常"
+           data-author="" >
+            <span class="post-title" title="Java内存区域详解">Java内存区域详解</span>
+            <span class="post-date" title="2019-11-30 16:22:50">2019/11/30</span>
+        </a>
+        
+        <a  class="Java虚拟机 "
+           href="/2019/11/30/Java%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E6%9C%BA%E5%88%B6/"
+           data-tag="GC"
+           data-author="" >
+            <span class="post-title" title="Java垃圾收集机制">Java垃圾收集机制</span>
+            <span class="post-date" title="2019-11-30 16:25:00">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/12/02/Spring%E9%9D%A2%E8%AF%95%E9%A2%98/"
+           data-tag="Spring IOC,Spring AOP,Spring 基础"
+           data-author="" >
+            <span class="post-title" title="Spring面试题">Spring面试题</span>
+            <span class="post-date" title="2019-12-02 16:55:45">2019/12/02</span>
+        </a>
+        
+        <a  class="微服务 nacos "
+           href="/2019/11/30/nacos-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/"
+           data-tag="spring-cloud-alibaba,注册中心"
+           data-author="" >
+            <span class="post-title" title="nacos-注册中心">nacos-注册中心</span>
+            <span class="post-date" title="2019-11-30 14:32:46">2019/11/30</span>
+        </a>
+        
+        <a  class="微服务 nacos "
+           href="/2019/11/30/nacos-%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/"
+           data-tag="spring-cloud-alibaba,注册中心"
+           data-author="" >
+            <span class="post-title" title="nacos-配置中心">nacos-配置中心</span>
+            <span class="post-date" title="2019-11-30 14:32:50">2019/11/30</span>
+        </a>
+        
+        <a  class="面试题 "
+           href="/2019/11/30/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3ClassLoader/"
+           data-tag="Java基础,类加载器"
+           data-author="" >
+            <span class="post-title" title="深入理解ClassLoader">深入理解ClassLoader</span>
+            <span class="post-date" title="2019-11-30 16:20:20">2019/11/30</span>
+        </a>
+        
+    </nav>
+</div>
+    </div>
+    <div class="hide-list">
+        <div class="semicircle">
+            <div class="brackets first"><</div>
+            <div class="brackets">&gt;</div>
+        </div>
+    </div>
+</aside>
+<div class="post">
+    <div class="pjax">
+        <article id="post-创建-Bean（四）之属性填充" class="article article-type-post" itemscope itemprop="blogPost">
+    
+        <h1 class="article-title">创建 Bean（四）之属性填充</h1>
+    
+    <div class="article-meta">
+        
+        <span class="top"><a href="javascript:" target="_blank" rel="noopener">置顶</a></span>
+        
+        
+        
+        <span class="book">
+            
+                <a href="javascript:" target="_blank" data-rel="Spring noopener">Spring</a>
+            
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color2">Spring</a>
+            
+            <a href="javascript:" target="_blank" rel="noopener" class="color5">源码分析</a>
+            
+        </span>
+        
+    </div>
+    <div class="article-meta">
+        
+        创建时间:<time class="date" title='更新时间: 2019-12-27 16:07:44'>2019-12-26 22:09</time>
+        
+    </div>
+    <div class="article-meta">
+        
+        <span>字数:3.5k</span>
+        
+        
+        <span id="busuanzi_container_page_pv">
+            阅读:<span id="busuanzi_value_page_pv">
+                <span class="count-comment">
+                    <span class="spinner">
+                      <div class="cube1"></div>
+                      <div class="cube2"></div>
+                    </span>
+                </span>
+            </span>
+        </span>
+        
+        
+    </div>
+    
+    <div class="toc-ref">
+    
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-populateBean"><span class="toc-text">1 populateBean</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-自动注入"><span class="toc-text">1.1 自动注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-1-autowireByName"><span class="toc-text">1.1.1 autowireByName</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-2-autowireByType"><span class="toc-text">1.1.2 autowireByType</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1-2-1-resolveDependency"><span class="toc-text">1.1.2.1 resolveDependency</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-applyPropertyValues"><span class="toc-text">1.2 applyPropertyValues</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-小结"><span class="toc-text">2 小结</span></a></li></ol>
+    
+<style>
+    .left-col .switch-btn,
+    .left-col .switch-area {
+        display: none;
+    }
+    .toc-level-3 i,
+    .toc-level-3 ol {
+        display: none !important;
+    }
+</style>
+</div>
+    <div class="article-entry" itemprop="articleBody">
+      
+        <font size=3>
+
+<br/>
+
+<p><code>#doCreateBean(...)</code>方法，主要用于完成 Bean 的创建和初始化工作，我们可以将其分为四个部分：</p>
+<font size=2>
+
+<ul>
+<li><code>#createBeanInstance(...)</code>方法，实例化 Bean。</li>
+<li><code>#populateBean(...)</code>方法，进行属性填充。</li>
+<li>循环依赖。</li>
+<li><code>#initializeBean(...)</code>方法，初始化 Bean。</li>
+</ul>
+</font>
+
+<p>第一个过程，如何实例化 Bean 在前两篇已经说明了，这篇主要来分析属性填充，也就是<code>#populateBean(...)</code>方法。该方法的作用是将 BeanDefinition 中的属性值复制给 BeanWrapper 实例对象。</p>
+<h1 id="1-populateBean"><a href="#1-populateBean" class="headerlink" title="1 populateBean"></a>1 populateBean</h1><pre><code>// AbstractAutowireCapableBeanFactory.java
+
+protected void populateBean(String beanName, RootBeanDefinition mbd, @Nullable BeanWrapper bw) {
+    // 没有实例化对象
+    if (bw == null) {
+        // 有属性，则抛出 BeanCreationException 异常
+        if (mbd.hasPropertyValues()) {
+            throw new BeanCreationException(
+                    mbd.getResourceDescription(), beanName, &quot;Cannot apply property values to null instance&quot;);
+            // 没有属性，直接 return 返回
+        } else {
+            // Skip property population phase for null instance.
+            return;
+        }
+    }
+
+    // 【1】 在设置属性之前给 InstantiationAwareBeanPostProcessors 最后一次改变 bean 的机会
+    boolean continueWithPropertyPopulation = true;
+    if (!mbd.isSynthetic()  // bean 不是&quot;合成&quot;的，即未由应用程序本身定义
+            &amp;&amp; hasInstantiationAwareBeanPostProcessors()) { // 是否持有 InstantiationAwareBeanPostProcessor
+        // 迭代所有的 BeanPostProcessors
+        for (BeanPostProcessor bp : getBeanPostProcessors()) {
+            if (bp instanceof InstantiationAwareBeanPostProcessor) { // 如果为 InstantiationAwareBeanPostProcessor
+                InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+                // 返回值为是否继续填充 bean
+                // postProcessAfterInstantiation：如果应该在 bean上面设置属性则返回 true，否则返回 false
+                // 一般情况下，应该是返回true 。
+                // 返回 false 的话，将会阻止在此 Bean 实例上调用任何后续的 InstantiationAwareBeanPostProcessor 实例。
+                if (!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) {
+                    continueWithPropertyPopulation = false;
+                    break;
+                }
+            }
+        }
+    }
+    // 如果后续处理器发出停止填充命令，则终止后续操作
+    if (!continueWithPropertyPopulation) {
+        return;
+    }
+
+    // 【2】bean 的属性值
+    PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
+
+    // 【3】 自动注入
+    if (mbd.getResolvedAutowireMode() == AUTOWIRE_BY_NAME || mbd.getResolvedAutowireMode() == AUTOWIRE_BY_TYPE) {
+        // 将 PropertyValues 封装成 MutablePropertyValues 对象
+        // MutablePropertyValues 允许对属性进行简单的操作，并提供构造函数以支持Map的深度复制和构造。
+        MutablePropertyValues newPvs = new MutablePropertyValues(pvs);
+        // Add property values based on autowire by name if applicable.
+        // 根据名称自动注入
+        if (mbd.getResolvedAutowireMode() == AUTOWIRE_BY_NAME) {
+            autowireByName(beanName, mbd, bw, newPvs);
+        }
+        // Add property values based on autowire by type if applicable.
+        // 根据类型自动注入
+        if (mbd.getResolvedAutowireMode() == AUTOWIRE_BY_TYPE) {
+            autowireByType(beanName, mbd, bw, newPvs);
+        }
+        pvs = newPvs;
+    }
+
+    // 是否已经注册了 InstantiationAwareBeanPostProcessors
+    boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors();
+    // 是否需要进行【依赖检查】
+    boolean needsDepCheck = (mbd.getDependencyCheck() != AbstractBeanDefinition.DEPENDENCY_CHECK_NONE);
+
+    // 【4】 BeanPostProcessor 处理
+    PropertyDescriptor[] filteredPds = null;
+    if (hasInstAwareBpps) {
+        if (pvs == null) {
+            pvs = mbd.getPropertyValues();
+        }
+        // 遍历 BeanPostProcessor 数组
+        for (BeanPostProcessor bp : getBeanPostProcessors()) {
+            if (bp instanceof InstantiationAwareBeanPostProcessor) {
+                InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+                // 对所有需要依赖检查的属性进行后处理
+                PropertyValues pvsToUse = ibp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
+                if (pvsToUse == null) {
+                    // 从 bw 对象中提取 PropertyDescriptor 结果集
+                    // PropertyDescriptor：可以通过一对存取方法提取一个属性
+                    if (filteredPds == null) {
+                        filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
+                    }
+                    pvsToUse = ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
+                    if (pvsToUse == null) {
+                        return;
+                    }
+                }
+                pvs = pvsToUse;
+            }
+        }
+    }
+
+    // 【5】 依赖检查
+    if (needsDepCheck) {
+        if (filteredPds == null) {
+            filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
+        }
+        // 依赖检查，对应 depends-on 属性
+        checkDependencies(beanName, mbd, filteredPds, pvs);
+    }
+
+    // 【6】 将属性应用到 bean 中
+    if (pvs != null) {
+        applyPropertyValues(beanName, mbd, bw, pvs);
+    }
+}</code></pre><p>处理流程如下：</p>
+<font size=2>
+
+<ul>
+<li>【1】处，根据<code>hasInstantiationAwareBeanPostProcessors</code>属性来判断，是否需要在注入属性之前给 InstantiationAwareBeanPostProcessors 最后一次改变 Bean 的机会。<strong>此过程可以控制 Spring 是否继续进行属性填充</strong>。</li>
+<li>【2】处，统一存入到 PropertyValues 中，PropertyValues 用于描述 Bean 的属性。</li>
+<li>【3】处，根据注入类型的不同来判断：<ul>
+<li>根据名称自动注入</li>
+<li>根据类型自动注入</li>
+<li>详见【1.1】</li>
+</ul>
+</li>
+<li>【4】处，进行 BeanPostProcessor 处理。</li>
+<li>【5】处，依赖检查。</li>
+<li>【6】处，将所有 PropertyValues 中的属性，填充到 BeanWrapper 中。</li>
+</ul>
+</font>
+
+
+<h2 id="1-1-自动注入"><a href="#1-1-自动注入" class="headerlink" title="1.1 自动注入"></a>1.1 自动注入</h2><p>Spring 会根据注入类型的不同，调用不同的方法来注入属性值。代码如下：</p>
+<pre><code>// AbstractBeanDefinition.java
+
+/**
+ * 注入模式
+ */
+private int autowireMode = AUTOWIRE_NO;
+
+public int getResolvedAutowireMode() {
+    if (this.autowireMode == AUTOWIRE_AUTODETECT) { // 自动检测模式，获得对应的检测模式
+        Constructor&lt;?&gt;[] constructors = getBeanClass().getConstructors();
+        for (Constructor&lt;?&gt; constructor : constructors) {
+            if (constructor.getParameterCount() == 0) {
+                return AUTOWIRE_BY_TYPE;
+            }
+        }
+        return AUTOWIRE_CONSTRUCTOR;
+    } else {
+        return this.autowireMode;
+    }
+}</code></pre><h3 id="1-1-1-autowireByName"><a href="#1-1-1-autowireByName" class="headerlink" title="1.1.1 autowireByName"></a>1.1.1 autowireByName</h3><p><code>#autowireByName(...)</code>方法，顾名思义是根据属性名称，完成自动依赖注入。代码如下：</p>
+<pre><code>// AbstractAutowireCapableBeanFactory.java
+
+protected void autowireByName(String beanName, AbstractBeanDefinition mbd, BeanWrapper bw, MutablePropertyValues pvs) {
+    // 【1】 对 Bean 对象中非简单属性
+    String[] propertyNames = unsatisfiedNonSimpleProperties(mbd, bw);
+    // 遍历 propertyName 数组
+    for (String propertyName : propertyNames) {
+        // 如果容器中包含指定名称的 bean，则将该 bean 注入到 bean中
+        if (containsBean(propertyName)) {
+            // 递归初始化相关 bean
+            Object bean = getBean(propertyName);
+            // 为指定名称的属性赋予属性值
+            pvs.add(propertyName, bean);
+            // 属性依赖注入
+            registerDependentBean(propertyName, beanName);
+            if (logger.isTraceEnabled()) {
+                logger.trace(&quot;Added autowiring by name from bean name &#39;&quot; + beanName +
+                        &quot;&#39; via property &#39;&quot; + propertyName + &quot;&#39; to bean named &#39;&quot; + propertyName + &quot;&#39;&quot;);
+            }
+        } else {
+            if (logger.isTraceEnabled()) {
+                logger.trace(&quot;Not autowiring property &#39;&quot; + propertyName + &quot;&#39; of bean &#39;&quot; + beanName +
+                        &quot;&#39; by name: no matching bean found&quot;);
+            }
+        }
+    }
+}</code></pre><font size=2>
+
+<ul>
+<li>【1】处，该方法逻辑简单，获取该 Bean 的非简单属性。非简单属性，就是对象类型的属性，但是这里并不会将所有的对象类型都找到，比如8个原始类型，String、Number、Date、URL、URI等都会被省略。代码如下：</li>
+</ul>
+<pre><code>// AbstractAutowireCapableBeanFactory.java
+
+protected String[] unsatisfiedNonSimpleProperties(AbstractBeanDefinition mbd, BeanWrapper bw) {
+    // 创建 result 集合
+    Set&lt;String&gt; result = new TreeSet&lt;&gt;();
+    PropertyValues pvs = mbd.getPropertyValues();
+    // 遍历 PropertyDescriptor 数组
+    PropertyDescriptor[] pds = bw.getPropertyDescriptors();
+    for (PropertyDescriptor pd : pds) {
+        if (pd.getWriteMethod() != null // 有可写方法
+                &amp;&amp; !isExcludedFromDependencyCheck(pd) // 依赖检测中没有被忽略
+                &amp;&amp; !pvs.contains(pd.getName()) // pvs 不包含该属性名
+                &amp;&amp; !BeanUtils.isSimpleProperty(pd.getPropertyType())) { // 不是简单属性类型
+            result.add(pd.getName()); // 添加到 result 中
+        }
+    }
+    return StringUtils.toStringArray(result);
+}</code></pre></font>
+
+<p>获取需要依赖注入的属性后，通过遍历、递归的方式初始化相关的 Bean，然后调用<code>#registerDependentBean(...)</code>方法，完成注册依赖。代码如下：</p>
+<pre><code>// DefaultSingletonBeanRegistry.java
+
+/**
+ *
+ * 保存的是依赖 beanName 之间的映射关系：beanName - &gt; 依赖 beanName 的集合
+ */
+private final Map&lt;String, Set&lt;String&gt;&gt; dependentBeanMap = new ConcurrentHashMap&lt;&gt;(64);
+
+/**
+ *
+ * 保存的是依赖 beanName 之间的映射关系：依赖 beanName - &gt; beanName 的集合
+ */
+private final Map&lt;String, Set&lt;String&gt;&gt; dependenciesForBeanMap = new ConcurrentHashMap&lt;&gt;(64);
+
+public void registerDependentBean(String beanName, String dependentBeanName) {
+    // 获取 beanName
+    String canonicalName = canonicalName(beanName);
+    // 添加 &lt;canonicalName, &lt;dependentBeanName&gt;&gt; 到 dependentBeanMap 中
+    synchronized (this.dependentBeanMap) {
+        Set&lt;String&gt; dependentBeans =
+                this.dependentBeanMap.computeIfAbsent(canonicalName, k -&gt; new LinkedHashSet&lt;&gt;(8));
+        if (!dependentBeans.add(dependentBeanName)) {
+            return;
+        }
+    }
+    // 添加 &lt;dependentBeanName, &lt;canonicalName&gt;&gt; 到 dependenciesForBeanMap 中
+    synchronized (this.dependenciesForBeanMap) {
+        Set&lt;String&gt; dependenciesForBean =
+                this.dependenciesForBeanMap.computeIfAbsent(dependentBeanName, k -&gt; new LinkedHashSet&lt;&gt;(8));
+        dependenciesForBean.add(canonicalName);
+    }
+}</code></pre><h3 id="1-1-2-autowireByType"><a href="#1-1-2-autowireByType" class="headerlink" title="1.1.2 autowireByType"></a>1.1.2 autowireByType</h3><p><code>#autowireByType(...)</code>方法，根据属性类型完成自动依赖注入。代码如下：</p>
+<pre><code>// AbstractAutowireCapableBeanFactory.java
+
+protected void autowireByType(String beanName, AbstractBeanDefinition mbd, BeanWrapper bw, MutablePropertyValues pvs) {
+
+    // 获取 TypeConverter 实例
+    // 使用自定义的 TypeConverter，用于取代默认的 PropertyEditor 机制
+    TypeConverter converter = getCustomTypeConverter();
+    if (converter == null) {
+        converter = bw;
+    }
+
+    Set&lt;String&gt; autowiredBeanNames = new LinkedHashSet&lt;&gt;(4);
+    // 获取非简单属性
+    String[] propertyNames = unsatisfiedNonSimpleProperties(mbd, bw);
+    // 遍历 propertyName 数组
+    for (String propertyName : propertyNames) {
+        try {
+            // 获取 PropertyDescriptor 实例
+            PropertyDescriptor pd = bw.getPropertyDescriptor(propertyName);
+            // 不要尝试按类型
+            if (Object.class != pd.getPropertyType()) {
+                // 探测指定属性的 set 方法
+                MethodParameter methodParam = BeanUtils.getWriteMethodParameter(pd);
+                boolean eager = !PriorityOrdered.class.isInstance(bw.getWrappedInstance());
+                DependencyDescriptor desc = new AutowireByTypeDependencyDescriptor(methodParam, eager);
+                // 解析指定 beanName 的属性所匹配的值，并把解析到的属性名称存储在 autowiredBeanNames 中
+                // 当属性存在过个封装 bean 时将会找到所有匹配的 bean 并将其注入
+                Object autowiredArgument = resolveDependency(desc, beanName, autowiredBeanNames, converter);
+                if (autowiredArgument != null) {
+                    pvs.add(propertyName, autowiredArgument);
+                }
+                // 遍历 autowiredBeanName 数组
+                for (String autowiredBeanName : autowiredBeanNames) {
+                    // 属性依赖注入
+                    registerDependentBean(autowiredBeanName, beanName);
+                    if (logger.isTraceEnabled()) {
+                        logger.trace(&quot;Autowiring by type from bean name &#39;&quot; + beanName + &quot;&#39; via property &#39;&quot; +
+                                propertyName + &quot;&#39; to bean named &#39;&quot; + autowiredBeanName + &quot;&#39;&quot;);
+                    }
+                }
+                // 清空 autowiredBeanName 数组
+                autowiredBeanNames.clear();
+            }
+        } catch (BeansException ex) {
+            throw new UnsatisfiedDependencyException(mbd.getResourceDescription(), beanName, propertyName, ex);
+        }
+    }
+}</code></pre><p>大致过程和根据名称自动注入差不多，都是找到需要的依赖注入的属性，然后找到匹配的 Bean，最后调用<code>#registerDependentBean(...)</code>方法注册依赖，不过相对于<code>#autowireByName(...)</code>方法而言，根据类型寻找匹配的 Bean 过程比较复杂。</p>
+<h4 id="1-1-2-1-resolveDependency"><a href="#1-1-2-1-resolveDependency" class="headerlink" title="1.1.2.1 resolveDependency"></a>1.1.2.1 resolveDependency</h4><p>下面我们分析下这个过程。代码如下：</p>
+<pre><code>// DefaultListableBeanFactory.java
+
+@Nullable
+private static Class&lt;?&gt; javaxInjectProviderClass;
+
+static {
+    try {
+        javaxInjectProviderClass = ClassUtils.forName(&quot;javax.inject.Provider&quot;, DefaultListableBeanFactory.class.getClassLoader());
+    } catch (ClassNotFoundException ex) {
+        // JSR-330 API not available - Provider interface simply not supported then.
+        javaxInjectProviderClass = null;
+    }
+}
+
+@Override
+@Nullable
+public Object resolveDependency(DependencyDescriptor descriptor, @Nullable String requestingBeanName,
+        @Nullable Set&lt;String&gt; autowiredBeanNames, @Nullable TypeConverter typeConverter) throws BeansException {
+    // 初始化参数名称发现器，该方法并不会在这个时候尝试检索参数名称
+    // getParameterNameDiscoverer 返回 parameterNameDiscoverer 实例，parameterNameDiscoverer 方法参数名称的解析器
+    descriptor.initParameterNameDiscovery(getParameterNameDiscoverer());
+    // 依赖类型为 Optional 类型
+    if (Optional.class == descriptor.getDependencyType()) {
+        return createOptionalDependency(descriptor, requestingBeanName);
+    // 依赖类型为ObjectFactory、ObjectProvider
+    } else if (ObjectFactory.class == descriptor.getDependencyType() ||
+            ObjectProvider.class == descriptor.getDependencyType()) {
+        return new DependencyObjectProvider(descriptor, requestingBeanName);
+    // javaxInjectProviderClass 类注入的特殊处理
+    } else if (javaxInjectProviderClass == descriptor.getDependencyType()) {
+        return new Jsr330Factory().createDependencyProvider(descriptor, requestingBeanName);
+    } else {
+        // 为实际依赖关系目标的延迟解析构建代理
+        // 默认实现返回 null
+        Object result = getAutowireCandidateResolver().getLazyResolutionProxyIfNecessary(descriptor, requestingBeanName);
+        if (result == null) {
+            // 通用处理逻辑
+            result = doResolveDependency(descriptor, requestingBeanName, autowiredBeanNames, typeConverter);
+        }
+        return result;
+    }
+}</code></pre><p>这个我们关注<strong>通用处理逻辑</strong><code>#doResolveDependency(...)</code>方法。代码如下：</p>
+<pre><code>// DefaultListableBeanFactory.java
+
+@Nullable
+public Object doResolveDependency(DependencyDescriptor descriptor, @Nullable String beanName,
+    @Nullable Set&lt;String&gt; autowiredBeanNames, @Nullable TypeConverter typeConverter) throws BeansException {
+    // 注入点
+    InjectionPoint previousInjectionPoint = ConstructorResolver.setCurrentInjectionPoint(descriptor);
+    try {
+        // 针对给定的工厂给定一个快捷实现的方式，例如考虑一些预先解析的信息
+        // 在进入所有bean的常规类型匹配算法之前，解析算法将首先尝试通过此方法解析快捷方式。
+        // 子类可以覆盖此方法
+        Object shortcut = descriptor.resolveShortcut(this);
+        if (shortcut != null) {
+            // 返回快捷的解析信息
+            return shortcut;
+        }
+        // 依赖的类型
+        Class&lt;?&gt; type = descriptor.getDependencyType();
+        // 支持 Spring 的注解 @value
+        Object value = getAutowireCandidateResolver().getSuggestedValue(descriptor);
+        if (value != null) {
+            if (value instanceof String) {
+                String strVal = resolveEmbeddedValue((String) value);
+                BeanDefinition bd = (beanName != null &amp;&amp; containsBean(beanName) ? getMergedBeanDefinition(beanName) : null);
+                value = evaluateBeanDefinitionString(strVal, bd);
+            }
+            TypeConverter converter = (typeConverter != null ? typeConverter : getTypeConverter());
+            return (descriptor.getField() != null ?
+                    converter.convertIfNecessary(value, type, descriptor.getField()) :
+                    converter.convertIfNecessary(value, type, descriptor.getMethodParameter()));
+        }
+        // 解析复合 bean，其实就是对 bean 的属性进行解析
+        // 包括：数组、Collection 、Map 类型
+        Object multipleBeans = resolveMultipleBeans(descriptor, beanName, autowiredBeanNames, typeConverter);
+        if (multipleBeans != null) {
+            return multipleBeans;
+        }
+        // 查找与类型相匹配的 bean
+        // 返回值构成为：key = 匹配的 beanName，value = beanName 对应的实例化 bean
+        Map&lt;String, Object&gt; matchingBeans = findAutowireCandidates(beanName, type, descriptor);
+        // 没有找到，检验 @autowire  的 require 是否为 true
+        if (matchingBeans.isEmpty()) {
+            // 如果 @autowire 的 require 属性为 true ，但是没有找到相应的匹配项，则抛出异常
+            if (isRequired(descriptor)) {
+                raiseNoMatchingBeanFound(type, descriptor.getResolvableType(), descriptor);
+            }
+            return null;
+        }
+        String autowiredBeanName;
+        Object instanceCandidate;
+        if (matchingBeans.size() &gt; 1) {
+            // 确认给定 bean autowire 的候选者
+            // 按照 @Primary 和 @Priority 的顺序
+            autowiredBeanName = determineAutowireCandidate(matchingBeans, descriptor);
+            if (autowiredBeanName == null) {
+                if (isRequired(descriptor) || !indicatesMultipleBeans(type)) {
+                    // 唯一性处理
+                    return descriptor.resolveNotUnique(descriptor.getResolvableType(), matchingBeans);
+                }
+                else {
+                    // 在可选的Collection / Map的情况下，默默地忽略一个非唯一的情况：可能它是一个多个常规bean的空集合
+                    return null;
+                }
+            }
+            instanceCandidate = matchingBeans.get(autowiredBeanName);
+        } else {
+            // We have exactly one match.
+            Map.Entry&lt;String, Object&gt; entry = matchingBeans.entrySet().iterator().next();
+            autowiredBeanName = entry.getKey();
+            instanceCandidate = entry.getValue();
+        }
+        if (autowiredBeanNames != null) {
+            autowiredBeanNames.add(autowiredBeanName);
+        }
+        if (instanceCandidate instanceof Class) {
+            instanceCandidate = descriptor.resolveCandidate(autowiredBeanName, type, this);
+        }
+        Object result = instanceCandidate;
+        if (result instanceof NullBean) {
+            if (isRequired(descriptor)) {
+                raiseNoMatchingBeanFound(type, descriptor.getResolvableType(), descriptor);
+            }
+            result = null;
+        }
+        if (!ClassUtils.isAssignableValue(type, result)) {
+            throw new BeanNotOfRequiredTypeException(autowiredBeanName, type, instanceCandidate.getClass());
+        }
+        return result;
+    } finally {
+        ConstructorResolver.setCurrentInjectionPoint(previousInjectionPoint);
+    }
+}</code></pre><p>到这里就可以完成了所有属性的注入了。<code>#populateBean()</code>方法的工作已经完成了大半。</p>
+<font size=2>
+
+<ul>
+<li>下一步，则是对依赖的 Bean 的依赖检查和 PostProcessor 的处理。<strong>这个我们后续再说</strong>。</li>
+<li>下面，我们来看该方法的最后一步<code>#applyPropertyValues(...)</code>方法。</li>
+</ul>
+</font>
+
+<h2 id="1-2-applyPropertyValues"><a href="#1-2-applyPropertyValues" class="headerlink" title="1.2 applyPropertyValues"></a>1.2 applyPropertyValues</h2><p>其实，上面只是完成了所有注入属性的获取，将获取的属性封装在 PropertyValues 的实例对象中而已。并没有注入到已经实例的 Bean 中。而<code>#applyPropertyValues(...)</code>方法，就是完成这最后一步。代码如下：</p>
+<pre><code>// AbstractAutowireCapableBeanFactory.java
+
+protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrapper bw, PropertyValues pvs) {
+    if (pvs.isEmpty()) {
+        return;
+    }
+
+    // 设置 BeanWrapperImpl 的 SecurityContext 属性
+    if (System.getSecurityManager() != null &amp;&amp; bw instanceof BeanWrapperImpl) {
+        ((BeanWrapperImpl) bw).setSecurityContext(getAccessControlContext());
+    }
+
+    // MutablePropertyValues 类型属性
+    MutablePropertyValues mpvs = null;
+
+    // 原始类型
+    List&lt;PropertyValue&gt; original;
+    // 获得 original
+    if (pvs instanceof MutablePropertyValues) {
+        mpvs = (MutablePropertyValues) pvs;
+        // 属性值已经转换
+        if (mpvs.isConverted()) {
+            // Shortcut: use the pre-converted values as-is.
+            try {
+                // 为实例化对象设置属性值 ，依赖注入真真正正地实现在此！！！！！
+                bw.setPropertyValues(mpvs);
+                return;
+            } catch (BeansException ex) {
+                throw new BeanCreationException(
+                        mbd.getResourceDescription(), beanName, &quot;Error setting property values&quot;, ex);
+            }
+        }
+        original = mpvs.getPropertyValueList();
+    } else {
+        // 如果 pvs 不是 MutablePropertyValues 类型，则直接使用原始类型
+        original = Arrays.asList(pvs.getPropertyValues());
+    }
+
+    // 获取 TypeConverter = 获取用户自定义的类型转换
+    TypeConverter converter = getCustomTypeConverter();
+    if (converter == null) {
+        converter = bw;
+    }
+
+    // 获取对应的解析器
+    BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this, beanName, mbd, converter);
+
+    // Create a deep copy, resolving any references for values.
+    List&lt;PropertyValue&gt; deepCopy = new ArrayList&lt;&gt;(original.size());
+    boolean resolveNecessary = false;
+    // 遍历属性，将属性转换为对应类的对应属性的类型
+    for (PropertyValue pv : original) {
+        // 属性值不需要转换
+        if (pv.isConverted()) {
+            deepCopy.add(pv);
+        // 属性值需要转换
+        } else {
+            String propertyName = pv.getName();
+            Object originalValue = pv.getValue(); // 原始的属性值，即转换之前的属性值
+            Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue); // 转换属性值，例如将引用转换为IoC容器中实例化对象引用 ！！！！！ 对属性值的解析！！
+            Object convertedValue = resolvedValue; // 转换之后的属性值
+            boolean convertible = bw.isWritableProperty(propertyName) &amp;&amp;
+                    !PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName);  // 属性值是否可以转换
+            // 使用用户自定义的类型转换器转换属性值
+            if (convertible) {
+                convertedValue = convertForProperty(resolvedValue, propertyName, bw, converter);
+            }
+            // Possibly store converted value in merged bean definition,
+            // in order to avoid re-conversion for every created bean instance.
+            // 存储转换后的属性值，避免每次属性注入时的转换工作
+            if (resolvedValue == originalValue) {
+                if (convertible) {
+                    // 设置属性转换之后的值
+                    pv.setConvertedValue(convertedValue);
+                }
+                deepCopy.add(pv);
+            // 属性是可转换的，且属性原始值是字符串类型，且属性的原始类型值不是
+            // 动态生成的字符串，且属性的原始值不是集合或者数组类型
+            } else if (convertible &amp;&amp; originalValue instanceof TypedStringValue &amp;&amp;
+                    !((TypedStringValue) originalValue).isDynamic() &amp;&amp;
+                    !(convertedValue instanceof Collection || ObjectUtils.isArray(convertedValue))) {
+                pv.setConvertedValue(convertedValue);
+                deepCopy.add(pv);
+            } else {
+                resolveNecessary = true;
+                // 重新封装属性的值
+                deepCopy.add(new PropertyValue(pv, convertedValue));
+            }
+        }
+    }
+    // 标记属性值已经转换过
+    if (mpvs != null &amp;&amp; !resolveNecessary) {
+        mpvs.setConverted();
+    }
+
+    // Set our (possibly massaged) deep copy.
+    // 进行属性依赖注入，依赖注入的真真正正实现依赖的注入方法在此！！！
+    try {
+        bw.setPropertyValues(new MutablePropertyValues(deepCopy));
+    } catch (BeansException ex) {
+        throw new BeanCreationException(
+                mbd.getResourceDescription(), beanName, &quot;Error setting property values&quot;, ex);
+    }
+}</code></pre><p><code>#applyPropertyValues(...)</code>方法就是做一件事，完成属性转换注入进去！</p>
+<font size=2>
+
+<ul>
+<li>属性值类型不需要转换时，不需要解析属性值，直接准备进入依赖注入。</li>
+<li>属性值需要进行类型转换时，如果对其他对象的引用等，首先需要解析属性值，然后对解析后的属性值进行依赖注入。</li>
+</ul>
+</font>
+
+<h1 id="2-小结"><a href="#2-小结" class="headerlink" title="2 小结"></a>2 小结</h1><p>至此，<code>#doCreateBean(...)</code>方法的第二个过程：属性填充。已经分析完成了。下篇分析第三个过程：循环依赖的处理。循环依赖并不仅仅只是在<code>#doCreateBean(...)</code>方法中，而是整个 Spring 的 IoC 体系都要涉及的内容。</p>
+</font>
+      
+       
+    </div>
+</article>
+
+
+
+
+
+
+
+
+
+
+    </div>
+    <div class="copyright">
+        <p class="footer-entry">©2019-2022 Why</p>
+<p class="footer-entry">Built with <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/yelog/hexo-theme-3-hexo" target="_blank">3-hexo</a> theme</p>
+
+    </div>
+    <div class="full-toc">
+        <button class="full"><span class="min "></span></button>
+<button class="post-toc-menu"><span class="post-toc-menu-icons"></span></button>
+<div class="post-toc"><span class="post-toc-title">目录</span>
+    <div class="post-toc-content">
+
+    </div>
+</div>
+<a class="" id="rocket" href="javascript:void(0)" target="_blank" rel="noopener"></a>
+    </div>
+</div>
+<div class="acParent"></div>
+
+</body>
+<script src="//cdn.bootcss.com/jquery.pjax/2.0.1/jquery.pjax.min.js"></script>
+
+<script src="/js/script.js?v=1.0.1" ></script>
+<script>
+    var img_resize = 'default';
+    /*作者、标签的自动补全*/
+    $(function () {
+        $('.search').AutoComplete({
+            'data': ['#Spring','#源码分析','#es','#全文检索','#Java基础','#JVM堆、栈','#内存溢出异常','#GC','#Spring IOC','#Spring AOP','#Spring 基础','#spring-cloud-alibaba','#注册中心','#类加载器',],
+            'itemHeight': 20,
+            'width': 418
+        }).AutoComplete('show');
+    })
+    function initArticle() {
+        /*渲染对应的表格样式*/
+        
+            $(".post .pjax table").addClass("green_title");
+        
+
+        /*渲染打赏样式*/
+        
+
+        /*高亮代码块行号*/
+        
+        $('pre code').each(function(){
+            var lines = $(this).text().split('\n').length - 1, widther='';
+            if (lines>99) {
+                widther = 'widther'
+            }
+            var $numbering = $('<ul/>').addClass('pre-numbering ' + widther).attr("unselectable","on");
+            $(this).addClass('has-numbering ' + widther)
+                    .parent()
+                    .append($numbering);
+            for(var i=1;i<=lines;i++){
+                $numbering.append($('<li/>').text(i));
+            }
+        });
+        
+
+        /*访问数量*/
+        
+        $.getScript("//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js");
+        
+
+        /*代码高亮，行号对齐*/
+        $('.pre-numbering').css('line-height',$('.has-numbering').css('line-height'));
+
+        
+    }
+
+    /*打赏页面隐藏与展示*/
+    
+
+</script>
+
+<!--加入行号的高亮代码块样式-->
+
+<style>
+    pre{
+        position: relative;
+        margin-bottom: 24px;
+        border-radius: 10px;
+        border: 1px solid #e2dede;
+        background: #FFF;
+        overflow: hidden;
+    }
+    code.has-numbering{
+        margin-left: 30px;
+    }
+    code.has-numbering.widther{
+        margin-left: 35px;
+    }
+    .pre-numbering{
+        margin: 0px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 20px;
+        padding: 0.5em 3px 0.7em 5px;
+        border-right: 1px solid #C3CCD0;
+        text-align: right;
+        color: #AAA;
+        background-color: ;
+    }
+    .pre-numbering.widther {
+        width: 35px;
+    }
+</style>
+
+<!--自定义样式设置-->
+<style>
+    
+    
+    .nav {
+        width: 542px;
+    }
+    .nav.fullscreen {
+        margin-left: -542px;
+    }
+    .nav-left {
+        width: 120px;
+    }
+    
+    
+    @media screen and (max-width: 1468px) {
+        .nav {
+            width: 492px;
+        }
+        .nav.fullscreen {
+            margin-left: -492px;
+        }
+        .nav-left {
+            width: 100px;
+        }
+    }
+    
+    
+    @media screen and (max-width: 1024px) {
+        .nav {
+            width: 492px;
+            margin-left: -492px
+        }
+        .nav.fullscreen {
+            margin-left: 0;
+        }
+        .nav .hide-list.fullscreen {
+            left: 492px
+        }
+    }
+    
+    @media screen and (max-width: 426px) {
+        .nav {
+            width: 100%;
+        }
+        .nav-left {
+            width: 100%;
+        }
+    }
+    
+    
+    .nav-right .title-list nav a .post-title, .nav-right .title-list #local-search-result a .post-title {
+        color: #383636;
+    }
+    
+    
+    .nav-right .title-list nav a .post-date, .nav-right .title-list #local-search-result a .post-date {
+        color: #5e5e5f;
+    }
+    
+    
+    .nav-right nav a.hover, #local-search-result a.hover{
+        background-color: #e2e0e0;
+    }
+    
+    
+
+    /*列表样式*/
+    
+    .post .pjax article .article-entry>ol, .post .pjax article .article-entry>ul, .post .pjax article>ol, .post .pjax article>ul{
+        border: #e2dede solid 1px;
+        border-radius: 10px;
+        padding: 10px 32px 10px 56px;
+    }
+    .post .pjax article .article-entry li>ol, .post .pjax article .article-entry li>ul,.post .pjax article li>ol, .post .pjax article li>ul{
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+    .post .pjax article .article-entry>ol>li, .post .pjax article .article-entry>ul>li,.post .pjax article>ol>li, .post .pjax article>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    .post .pjax article .article-entry li>ol>li, .post .pjax article .article-entry li>ul>li,.post .pjax article li>ol>li, .post .pjax article li>ul>li{
+        margin-bottom: auto;
+        margin-left: auto;
+    }
+    
+
+    /* 背景图样式 */
+    
+    
+
+
+    /*引用块样式*/
+    
+
+    /*文章列表背景图*/
+    
+    .nav-right:before {
+        content: ' ';
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.1;
+        background: url("/img/zzpic20363.jpg");
+        background-repeat: no-repeat;
+        background-position: 50% 0;
+        -ms-background-size: cover;
+        -o-background-size: cover;
+        -moz-background-size: cover;
+        -webkit-background-size: cover;
+        background-size: cover;
+    }
+    
+
+    
+</style>
+
+
+
+
+
+
+
+</html>
